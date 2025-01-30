@@ -17,7 +17,7 @@
     <!--Title-->
     <title>El mono infinito</title>
 </head>
-<body>
+<body> <!--TODO: Poner fondo cuadricula-->
     <!-- Contenedor -->
     <div class="container"></div>
         <!-- Header -->
@@ -41,13 +41,44 @@
         </nav>
         <!-- Aside -->
         <aside class="mb-4">
-            <!-- Aside content -->
+            <h2>Añadir Producto</h2>
+            <form id="productForm">
+                <label>Tipo de producto:</label>
+                <select id="productType">
+                    <option value="">Seleccione un tipo</option>
+                    <option value="libro_Fisico">Libro Físico</option>
+                    <option value="libro_Digital">Libro Digital</option>
+                    <option value="ereader">Ereader</option>
+                    <option value="funda">Funda Ereader</option>
+                    <option value="marcapaginas">Marcapaginas</option>
+                </select>
+                <div id="extraField"></div>
+    
+                <label>Nombre del producto:</label>
+                <input type="text" placeholder="Ingrese el nombre" required>
+    
+                <label>Precio:</label>
+                <input type="number" placeholder="Ingrese el precio" required>
+    
+                <label>Descripción:</label>
+                <textarea placeholder="Ingrese la descripción"></textarea>
+    
+                <label>Subir imagen:</label>
+                <input type="file">
+                
+                <div id="dragDropArea" class="drag-drop">Arrastre y suelte aquí</div>
+                <button type="submit">Subir</button>
+            </form>
+
         </aside>
         <!-- Main -->
         <main>
             <!-- Main content -->
         </main>
         <!-- Footer -->
+         <footer>
+            
+         </footer>
     </div>
 </body>
 </html>

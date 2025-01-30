@@ -1,19 +1,43 @@
 # DAWE-Proyecto
  Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
+## Tareas
 
-
-# Tareas "HTML" realizar
-
-- [ ] Organización de carpetas
-- [ ] Favicono (en dir imagenes)
-- [ ] Fondo en body, patrón repetido 
-- [ ] Contenedor (div ancho <90%)
-- [ ] Cabecera (con titulo h1)
-- [ ] Menú horizontal nav ul li (debajo de titulo)
+### Tareas "HTML" realizar
+- [X] Organización de carpetas
+- [ ] Favicono (en dir imagenes) - Eneko
+- [ ] Fondo en body, patrón repetido - Luken
+- [ ] Contenedor (div ancho <90%) - Luken
+- [X] Cabecera (con titulo h1)
+- [X] Menú horizontal nav ul li (debajo de titulo)
 - [ ] Main
-- [ ] Aside
+- [ ] Aside - Ander
 - [ ] Card boostrap
-- [ ] Pie
+- [ ] Footer 
 - [ ] Carrito
-- [ ] Descripcion exetendida
+- [ ] Descripcion extendida
+
+
+### JS
+- [X] Producto - Xabi
+- [X] Producto personalizable - Xabi
+  - [X] Libros físicos (peso)
+  - [X] Libros digitales (_peso_)
+  - [X] Ereaders (Marca)
+  - [X] Fundas de ereader (Marca)
+  - [X] Marcapáginas (Material)
+- [ ] Fichero utils.js - TODOS
+- [ ] Fichero tienda.js - Eneko
+
+
+### Requisitos funcionales
+- [ ] Buscador de productos - Luken
+- [ ] Paginación - Xabier
+- [ ] Formulario para introducir nuevos productos - Ander
+- [ ] Carrito de la compra - Eneko
+- [ ] Funcionalidad extra (pedir aprovación)
+
+
+
+
+
