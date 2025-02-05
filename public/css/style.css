@@ -1,11 +1,9 @@
-.container {
+.contenedor {
     width: 90%;
     min-height: 100vh;
     margin: 0 auto;
     background-color: rgba(33, 37, 41, 0.95);
-    display: flex;
     flex-direction: column;
-    overflow-y: auto;
 }
 
 body {
@@ -13,6 +11,7 @@ body {
     background-repeat: repeat;
     background-size: 10em;
     background-attachment: fixed;
+    
     margin: 0;
     padding: 0;
     min-height: 100vh;
