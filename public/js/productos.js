@@ -1,3 +1,31 @@
+/*
+4.1.1. Producto
+La clase Producto es una superclase de la que heredarán todos los productos de la tienda.
+Debe tener métodos setter y getter (implementados mediante las palabras clave set y get de ES5-6) de todos sus atributos. 
+Los atributos deben ser privados (utiliza la sintaxis de ES2022). 
+Deben incluirse como atributos:
+
+ID del producto.
+Nombre del producto.
+Precio del producto.
+Descripción del producto.
+Imagen del producto.
+
+El ID NO tiene que tener un setter, solo un getter. 
+Al instanciar un producto, se le asignará automáticamente un ID único y no podrá ser modificado de ninguna manera. 
+Puedes usar la siguiente función para generar dicho ID:
+
+function guidGenerator() {
+	var S4 = function() {
+   	return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+	};
+	return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+
+En caso de que la imagen sea null (porque no la hemos metido), se debe de poner una imagen predefinida indicando la ausencia de imagen.
+*/
+
 // Superclase: Producto
 class Producto {
     #id;
@@ -58,8 +86,13 @@ class Producto {
     }
 }
 
+/*
+4.1.2. Productos personalizables
+Se deben crear al menos 5 clases de productos que extiendan/hereden de la clase Producto. Incluirán al menos un atributo extra en cada clase (distinto) como el origen, fabricante, etc., así como sus respectivos métodos getter y setter.
+*/
+
 // Subclase: Libro fisico
-class Libro extends Producto {
+export class Libro extends Producto {
     #ibsn;
     #autor;
     #paginas;
@@ -97,7 +130,7 @@ class Libro extends Producto {
 }
 
 // Subclase: Libro electronico
-class Ebook extends Libro {
+export class Ebook extends Libro {
     #tamano;
 
     constructor(nombre, precio, descripcion, autor, ibsn, paginas, tamano, imagen) {
@@ -115,7 +148,7 @@ class Ebook extends Libro {
 }
 
 // Subclase: Ereader
-class Ereader extends Producto {
+export class Ereader extends Producto {
     #resolucion;
 
     constructor(nombre, precio, descripcion, resolucion, imagen) {
@@ -132,8 +165,8 @@ class Ereader extends Producto {
     }
 }
 
-// Subclase: Marcapaginas
-class Marcapaginas extends Producto {
+// Subclase: Funda Ereader
+export class Funda extends Producto {
     #material;
 
     constructor(nombre, precio, descripcion, material, imagen) {
@@ -147,5 +180,23 @@ class Marcapaginas extends Producto {
 
     set material(material) {
         this.#material = material;
+    }
+}
+
+// Subclase: Marcapaginas
+export class Marcapaginas extends Producto {
+    #color;
+
+    constructor(nombre, precio, descripcion, color, imagen) {
+        super(nombre, precio, descripcion, imagen);
+        this.#color = color;
+    }
+
+    get color() {
+        return this.#color;
+    }
+
+    set color(material) {
+        this.#color = material;
     }
 }
