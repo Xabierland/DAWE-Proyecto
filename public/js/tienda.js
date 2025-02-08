@@ -11,6 +11,7 @@ const listaProductos = [
    new Ebook("Dungeon Crawler Carl", 5, "The apocalypse will be televised", "Matt Dinniman", 2, 400, 300, "img/img2.png"),
    new Ebook("Dungeon Crawler Carl: Carl's doomsday scenario", 6, "The apocalypse will be televised", "Matt Dinniman", 4, 500, 300, "img/img6.png"),
    new Ebook("El camino de los reyes", 15, "La historia de Kaladin", "Brandon Sanderson", 6, 1200, 500, "img/img11.png"),
+   new Ebook("Palabras radiantes", 15, "La historia de Shallan", "Brandon Sanderson", 7, 1300, 550, "img/img15.png"),
 
    // Ereaders
    new Ereader("Kobo clara", 127, "Lee mucho", 300, "img/img3.png"),
@@ -28,45 +29,9 @@ const listaProductos = [
    new Funda("Funda Universal", 15, "Compatible con varios modelos", "Cuero", "img/img14.png")
 ];
 
-// Carrito de compra
-const carrito = new Map();
-
 // Funciones de productos
 export function obtenerProductos() {
    return listaProductos;
-}
-
-export function obtenerCarrito() {
-   return carrito;
-}
-
-export function agregarAlCarrito(productoId) {
-   const producto = listaProductos.find(p => p.id === productoId);
-   if (!producto) return false;
-   
-   if (carrito.has(productoId)) {
-       const cantidad = carrito.get(productoId).cantidad;
-       if (cantidad >= 20) return false;
-       carrito.get(productoId).cantidad++;
-   } else {
-       carrito.set(productoId, {
-           nombre: producto.nombre,
-           precio: producto.precio,
-           imagen: producto.imagen,
-           cantidad: 1
-       });
-   }
-   return true;
-}
-
-export function actualizarCantidadCarrito(productoId, cantidad) {
-   if (!carrito.has(productoId)) return false;
-   if (cantidad <= 0) {
-       carrito.delete(productoId);
-   } else if (cantidad <= 20) {
-       carrito.get(productoId).cantidad = cantidad;
-   }
-   return true;
 }
 
 // Función para añadir nuevo producto

@@ -1,4 +1,5 @@
-import { obtenerProductos, obtenerCarrito, agregarAlCarrito, actualizarCantidadCarrito } from './tienda.js';
+import { obtenerProductos, agregarNuevoProducto } from './tienda.js';
+import { agregarAlCarrito, actualizarCantidadCarrito } from './carrito.js';
 
 class PaginacionProductos {
    constructor(productosPerPage = 9) {
@@ -8,6 +9,7 @@ class PaginacionProductos {
        this.currentPage = 1;
        this.setupBuscador();
        this.setupCarrito();
+       this.setupAside();
        this.renderizarProductos();
        this.setupEventListeners();
    }
@@ -22,6 +24,126 @@ class PaginacionProductos {
            this.renderizarProductos();
        });
    }
+
+   
+
+   setupAside() {
+    console.log("vbbbbbbbbbbbbbbbbbbbbb");
+    const typeInput = document.getElementById('productType');
+    typeInput.addEventListener("change", (e) => 
+        {
+            console.log("aaaaaaaaaaaaaaaaaaaaaaa");
+            
+            var val = document.getElementById('productType').value
+
+            const inputs = document.getElementById('optionalInput');           
+            inputs.innerHTML = '';
+
+            switch(val) {
+                case 'libro_Fisico':
+                    inputs.innerHTML += 
+                    `
+                    
+                                <div class="mb-3">
+                                    <label for="optionalInputAutor" class="form-label">Autor:</label>
+                                    <input type="text" class="form-control" id="optionalInputAutor" placeholder="Nombre Apellido" required>
+                                </div>
+                                
+    
+                                <div class="mb-3">
+                                    <label for="optionalInputIsbn" class="form-label">ISBN:</label>
+                                    <input type="text" class="form-control" id="optionalInputIsbn" placeholder="ISBN" required>
+                                </div>
+    
+    
+                                <div class="mb-3">
+                                    <label for="optionalInputPaginas" class="form-label">Número de páginas:</label>
+                                    <input type="number" class="form-control" id="optionalInputPaginas" min="1" placeholder=0 required>
+                                </div>
+    
+                    `;
+                    break;
+
+                case 'libro_Digital':
+                    inputs.innerHTML += 
+                    `
+                    
+                                <div class="mb-3">
+                                    <label for="optionalInputAutor" class="form-label">Autor:</label>
+                                    <input type="text" class="form-control" id="optionalInputAutor" placeholder="Nombre Apellido" required>
+                                </div>
+                                
+    
+                                <div class="mb-3">
+                                    <label for="optionalInputIsbn" class="form-label">ISBN:</label>
+                                    <input type="text" class="form-control" id="optionalInputIsbn" placeholder="ISBN" required>
+                                </div>
+    
+    
+                                <div class="mb-3">
+                                    <label for="optionalInputPaginas" class="form-label">Número de páginas:</label>
+                                    <input type="number" class="form-control" id="optionalInputPaginas" min="1" placeholder=0 required>
+                                </div>
+    
+    
+                                <div class="mb-3">
+                                    <label for="optionalInputTamano" class="form-label">Tamaño (kb):</label>
+                                    <input type="number" class="form-control" id="optionalInputPaginas" min="0" placeholder="0" required>
+                                </div>
+        
+
+    
+                    `;
+                    break;
+
+                case 'ereader':
+                    inputs.innerHTML += 
+                    `
+                                <div class="mb-3">
+                                    <label for="optionalInputResolucion" class="form-label">Resolución:</label>
+                                    <input type="number" class="form-control" id="productName" placeholder="Ingrese la resolucion en ppp" required>
+                                </div>
+    
+                    `;
+                    break;
+
+                case 'funda':
+                    inputs.innerHTML += 
+                    `
+                                <div class="mb-3">
+                                    <label for="optionalInputMaterial" class="form-label">Material:</label>
+                                    <input type="text" class="form-control" id="productName" placeholder="Ingrese el material" required>
+                                </div>     
+                    `;
+                    break;
+
+                case 'marcapaginas':
+                    inputs.innerHTML += 
+                    `
+                                <div class="mb-3">
+                                    <label for="optionalInputColor" class="form-label">Color:</label>
+                                    <input type="text" class="form-control" id="productName" placeholder="Ingrese el color" required>
+                                </div>
+                    `;
+                    break;
+                }
+        }
+    ); 
+    
+    const searchInput = document.getElementById('productForm');
+    searchInput.addEventListener('input', (e) => {
+        agregarNuevoProducto(e.target.productType, e.target)
+
+
+        /*
+        productType                
+        libro_Digital
+        ereader
+        funda
+        marcapaginas
+        */
+    });
+}
 
    filtrarProductos(searchTerm) {
        if (!searchTerm) {
@@ -110,7 +232,7 @@ class PaginacionProductos {
    }
 
    getExtraField(producto) {
-       if (producto.ibsn) return `ISBN: ${producto.ibsn}`;
+       if (producto.isbn) return `ISBN: ${producto.isbn}`;
        if (producto.tamano) return `Tamaño: ${producto.tamano}`;
        if (producto.resolucion) return `Resolución: ${producto.resolucion}`;
        if (producto.material) return `Material: ${producto.material}`;
