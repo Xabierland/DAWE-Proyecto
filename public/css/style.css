@@ -1,20 +1,75 @@
 body {
+    /*Imagen de fondo*/
     background-image: url(../img/patroncuadros.png);
-    background-repeat: repeat;
+    /*Tamano de la imagen*/
     background-size: 10em;
+    /*Hace que se quede fija la imagen al hacer scroll*/
     background-attachment: fixed;
-    
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
 }
 
 .contenedor {
+    /*El div ocupa el 90& del ancho*/
     width: 90%;
-    min-height: 100vh;
+    /*Para que el div se centre en la pantalla*/
     margin: 0 auto;
-    background-color: rgba(33, 37, 41, 0.95);
+    /*Para que el div este pegado a los bordes superiores e inferiores*/
     display: flex;
+    /*Para que el contenido se muestre de arriba a abajo*/
     flex-direction: column;
+    /*Para el color de fondo*/
+    background-color: rgba(33, 37, 41, 0.95);
 }
 
+/*Animacion para la descripción extendida de un producto*/
+.modal-overlay {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-producto {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+}
+
+/* Scroll personalizado para modo oscuro */
+.producto-detalles {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(0, 0, 0, 0.2);
+}
+
+.producto-detalles::-webkit-scrollbar {
+    width: 8px;
+}
+
+.producto-detalles::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.producto-detalles::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    border: 2px solid transparent;
+}
+
+.producto-detalles::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}

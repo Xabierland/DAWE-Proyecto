@@ -1,38 +1,72 @@
 import { obtenerProductos, agregarNuevoProducto } from './tienda.js';
-import { agregarAlCarrito, actualizarCantidadCarrito } from './carrito.js';
 
-class PaginacionProductos {
-   constructor(productosPerPage = 9) {
-       this.productos = obtenerProductos();
-       this.productosFiltrados = [...this.productos];
-       this.productosPerPage = productosPerPage;
-       this.currentPage = 1;
-       this.setupBuscador();
-       this.setupCarrito();
-       this.setupAside();
-       this.renderizarProductos();
-       this.setupEventListeners();
-   }
+class Tienda 
+{
+    constructor() {
+        // Lista de los productos
+        this.productos = obtenerProductos();
+        // Copia de los productos para poder filtrar
+        this.productosFiltrados = [...this.productos];
+        // Número de productos por página
+        this.productosPerPage = 6;
+        // Página por defecto
+        this.currentPage = 1;
+        // Variable que guarde el carrito
+        //! Preguntar a Adrian sobre colocar el carrito en tienda.js
+        this.carrito = new Map();
+        // Número máximo de copias de un producto en el carrito
+        this.maxCopias = 20;
 
-   setupBuscador() {
-       const searchInput = document.getElementById('searchInput');
-       searchInput.addEventListener('input', (e) => {
-           const searchTerm = e.target.value.toLowerCase();
-           this.filtrarProductos(searchTerm);
-           this.updateTitle(searchTerm);
-           this.currentPage = 1;
-           this.renderizarProductos();
-       });
-   }
+        // Inicializamos el buscador
+        this.mostrarBuscador();
+        // Inicializamos el formulario
+        this.mostrarFormulario();
+        // Inicializamos el carrito
+        this.mostrarCarrito();
+        // Inicializamos la lista de productos
+        this.mostrarProductos();
+        this.initializePageNavigation();
+    }
 
-   
+    // ============================== Logica Buscador ==============================
+    // Crea el elemento buscador y añade un evento input para filtrar los productos
+    mostrarBuscador() {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            this.filtrarProductos(searchTerm);
+            this.actualizarTituloBuscador(searchTerm);
+            this.currentPage = 1;
+            this.mostrarProductos();
+        });
+    }
 
-   setupAside() {
-    console.log("vbbbbbbbbbbbbbbbbbbbbb");
-    const typeInput = document.getElementById('productType');
-    typeInput.addEventListener("change", (e) => 
+    // Busca los productos que coincidan con el término de búsqueda
+    filtrarProductos(searchTerm) {
+        if (!searchTerm) {
+            this.productosFiltrados = [...this.productos];
+        } else {
+            this.productosFiltrados = this.productos.filter(producto => 
+                producto.nombre.toLowerCase().includes(searchTerm)
+            );
+        }
+    }
+
+    // Actualiza el título principal de la página al buscar
+    actualizarTituloBuscador(searchTerm) {
+        const mainTitle = document.getElementById('mainTitle');
+        mainTitle.textContent = searchTerm ? `Buscando por: ${searchTerm}` : 'Todos los productos';
+    }
+
+    // ============================== Logica Formulario ==============================
+    mostrarFormulario() 
+    {
+        //console.log("vbbbbbbbbbbbbbbbbbbbbb");
+        const typeInput = document.getElementById('productType');
+        typeInput.selectedIndex = 0; //resetea valor a "Selecciona una opción"
+        typeInput.addEventListener("change", (e) => 
         {
-            console.log("aaaaaaaaaaaaaaaaaaaaaaa");
+            //console.log("aaaaaaaaaaaaaaaaaaaaaaa");
             
             var val = document.getElementById('productType').value
 
@@ -58,7 +92,7 @@ class PaginacionProductos {
     
                                 <div class="mb-3">
                                     <label for="optionalInputPaginas" class="form-label">Número de páginas:</label>
-                                    <input type="number" class="form-control" id="optionalInputPaginas" min="1" placeholder=0 required>
+                                    <input type="number" min="1" step="0" class="form-control" id="optionalInputPaginas" min="1" placeholder=0 required>
                                 </div>
     
                     `;
@@ -82,13 +116,13 @@ class PaginacionProductos {
     
                                 <div class="mb-3">
                                     <label for="optionalInputPaginas" class="form-label">Número de páginas:</label>
-                                    <input type="number" class="form-control" id="optionalInputPaginas" min="1" placeholder=0 required>
+                                    <input type="number" min="1" step="0" class="form-control" id="optionalInputPaginas" min="1" placeholder=0 required>
                                 </div>
     
     
                                 <div class="mb-3">
                                     <label for="optionalInputTamano" class="form-label">Tamaño (kb):</label>
-                                    <input type="number" class="form-control" id="optionalInputPaginas" min="0" placeholder="0" required>
+                                    <input type="number" min="0" step="0.01" class="form-control" id="optionalInputPaginas" min="0" placeholder="0" required>
                                 </div>
         
 
@@ -101,7 +135,7 @@ class PaginacionProductos {
                     `
                                 <div class="mb-3">
                                     <label for="optionalInputResolucion" class="form-label">Resolución:</label>
-                                    <input type="number" class="form-control" id="productName" placeholder="Ingrese la resolucion en ppp" required>
+                                    <input type="number" min="1" step="0" class="form-control" id="optionalInputResolucion" placeholder="Ingrese la resolucion en ppp" required>
                                 </div>
     
                     `;
@@ -112,7 +146,7 @@ class PaginacionProductos {
                     `
                                 <div class="mb-3">
                                     <label for="optionalInputMaterial" class="form-label">Material:</label>
-                                    <input type="text" class="form-control" id="productName" placeholder="Ingrese el material" required>
+                                    <input type="text" class="form-control" id="optionalInputMaterial" placeholder="Ingrese el material" required>
                                 </div>     
                     `;
                     break;
@@ -122,7 +156,7 @@ class PaginacionProductos {
                     `
                                 <div class="mb-3">
                                     <label for="optionalInputColor" class="form-label">Color:</label>
-                                    <input type="text" class="form-control" id="productName" placeholder="Ingrese el color" required>
+                                    <input type="text" class="form-control" id="optionalInputColor" placeholder="Ingrese el color" required>
                                 </div>
                     `;
                     break;
@@ -131,166 +165,430 @@ class PaginacionProductos {
     ); 
     
     const searchInput = document.getElementById('productForm');
-    searchInput.addEventListener('input', (e) => {
-        agregarNuevoProducto(e.target.productType, e.target)
+    searchInput.addEventListener('submit', (e) => {
+        e.preventDefault(); 
+        
+        var val = document.getElementById('productType').value;
 
+        const datos = {
+            nombre: document.getElementById('productName').value,
+            precio: document.getElementById('productPrice').value,
+            descripcion: document.getElementById('productDescription').value,
+            imagen: document.getElementById('productImage').value
+          };
 
-        /*
-        productType                
-        libro_Digital
-        ereader
-        funda
-        marcapaginas
-        */
+        if(datos.precio<0){ //no debería de hacer falta, pero introducir aquí condiciones adicionales
+            document.getElementById('productPrice').value = "";
+            alert("Introduzca un precio válido.");
+        }else{
+        
+        //datos.nombre = document.getElementById('productName').value;
+        //datos.precio = document.getElementById('productPrice').value;
+        //datos.descripcion = document.getElementById('productDescription').value;
+        //datos.imagen = document.getElementById('productImage').value;
+
+        
+    
+        switch(val) {
+            case 'libro_Fisico':
+            
+                datos.autor = document.getElementById('optionalInputAutor').value;
+                datos.isbn = document.getElementById('optionalInputIsbn').value;
+                datos.paginas = document.getElementById('optionalInputPaginas').value;
+                
+                break;
+
+            case 'libro_Digital':
+                datos.autor = document.getElementById('optionalInputAutor').value;
+                datos.isbn = document.getElementById('optionalInputIsbn').value;
+                datos.paginas = document.getElementById('optionalInputPaginas').value;
+                datos.tamano = document.getElementById('optionalInputTamano').value;ç
+                alert(datos.tamano);
+                break;
+
+            case 'ereader':
+                datos.resolucion = document.getElementById('optionalInputResolucion').value; 
+                break;
+
+            case 'funda':
+                datos.resolucion = document.getElementById('optionalInputMaterial').value; 
+                break;
+
+            case 'marcapaginas':
+                datos.resolucion = document.getElementById('optionalInputColor').value;
+                break;
+
+            default:
+                alert("Default");
+                break;
+            }
+//
+     //
+     agregarNuevoProducto(val, datos);
+
+     this.productos = obtenerProductos();
+     this.filtrarProductos();
+     this.mostrarProductos();
+        }
+     return;
+
     });
-}
+    }
 
-   filtrarProductos(searchTerm) {
-       if (!searchTerm) {
-           this.productosFiltrados = [...this.productos];
-       } else {
-           this.productosFiltrados = this.productos.filter(producto => 
-               producto.nombre.toLowerCase().includes(searchTerm)
-           );
-       }
-   }
+    // ============================== Logica Productos ==============================
+    mostrarProductos() {
+        const gridContainer = document.getElementById('productsGrid');
+        const paginatedProducts = this.getPaginatedProducts();
+        
+        gridContainer.innerHTML = '';
+        
+        paginatedProducts.forEach(producto => {
+            const card = `
+                <div class="col">
+                    <div class="card h-100 position-relative">
+                        <button class="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
+                                style="width: 40px; height: 40px;"
+                                data-product-id="${producto.id}">
+                            <i class="bi bi-cart-plus-fill"></i>
+                        </button>
+    
+                        <img src="${producto.imagen}" 
+                             class="card-img-top producto-imagen" 
+                             alt="${producto.nombre}"
+                             data-product-id="${producto.id}"
+                             style="cursor: pointer;">
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">${producto.nombre}</h5>
+                            <p class="card-text"><strong>Precio: </strong>${producto.precio}€</p>
+                            <p class="card-text"><small class="text-muted">${this.getExtraField(producto)}</small></p>
+                            <p class="card-text description-truncate">${producto.descripcion.length > 100 ? producto.descripcion.substring(0, 100) + '...' : producto.descripcion}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            gridContainer.innerHTML += card;
+        });
+    
+        // Añadir evento click a las imágenes
+        document.querySelectorAll('.producto-imagen').forEach(img => {
+            img.addEventListener('click', (e) => {
+                const productId = e.target.dataset.productId;
+                const producto = this.productos.find(p => p.id === productId);
+                this.mostrarDetallesProducto(producto);
+            });
+        });
+    
+        this.renderPagination();
+        this.updateProductCount();
+    }
+    
+    // ============================== Logica Carrito ==============================
+    mostrarCarrito() {
+        // Evento para botones de añadir al carrito
+        document.addEventListener('click', (e) => {
+            const cartButton = e.target.closest('.btn-cart');
+            if (cartButton) {
+                const productId = cartButton.dataset.productId;
+                this.agregarAlCarrito(productId);
+            }
+        });
 
-   updateTitle(searchTerm) {
-       const mainTitle = document.getElementById('mainTitle');
-       mainTitle.textContent = searchTerm ? `Buscando por: ${searchTerm}` : 'Todos los productos';
-   }
+        // Evento para cambios en la cantidad de productos
+        document.getElementById('cartItems').addEventListener('change', (e) => {
+            if (e.target.classList.contains('product-quantity')) {
+                const productId = e.target.dataset.productId;
+                const newQuantity = parseInt(e.target.value);
+                this.actualizarCantidad(productId, newQuantity);
+            }
+        });
+    }
 
-   setupCarrito() {
-       document.addEventListener('click', e => {
-           const cartButton = e.target.closest('.btn-cart');
-           if (cartButton) {
-               const productId = cartButton.dataset.productId;
-               if (agregarAlCarrito(productId)) {
-                   this.mostrarToast(productId);
-                   this.actualizarContadorCarrito();
-               }
-           }
-       });
-   }
+    // Agregar un producto al carrito
+    agregarAlCarrito(productId) {
+        const producto = this.productos.find(p => p.id === productId);
+        if (!producto) return;
 
-   mostrarToast(productId) {
-       const toast = document.querySelector(`[data-product-id="${productId}"] .toast`);
-       const bsToast = new bootstrap.Toast(toast, { delay: 2000 });
-       bsToast.show();
-   }
+        if (this.carrito.has(productId)) {
+            const currentQuantity = this.carrito.get(productId).cantidad;
+            if (currentQuantity < this.maxCopias) {
+                this.carrito.get(productId).cantidad++;
+                this.mostrarMensajeExito(productId);
+            } else {
+                this.mostrarMensajeMaximoCopias(productId);
+            }
+        } else {
+            this.carrito.set(productId, {
+                producto: producto,
+                cantidad: 1
+            });
+            this.mostrarMensajeExito(productId);
+        }
 
-   actualizarContadorCarrito() {
-       const carrito = obtenerCarrito();
-       const total = Array.from(carrito.values())
-           .reduce((sum, item) => sum + item.cantidad, 0);
-       document.querySelector('.cart-count').textContent = total;
-   }
+        this.actualizarCarritoUI();
+        this.actualizarContadorCarrito();
+    }
 
-   renderizarProductos() {
-       const gridContainer = document.getElementById('productsGrid');
-       const paginatedProducts = this.getPaginatedProducts();
-       
-       gridContainer.innerHTML = '';
-       
-       paginatedProducts.forEach(producto => {
-           const card = `
-               <div class="col">
-                   <div class="card h-100 position-relative">
-                       <button class="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
-                               style="width: 40px; height: 40px;"
-                               data-product-id="${producto.id}">
-                           <i class="bi bi-cart-plus"></i>
-                       </button>
-                       
-                       <div class="toast position-absolute end-0 top-0 m-2" role="alert">
-                           <div class="toast-body bg-success text-white">
-                               Añadido al carrito
-                           </div>
-                       </div>
+    // Actualizar la cantidad de un producto en el carrito
+    actualizarCantidad(productId, newQuantity) {
+        if (!this.carrito.has(productId)) return;
 
-                       <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}">
-                       <div class="card-body">
-                           <h5 class="card-title text-truncate">${producto.nombre}</h5>
-                           <p class="card-text description-truncate">${producto.descripcion}</p>
-                           <p class="card-text"><strong>Precio: </strong>${producto.precio}€</p>
-                           <p class="card-text"><small class="text-muted">${this.getExtraField(producto)}</small></p>
-                       </div>
-                   </div>
-               </div>
-           `;
-           gridContainer.innerHTML += card;
-       });
+        if (newQuantity <= 0) {
+            this.carrito.delete(productId);
+        } else if (newQuantity > this.maxCopias) {
+            this.mostrarMensajeMaximoCopias(productId);
+            // Resetear el input a 20
+            const input = document.querySelector(`input[data-product-id="${productId}"]`);
+            if (input) input.value = this.maxCopias;
+            return;
+        } else {
+            this.carrito.get(productId).cantidad = newQuantity;
+        }
 
-       this.renderPagination();
-       this.updateProductCount();
-   }
+        this.actualizarCarritoUI();
+        this.actualizarContadorCarrito();
+    }
 
-   getPaginatedProducts() {
-       const startIndex = (this.currentPage - 1) * this.productosPerPage;
-       const endIndex = startIndex + this.productosPerPage;
-       return this.productosFiltrados.slice(startIndex, endIndex);
-   }
+    // Actualizar la interfaz del carrito
+    actualizarCarritoUI() {
+        const cartItems = document.getElementById('cartItems');
+        const cartTotal = document.getElementById('cartTotal');
+        let total = 0;
 
-   getExtraField(producto) {
-       if (producto.isbn) return `ISBN: ${producto.isbn}`;
-       if (producto.tamano) return `Tamaño: ${producto.tamano}`;
-       if (producto.resolucion) return `Resolución: ${producto.resolucion}`;
-       if (producto.material) return `Material: ${producto.material}`;
-       if (producto.color) return `Color: ${producto.color}`;
-       return '';
-   }
+        cartItems.innerHTML = '';
 
-   renderPagination() {
-       const totalPages = Math.ceil(this.productosFiltrados.length / this.productosPerPage);
-       const paginationContainer = document.createElement('nav');
-       paginationContainer.innerHTML = `
-           <div class="d-flex justify-content-between align-items-center">
-               <p class="mb-2">Mostrando ${this.getPaginatedProducts().length} de ${this.productosFiltrados.length} productos</p>
-           </div>
-           <ul class="pagination justify-content-center">
-               ${this.currentPage > 1 ? '<li class="page-item"><a class="page-link" href="#" data-page="prev">Anterior</a></li>' : ''}
-               ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
-                   <li class="page-item ${page === this.currentPage ? 'active' : ''}">
-                       <a class="page-link" href="#" data-page="${page}">${page}</a>
-                   </li>
-               `).join('')}
-               ${this.currentPage < totalPages ? '<li class="page-item"><a class="page-link" href="#" data-page="next">Siguiente</a></li>' : ''}
-           </ul>
-       `;
+        this.carrito.forEach((item, productId) => {
+            const subtotal = item.producto.precio * item.cantidad;
+            total += subtotal;
 
-       const mainElement = document.querySelector('main');
-       const existingPagination = mainElement.querySelector('nav');
-       if (existingPagination) {
-           existingPagination.remove();
-       }
-       mainElement.appendChild(paginationContainer);
-   }
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item mb-3 border-bottom pb-3';
+            itemElement.innerHTML = `
+                <div class="d-flex">
+                    <img src="${item.producto.imagen}" 
+                         alt="${item.producto.nombre}" 
+                         class="cart-item-image me-3" 
+                         style="width: 100px; height: 100px; object-fit: cover;">
+                    <div class="cart-item-details flex-grow-1">
+                        <h6 class="mb-1">${item.producto.nombre}</h6>
+                        <p class="mb-1">Precio: ${item.producto.precio}€</p>
+                        <div class="d-flex align-items-center mb-1">
+                            <label class="me-2">Cantidad:</label>
+                            <input type="number" 
+                                   class="form-control form-control-sm product-quantity" 
+                                   value="${item.cantidad}"
+                                   min="0"
+                                   max="${this.maxCopias}"
+                                   style="width: 70px"
+                                   data-product-id="${productId}">
+                        </div>
+                        <p class="mb-1">Subtotal: ${subtotal.toFixed(2)}€</p>
+                    </div>
+                </div>
+            `;
 
-   updateProductCount() {
-       const start = (this.currentPage - 1) * this.productosPerPage + 1;
-       const end = Math.min(this.currentPage * this.productosPerPage, this.productosFiltrados.length);
-   }
+            cartItems.appendChild(itemElement);
+        });
 
-   setupEventListeners() {
-       document.addEventListener('click', (e) => {
-           if (e.target.closest('.page-link')) {
-               e.preventDefault();
-               const pageData = e.target.dataset.page;
-               
-               if (pageData === 'prev') {
-                   this.currentPage--;
-               } else if (pageData === 'next') {
-                   this.currentPage++;
-               } else {
-                   this.currentPage = parseInt(pageData);
-               }
-               
-               this.renderizarProductos();
-           }
-       });
-   }
+        cartTotal.textContent = total.toFixed(2);
+    }
+
+    // Actualizar el contador del carrito en el navbar
+    actualizarContadorCarrito() {
+        const cartCount = document.querySelector('.cart-count');
+        let totalItems = 0;
+        this.carrito.forEach(item => totalItems += item.cantidad);
+        cartCount.textContent = totalItems;
+    }
+
+    // Mostrar mensaje de éxito al añadir al carrito
+    mostrarMensajeExito(productId) {
+        const button = document.querySelector(`button[data-product-id="${productId}"]`);
+        if (!button) return;
+
+        const successMessage = document.createElement('div');
+        successMessage.className = 'position-absolute top-0 end-0 m-2 alert alert-success';
+        successMessage.style.zIndex = '1000';
+        successMessage.textContent = '¡Añadido al carrito!';
+
+        button.parentElement.appendChild(successMessage);
+
+        setTimeout(() => {
+            successMessage.remove();
+        }, 1500);
+    }
+
+    // Mostrar mensaje de máximo de copias alcanzado
+    mostrarMensajeMaximoCopias(productId) {
+        const cartItem = document.querySelector(`[data-product-id="${productId}"]`).closest('.cart-item');
+        if (!cartItem) return;
+
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'alert alert-danger mt-2 mb-0';
+        errorMessage.textContent = '¡Máximo de copias alcanzado!';
+
+        cartItem.appendChild(errorMessage);
+
+        setTimeout(() => {
+            errorMessage.remove();
+        }, 1500);
+    }
+    // ============================== Logica Descripción extendida ==============================
+    mostrarDetallesProducto(producto) {
+        // Eliminar modal anterior si existe
+        const modalAnterior = document.querySelector('.modal-producto');
+        if (modalAnterior) {
+            modalAnterior.remove();
+        }
+    
+        // Crear overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1050;
+        `;
+    
+        // Crear modal
+        const modal = document.createElement('div');
+        modal.className = 'modal-producto card bg-dark text-light';
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 2rem;
+            border-radius: 8px;
+            z-index: 1051;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.125);
+        `;
+    
+        // Contenido del modal
+        modal.innerHTML = `
+            <div class="row h-100">
+                <div class="col-md-6 d-flex align-items-center justify-content-center p-4">
+                    <img src="${producto.imagen}" 
+                         alt="${producto.nombre}" 
+                         class="img-fluid rounded"
+                         style="max-width: 100%; max-height: 70vh; object-fit: contain;">
+                </div>
+                <div class="col-md-6 producto-detalles" style="max-height: 70vh; overflow-y: auto;">
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"></button>
+                    <!-- Nombre en H3 -->
+                    <h3 class="display-6 mb-4 text-light">${producto.nombre}</h3>
+                    <!-- Precios -->
+                    <p class="h4 text-warning">Precio: ${producto.precio}€</p>
+                    <!-- Campos extra -->
+                    <p class="text-muted">${this.getExtraField(producto)}</p>
+                    <!-- Descripción -->
+                    <p class="lead">${producto.descripcion}</p>
+                </div>
+            </div>
+        `;
+    
+        // Añadir evento para cerrar
+        const cerrarModal = () => {
+            document.body.classList.remove("overflow-hidden"); //desbloquea el scroll
+            overlay.remove();
+            modal.remove();
+        };
+    
+        overlay.addEventListener('click', cerrarModal);
+        modal.querySelector('.btn-close').addEventListener('click', cerrarModal);
+    
+        // Prevenir que el click en el modal cierre la ventana
+        modal.addEventListener('click', (e) => e.stopPropagation());
+    
+        // Añadir elementos al DOM
+        document.body.appendChild(overlay);
+        document.body.classList.add("overflow-hidden"); //bloquea el scroll
+        document.body.appendChild(modal);
+    }
+
+    // ============================== Logica Paginación ==============================
+    renderPagination() {
+        const totalPages = Math.ceil(this.productosFiltrados.length / this.productosPerPage);
+        const paginationContainer = document.createElement('nav');
+        paginationContainer.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <p class="mb-2">Mostrando ${this.getPaginatedProducts().length} de ${this.productosFiltrados.length} productos</p>
+            </div>
+            <ul class="pagination justify-content-center">
+                ${this.currentPage > 1 ? '<li class="page-item"><a class="page-link" href="#" data-page="prev">Anterior</a></li>' : ''}
+                ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
+                    <li class="page-item ${page === this.currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${page}">${page}</a>
+                    </li>
+                `).join('')}
+                ${this.currentPage < totalPages ? '<li class="page-item"><a class="page-link" href="#" data-page="next">Siguiente</a></li>' : ''}
+            </ul>
+        `;
+
+        const mainElement = document.querySelector('main');
+        const existingPagination = mainElement.querySelector('nav');
+        if (existingPagination) {
+            existingPagination.remove();
+        }
+        mainElement.appendChild(paginationContainer);
+    }
+    
+    getPaginatedProducts() {
+        const startIndex = (this.currentPage - 1) * this.productosPerPage;
+        const endIndex = startIndex + this.productosPerPage;
+        return this.productosFiltrados.slice(startIndex, endIndex);
+    }
+
+    updateProductCount() {
+        const start = (this.currentPage - 1) * this.productosPerPage + 1;
+        const end = Math.min(this.currentPage * this.productosPerPage, this.productosFiltrados.length);
+    }
+
+    initializePageNavigation() {
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.page-link')) {
+                e.preventDefault();
+                const pageData = e.target.dataset.page;
+                
+                if (pageData === 'prev') {
+                    this.currentPage--;
+                } else if (pageData === 'next') {
+                    this.currentPage++;
+                } else {
+                    this.currentPage = parseInt(pageData);
+                }
+                
+                this.mostrarProductos();
+            }
+        });
+    }
+
+   // ============================== Utilidades ==============================
+    mostrarToast(productId) {
+        const toast = document.querySelector(`[data-product-id="${productId}"] .toast`);
+        const bsToast = new bootstrap.Toast(toast, { delay: 2000 });
+        bsToast.show();
+    }
+
+    getExtraField(producto) {
+        if (producto.isbn) return `ISBN: ${producto.isbn}`;
+        if (producto.tamano) return `Tamaño: ${producto.tamano}`;
+        if (producto.resolucion) return `Resolución: ${producto.resolucion}`;
+        if (producto.material) return `Material: ${producto.material}`;
+        if (producto.color) return `Color: ${producto.color}`;
+        return '';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-   new PaginacionProductos();
+    new Tienda();
 });
+
+// Como odio JavaScript 🤢 - Xabier Gabiña

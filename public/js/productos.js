@@ -39,7 +39,7 @@ class Producto {
         this.#nombre = nombre;
         this.#precio = precio;
         this.#descripcion = descripcion;
-        this.#imagen = imagen || 'default-image.png';
+        this.#imagen = imagen || '/img/default.png';
     }
 
     guidGenerator() {
