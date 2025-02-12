@@ -1,4 +1,4 @@
-import { obtenerProductos, agregarNuevoProducto } from './tienda.js';
+import { obtenerProductos, agregarNuevoProducto, obtenerCarrito } from './tienda.js';
 
 class Tienda 
 {
@@ -12,13 +12,14 @@ class Tienda
         // Página por defecto
         this.currentPage = 1;
         // Variable que guarde el carrito
-        //! Preguntar a Adrian sobre colocar el carrito en tienda.js
-        this.carrito = new Map();
+        this.carrito = obtenerCarrito();
         // Número máximo de copias de un producto en el carrito
         this.maxCopias = 20;
 
         // Inicializamos el buscador
         this.mostrarBuscador();
+        // Inicializamos el filtro
+        this.mostrarFiltro();
         // Inicializamos el formulario
         this.mostrarFormulario();
         // Inicializamos el carrito
@@ -26,6 +27,115 @@ class Tienda
         // Inicializamos la lista de productos
         this.mostrarProductos();
         this.initializePageNavigation();
+    }
+
+    // ============================== Logica Filtro ==============================
+    // Implementamos los tres tipos de filtros
+    // 1. El filtro de tipo de producto
+    // 2. El filtro de rango precio de precio
+    // 3. El filtro de ordenar precios de mayor a menor o vicebersa
+    mostrarFiltro() {
+        // Obtener elementos del DOM
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        
+        // 1. Filtro por tipo de producto (ya implementado en el HTML)
+        dropdownMenu.querySelectorAll('[data-filter]').forEach(filterItem => {
+            filterItem.addEventListener('click', (e) => {
+                e.preventDefault();
+                const filterValue = e.target.dataset.filter;
+                
+                if (filterValue === 'all') {
+                    this.productosFiltrados = [...this.productos];
+                } else {
+                    this.productosFiltrados = this.productos.filter(producto => 
+                        producto.tipo === filterValue
+                    );
+                }
+                
+                this.currentPage = 1;
+                this.mostrarProductos();
+            });
+        });
+    
+        // 2. Filtro de rango de precios
+        const priceContainer = document.createElement('div');
+        priceContainer.className = 'px-3';
+        priceContainer.innerHTML = `
+            <div class="price-inputs d-flex gap-2 mt-2">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">€</span>
+                    <input type="number" class="form-control" id="minPrice" placeholder="Min" min="0">
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">€</span>
+                    <input type="number" class="form-control" id="maxPrice" placeholder="Max" min="0">
+                </div>
+            </div>
+        `;
+        
+        // Insertar después del divisor de precio
+        const priceRangeLabel = dropdownMenu.querySelector('label[for="priceRangeMin"]');
+        priceRangeLabel.parentNode.appendChild(priceContainer);
+    
+        // 3. Ordenar por precio
+        const sortContainer = document.createElement('li');
+        sortContainer.className = 'px-3';
+        sortContainer.innerHTML = `
+            <div class="btn-group btn-group-sm w-100">
+                <button class="btn btn-outline-secondary" data-sort="asc">
+                    <i class="bi bi-sort-numeric-down"></i> Menor precio
+                </button>
+                <button class="btn btn-outline-secondary" data-sort="desc">
+                    <i class="bi bi-sort-numeric-up"></i> Mayor precio
+                </button>
+            </div>
+        `;
+        dropdownMenu.appendChild(sortContainer);
+    
+        // Obtener referencias a los inputs de precio
+        const minInput = document.getElementById('minPrice');
+        const maxInput = document.getElementById('maxInput');
+    
+        // Calcular precios mínimo y máximo del catálogo
+        const precios = this.productos.map(p => p.precio);
+        const precioMinimo = Math.min(...precios);
+        const precioMaximo = Math.max(...precios);
+    
+        // Función para aplicar filtros de precio
+        const aplicarFiltroPrecio = () => {
+            const min = Number(minInput.value) || precioMinimo;
+            const max = Number(maxInput.value) || precioMaximo;
+            
+            this.productosFiltrados = this.productos.filter(producto => 
+                producto.precio >= min && producto.precio <= max
+            );
+            
+            this.currentPage = 1;
+            this.mostrarProductos();
+        };
+    
+        // Eventos para los inputs de precio
+        [minInput, maxInput].forEach(input => {
+            input.addEventListener('change', () => {
+                aplicarFiltroPrecio();
+            });
+        });
+    
+        // Eventos para ordenar por precio
+        sortContainer.querySelectorAll('[data-sort]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const sortDirection = e.target.closest('[data-sort]').dataset.sort;
+                
+                this.productosFiltrados.sort((a, b) => {
+                    return sortDirection === 'asc' 
+                        ? a.precio - b.precio 
+                        : b.precio - a.precio;
+                });
+                
+                this.currentPage = 1;
+                this.mostrarProductos();
+            });
+        });
     }
 
     // ============================== Logica Buscador ==============================
@@ -70,7 +180,7 @@ class Tienda
             
             var val = document.getElementById('productType').value
 
-            const inputs = document.getElementById('optionalInput');           
+            const inputs = document.getElementById('optionalInput');
             inputs.innerHTML = '';
 
             switch(val) {
@@ -161,8 +271,51 @@ class Tienda
                     `;
                     break;
                 }
+        });
+
+        function fileDragHover(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            e.target.className = (e.type == "dragover" ? "hover" : "");
         }
-    ); 
+
+               //hola ander
+        function fileSelectHandler(e) {
+            // cancel event and hover styling
+            fileDragHover(e);
+    
+            // fetch FileList object
+            var files = e.target.files || e.dataTransfer.files;
+            if (files.length > 1) { //limita a un archivo
+                alert("Solo puedes subir un archivo.");
+                return;
+            } 
+        
+            if (files.length === 1) {
+                var file = files[0];
+                console.log(file.name);
+                parseFile(file);
+            }
+    
+            // files can be added by drag&drop or clicking on form's button 
+            // if the later, append files to form files field
+            var formFiles = $id("upload").fileselect;
+            if (formFiles.files.length == 0){
+                formFiles.files = files;
+            }
+        }
+
+        function parseFile(file) {
+            console.log(file.name);
+            output(
+                "<p>Datos del fichero: <strong>" + file.name +
+                "</strong> Tipo: <strong>" + file.type +
+                "</strong> Tamaño: <strong>" + file.size +
+                "</strong> bytes</p>"
+            );
+        }
+
+        //checkear egela-drive
     
     const searchInput = document.getElementById('productForm');
     searchInput.addEventListener('submit', (e) => {
@@ -592,3 +745,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Como odio JavaScript 🤢 - Xabier Gabiña
+// Como odio a Xabier Gabiña 🤢 - JavaScript

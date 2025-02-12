@@ -31,7 +31,7 @@
         <script type="module" src="./js/main.js"></script>
     
         <!-- Título de la página -->
-        <title>El mono infinito</title>
+        <title>El Mono Infinito</title>
     </head>
     
 <body data-bs-theme="dark"> 
@@ -79,12 +79,32 @@
             <main class="col-md-8 order-md-1">
                 <!-- Título y buscador -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 id="mainTitle">Todos los productos</h2>
+                    <!-- Título -->
+                    <h2 id="mainTitle">Todos los productos</h2>                        
+                    <!-- Buscador -->
                     <div class="input-group w-auto">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-funnel-fill"></i> Filtrar
+                            </button>
+                            <!--Fltro de categorias + Slice de precio maximo y minimo + Ordenar por precio-->
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-filter="all">Todos</a></li>
+                                <li><a class="dropdown-item" href="#" data-filter="libro_Fisico">Libros Físicos</a></li>
+                                <li><a class="dropdown-item" href="#" data-filter="libro_Digital">Libros Digitales</a></li>
+                                <li><a class="dropdown-item" href="#" data-filter="ereader">Ereaders</a></li>
+                                <li><a class="dropdown-item" href="#" data-filter="funda">Fundas Ereader</a></li>
+                                <li><a class="dropdown-item" href="#" data-filter="marcapaginas">Marcapáginas</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="px-3">
+                                    <label for="priceRangeMin" class="form-label">Rango de precios:</label>
+                                    <!--Logica del slice-->
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <!--Logica del ordenar-->
+                            </ul>
+                        </div>
                         <input type="text" class="form-control" id="searchInput" placeholder="Buscar productos...">
-                        <button class="btn btn-outline-secondary" type="button" id="searchButton">
-                            <i class="bi bi-search"></i>
-                        </button>
                     </div>
                 </div>
                 <!-- Grid de productos -->
@@ -157,17 +177,20 @@
             </aside>
             
         </div>
-        <!-- Footer -->
-        <footer class="footer bg-dark py-3 sticky-bottom">
-            <div class="container">
-                <div class="row">
-                    <div class="col text-center">
-                        <!-- Contenido del footer -->
-                        <p class="mb-0">© 2025 El mono infinito. Todos los derechos reservados.</p>
-                    </div>
+       
+
+    </div>
+
+</body>
+     <!-- Footer -->
+     <footer class="footer bg-dark py-3 sticky-bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col text-center">
+                    <!-- Contenido del footer -->
+                    <p class="mb-0">© 2025 El Mono Infinito. Todos los derechos reservados.</p>
                 </div>
             </div>
-        </footer>
-    </div>
-</body>
+        </div>
+    </footer>
 </html>

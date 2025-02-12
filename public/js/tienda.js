@@ -3,9 +3,9 @@ import {Libro, Ebook, Ereader, Marcapaginas, Funda} from './productos.js';
 // Lista de productos base
 const listaProductos = [
    // Libros Físicos
-   new Libro("El tunel", 1, "Hay un tunel", "Ernesto Sabato", 1, 100),
-   new Libro("Viento y verdad", 5, "Viaje antes que destino", "Brandon Sanderson", 3, 1400),
-   new Libro("El nombre del viento", 20, "La historia de un músico, mago y leyenda", "Patrick Rothfuss", 5, 800),
+   new Libro("El tunel", 1, "Hay un tunel", "Ernesto Sabato", 1, 100, '//img/productos/ElTunel.jpg'),
+   new Libro("Viento y verdad", 5, "Viaje antes que destino", "Brandon Sanderson", 3, 1400, '/img/VientoYVerdad.jpg'),
+   new Libro("El nombre del viento", 20, "La historia de un músico, mago y leyenda", "Patrick Rothfuss", 5, 800, '/img/productos/ElNombreDelViento.jpg'),
 
    // Libros Electrónicos
    new Ebook("Dungeon Crawler Carl", 5, "The apocalypse will be televised", "Matt Dinniman", 2, 400, 300),
@@ -29,9 +29,16 @@ const listaProductos = [
    new Funda("Funda Universal", 15, "Compatible con varios modelos", "Cuero")
 ];
 
+const carrito = new Map();
+
 // Funciones de productos
 export function obtenerProductos() {
    return listaProductos;
+}
+
+// 
+export function obtenerCarrito() {
+    return carrito;
 }
 
 // Función para añadir nuevo producto

@@ -59,5 +59,11 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
 ### Opcional si alguien se aburre
 
-- [ ] En la barra de "Buscar productos..." quitan el recuadro donde iria la lupa
+- [X] En la barra de "Buscar productos..." quitan el recuadro donde iria la lupa
 - [X] Bloquear el scroll de la página cuando se abre una tarjeta de producto - Luken
+
+
+### Función extra
+- [ ] Filtro avanzado de busquedá
+  - [ ] Ordénar por précio
+  - [ ] Filtrar por précio mínimo y máximo
