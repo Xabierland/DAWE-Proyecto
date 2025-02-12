@@ -15,7 +15,11 @@ class Tienda
         this.carrito = obtenerCarrito();
         // Número máximo de copias de un producto en el carrito
         this.maxCopias = 20;
-
+        // Valor minimo de precio
+        this.minPrice = 0;
+        // Valor maximo de precio
+        this.maxPrice = 100000000000000;
+    
         // Inicializamos el buscador
         this.mostrarBuscador();
         // Inicializamos el filtro
@@ -26,7 +30,6 @@ class Tienda
         this.mostrarCarrito();
         // Inicializamos la lista de productos
         this.mostrarProductos();
-        this.initializePageNavigation();
     }
 
     // ============================== Logica Filtro ==============================
@@ -34,26 +37,46 @@ class Tienda
     // 1. El filtro de tipo de producto
     // 2. El filtro de rango precio de precio
     // 3. El filtro de ordenar precios de mayor a menor o vicebersa
+    // ============================== Logica Filtro ==============================
     mostrarFiltro() {
         // Obtener elementos del DOM
         const dropdownMenu = document.querySelector('.dropdown-menu');
         
-        // 1. Filtro por tipo de producto (ya implementado en el HTML)
+        // 1. Filtro por tipo de producto
         dropdownMenu.querySelectorAll('[data-filter]').forEach(filterItem => {
             filterItem.addEventListener('click', (e) => {
                 e.preventDefault();
                 const filterValue = e.target.dataset.filter;
                 
+                // Reiniciar los productos filtrados
                 if (filterValue === 'all') {
                     this.productosFiltrados = [...this.productos];
                 } else {
-                    this.productosFiltrados = this.productos.filter(producto => 
-                        producto.tipo === filterValue
-                    );
+                    // Filtrar usando el getter tipo
+                    this.productosFiltrados = this.productos.filter(producto => {
+                        return producto.tipo === filterValue;
+                    });
                 }
                 
+                // Actualizar la visualización
                 this.currentPage = 1;
                 this.mostrarProductos();
+                
+                // Actualizar el título
+                const mainTitle = document.getElementById('mainTitle');
+                if (filterValue === 'all') {
+                    mainTitle.textContent = 'Todos los productos';
+                } else {
+                    const filterName = {
+                        'libro_Fisico': 'Libros Físicos',
+                        'libro_Digital': 'Libros Digitales',
+                        'ereader': 'E-readers',
+                        'funda': 'Fundas',
+                        'marcapaginas': 'Marcapáginas'
+                    }[filterValue] || filterValue;
+                    
+                    mainTitle.textContent = filterName;
+                }
             });
         });
     
@@ -94,7 +117,7 @@ class Tienda
     
         // Obtener referencias a los inputs de precio
         const minInput = document.getElementById('minPrice');
-        const maxInput = document.getElementById('maxInput');
+        const maxInput = document.getElementById('maxPrice');
     
         // Calcular precios mínimo y máximo del catálogo
         const precios = this.productos.map(p => p.precio);
@@ -103,8 +126,8 @@ class Tienda
     
         // Función para aplicar filtros de precio
         const aplicarFiltroPrecio = () => {
-            const min = Number(minInput.value) || precioMinimo;
-            const max = Number(maxInput.value) || precioMaximo;
+            const min = Number(minInput.value) || 0;
+            const max = Number(maxInput.value) || Number.MAX_SAFE_INTEGER;
             
             this.productosFiltrados = this.productos.filter(producto => 
                 producto.precio >= min && producto.precio <= max
@@ -136,8 +159,12 @@ class Tienda
                 this.mostrarProductos();
             });
         });
+    
+        // Aplicar filtro inicial para mostrar todos los productos
+        this.productosFiltrados = [...this.productos];
+        this.mostrarProductos();
     }
-
+    
     // ============================== Logica Buscador ==============================
     // Crea el elemento buscador y añade un evento input para filtrar los productos
     mostrarBuscador() {
@@ -168,7 +195,15 @@ class Tienda
         mainTitle.textContent = searchTerm ? `Buscando por: ${searchTerm}` : 'Todos los productos';
     }
 
-    // ============================== Logica Formulario ==============================
+    // ============================== Logica Formulario DE ASIDE  ==============================
+    //    
+    //  N   N   OOO      TTTTTTT  OOO    CCC    AAA    RRR
+    //  NN  N  O   O        T    O   O  C      A   A  R   R
+    //  N N N  O   O        T    O   O  C      AAAAA  RRRR
+    //  N  NN  O   O        T    O   O  C      A   A  R   R
+    //  N   N   OOO         T     OOO    CCC   A   A  R    R
+    //
+    // O Gabiña muere
     mostrarFormulario() 
     {
         //console.log("vbbbbbbbbbbbbbbbbbbbbb");
@@ -273,6 +308,60 @@ class Tienda
                 }
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const fileInput = document.getElementById("productImage");
+            const dragDropArea = document.getElementById("dragDropArea");
+            const allowedTypes = ["image/png", "image/webp", "image/jpeg"];
+        
+            function handleFile(file) {
+                if (!allowedTypes.includes(file.type)) {
+                    alert("Solo se permiten archivos PNG, WEBP y JPG.");
+                    return;
+                }
+        
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                parseFile(file)
+            }
+        
+            ["dragover", "dragenter"].forEach(event => {
+                dragDropArea.addEventListener(event, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dragDropArea.style.border = "2px solid green";
+                });
+            });
+        
+            ["dragleave", "drop"].forEach(event => {
+                dragDropArea.addEventListener(event, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dragDropArea.style.border = "2px dashed #ccc";
+                });
+            });
+        
+            dragDropArea.addEventListener("drop", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.dataTransfer.files.length > 1) {
+                    alert("Solo se puede subir un archivo a la vez.");
+                    return;
+                }
+                handleFile(e.dataTransfer.files[0]);
+            });
+        
+            fileInput.addEventListener("change", function () {
+                if (fileInput.files.length > 1) {
+                    alert("Solo se puede subir un archivo a la vez.");
+                    fileInput.value = "";
+                    return;
+                }
+                handleFile(fileInput.files[0]);
+            });
+        });
+        
+        /*
         function fileDragHover(e) {
             e.stopPropagation();
             e.preventDefault();
@@ -304,7 +393,7 @@ class Tienda
                 formFiles.files = files;
             }
         }
-
+*/
         function parseFile(file) {
             console.log(file.name);
             output(
@@ -314,7 +403,6 @@ class Tienda
                 "</strong> bytes</p>"
             );
         }
-
         //checkear egela-drive
     
     const searchInput = document.getElementById('productForm');
@@ -396,6 +484,7 @@ class Tienda
         gridContainer.innerHTML = '';
         
         paginatedProducts.forEach(producto => {
+            console.log("Esto deberia decir algo : "+producto.imagen);
             const card = `
                 <div class="col">
                     <div class="card h-100 position-relative">
@@ -685,6 +774,24 @@ class Tienda
             </ul>
         `;
 
+        // Añadir eventos de paginación
+        paginationContainer.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageData = e.target.dataset.page;
+                
+                if (pageData === 'prev' && this.currentPage > 1) {
+                    this.currentPage--;
+                } else if (pageData === 'next' && this.currentPage < totalPages) {
+                    this.currentPage++;
+                } else if (pageData !== 'prev' && pageData !== 'next') {
+                    this.currentPage = parseInt(pageData);
+                }
+                
+                this.mostrarProductos();
+            });
+        });
+
         const mainElement = document.querySelector('main');
         const existingPagination = mainElement.querySelector('nav');
         if (existingPagination) {
@@ -702,25 +809,13 @@ class Tienda
     updateProductCount() {
         const start = (this.currentPage - 1) * this.productosPerPage + 1;
         const end = Math.min(this.currentPage * this.productosPerPage, this.productosFiltrados.length);
+        return { start, end };
     }
 
     initializePageNavigation() {
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.page-link')) {
-                e.preventDefault();
-                const pageData = e.target.dataset.page;
-                
-                if (pageData === 'prev') {
-                    this.currentPage--;
-                } else if (pageData === 'next') {
-                    this.currentPage++;
-                } else {
-                    this.currentPage = parseInt(pageData);
-                }
-                
-                this.mostrarProductos();
-            }
-        });
+        // Ya no necesitamos este método ya que los eventos se manejan en renderPagination
+        // Pues borralo no????
+        return;
     }
 
    // ============================== Utilidades ==============================
@@ -746,3 +841,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Como odio JavaScript 🤢 - Xabier Gabiña
 // Como odio a Xabier Gabiña 🤢 - JavaScript
+// Como odio a Xabier Gabiña 🤢 - CloudFare
+// Como odio a Xabier Gabiña 🤢 - Discord
+// Como odio a Xabier Gabiña 🤢 - Elon Mask
+// Como odio a Xabier Gabiña 🤢 - El putisimo codigo del formulario

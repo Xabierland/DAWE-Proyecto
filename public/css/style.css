@@ -7,20 +7,42 @@ body {
     background-attachment: fixed;
     height: 100%;
     padding: 0;
-    margin: 0;
+    margin: 5%;
+
+    display: flex;
+    flex-direction: column;
 }
 
 html {
     height: 100%;
-    margin: 0;
+
     padding: 0;
-    display: flex;
-    flex-direction: flex;
+
 }
 
 footer {
     margin-bottom: 0%;
-    position: sticky;
+    padding: 1rem 0;
+}
+
+:root { /*pendiente de investigar por el menda*/
+    --bs-primary: #ff5733;  /* Cambia el color primario */
+    --bs-secondary: #333333; /* Cambia el color secundario */
+    --bs-success: #28a745;  /* Cambia el color de éxito */
+    --bs-danger: #dc3545;   /* Cambia el color de error */
+    --bs-warning: #ffc107;  /* Cambia el color de advertencia */
+    --bs-info: #17a2b8;     /* Cambia el color informativo */
+}
+
+
+button {
+    background-color: #F6CA1B !important;
+    color: #000000 !important;
+}       
+
+li {
+    border-color: #F6CA1B !important;
+    color: #000000 !important;
 }
 
 .contenedor {
@@ -28,13 +50,14 @@ footer {
     width: 90%;
     /*Para que el div se centre en la pantalla*/
     margin: 0 auto;
-    margin-bottom: 0%;
+    padding: 2%;
     /*Para que el div este pegado a los bordes superiores e inferiores*/
     display: flex;
     /*Para que el contenido se muestre de arriba a abajo*/
     flex-direction: column;
     /*Para el color de fondo*/
     background-color: rgba(33, 37, 41, 0.95);
+    flex: 1;
 }
 
 /*Animacion para la descripción extendida de un producto*/

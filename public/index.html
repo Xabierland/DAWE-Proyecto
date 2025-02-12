@@ -83,27 +83,24 @@
                     <h2 id="mainTitle">Todos los productos</h2>                        
                     <!-- Buscador -->
                     <div class="input-group w-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-funnel-fill"></i> Filtrar
-                            </button>
-                            <!--Fltro de categorias + Slice de precio maximo y minimo + Ordenar por precio-->
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" data-filter="all">Todos</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="libro_Fisico">Libros Físicos</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="libro_Digital">Libros Digitales</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="ereader">Ereaders</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="funda">Fundas Ereader</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="marcapaginas">Marcapáginas</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="px-3">
-                                    <label for="priceRangeMin" class="form-label">Rango de precios:</label>
-                                    <!--Logica del slice-->
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <!--Logica del ordenar-->
-                            </ul>
-                        </div>
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-funnel-fill"></i> Filtrar
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-filter="all">Todos</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="libro_Fisico">Libros Físicos</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="libro_Digital">Libros Digitales</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="ereader">Ereaders</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="funda">Fundas Ereader</a></li>
+                            <li><a class="dropdown-item" href="#" data-filter="marcapaginas">Marcapáginas</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="px-3">
+                                <label for="priceRangeMin" class="form-label">Rango de precios:</label>
+                                <!--Logica del slice-->
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <!--Logica del ordenar-->
+                        </ul>
                         <input type="text" class="form-control" id="searchInput" placeholder="Buscar productos...">
                     </div>
                 </div>

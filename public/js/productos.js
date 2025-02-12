@@ -33,13 +33,15 @@ class Producto {
     #precio;
     #descripcion;
     #imagen;
+    #tipo;
 
-    constructor(nombre, precio, descripcion, imagen) {
+    constructor(nombre, precio, descripcion, imagen, tipo) {
         this.#id = this.guidGenerator();
         this.#nombre = nombre;
         this.#precio = precio;
         this.#descripcion = descripcion;
         this.#imagen = imagen || '/img/default.png';
+        this.#tipo = tipo;
     }
 
     guidGenerator() {
@@ -49,6 +51,11 @@ class Producto {
         return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
     }
 
+    get tipo() {
+        return this.#tipo;
+    }
+
+    // Resto de getters y setters se mantienen igual
     get id() {
         return this.#id;
     }
@@ -86,30 +93,25 @@ class Producto {
     }
 }
 
-/*
-4.1.2. Productos personalizables
-Se deben crear al menos 5 clases de productos que extiendan/hereden de la clase Producto. Incluirán al menos un atributo extra en cada clase (distinto) como el origen, fabricante, etc., así como sus respectivos métodos getter y setter.
-*/
-
 // Subclase: Libro fisico
 export class Libro extends Producto {
-    #ibsn;
+    #isbn;
     #autor;
     #paginas;
 
-    constructor(nombre, precio, descripcion, autor, ibsn, paginas, imagen) {
-        super(nombre, precio, descripcion, imagen);
-        this.#ibsn = ibsn;
+    constructor(nombre, precio, descripcion, autor, isbn, paginas, imagen) {
+        super(nombre, precio, descripcion, imagen, 'libro_Fisico');
+        this.#isbn = isbn;
         this.#autor = autor;
         this.#paginas = paginas;
     }
 
-    get ibsn() {
-        return this.#ibsn;
+    get isbn() {
+        return this.#isbn;
     }
 
-    set ibsn(ibsn) {
-        this.#ibsn = ibsn;
+    set isbn(isbn) {
+        this.#isbn = isbn;
     }
 
     get autor() {
@@ -133,8 +135,8 @@ export class Libro extends Producto {
 export class Ebook extends Libro {
     #tamano;
 
-    constructor(nombre, precio, descripcion, autor, ibsn, paginas, tamano, imagen) {
-        super(nombre, precio, descripcion, autor, ibsn, paginas, imagen);
+    constructor(nombre, precio, descripcion, autor, isbn, paginas, tamano, imagen) {
+        super(nombre, precio, descripcion, imagen, 'libro_Digital');
         this.#tamano = tamano;
     }
 
@@ -152,7 +154,7 @@ export class Ereader extends Producto {
     #resolucion;
 
     constructor(nombre, precio, descripcion, resolucion, imagen) {
-        super(nombre, precio, descripcion, imagen);
+        super(nombre, precio, descripcion, imagen, 'ereader');
         this.#resolucion = resolucion;
     }
 
@@ -170,7 +172,7 @@ export class Funda extends Producto {
     #material;
 
     constructor(nombre, precio, descripcion, material, imagen) {
-        super(nombre, precio, descripcion, imagen);
+        super(nombre, precio, descripcion, imagen, 'funda');
         this.#material = material;
     }
 
@@ -188,7 +190,7 @@ export class Marcapaginas extends Producto {
     #color;
 
     constructor(nombre, precio, descripcion, color, imagen) {
-        super(nombre, precio, descripcion, imagen);
+        super(nombre, precio, descripcion, imagen, 'marcapaginas');
         this.#color = color;
     }
 
@@ -196,7 +198,7 @@ export class Marcapaginas extends Producto {
         return this.#color;
     }
 
-    set color(material) {
-        this.#color = material;
+    set color(color) {
+        this.#color = color;
     }
 }
