@@ -132,11 +132,17 @@ export class Libro extends Producto {
 }
 
 // Subclase: Libro electronico
-export class Ebook extends Libro {
+export class Ebook extends Producto {
+    #isbn
+    #autor
+    #paginas
     #tamano;
 
     constructor(nombre, precio, descripcion, autor, isbn, paginas, tamano, imagen) {
         super(nombre, precio, descripcion, imagen, 'libro_Digital');
+        this.#isbn = isbn;
+        this.#autor = autor;
+        this.#paginas = paginas;
         this.#tamano = tamano;
     }
 
