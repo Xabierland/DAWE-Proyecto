@@ -206,13 +206,11 @@ class Tienda
     // O Gabiña muere
     mostrarFormulario() 
     {
-        //console.log("vbbbbbbbbbbbbbbbbbbbbb");
         const typeInput = document.getElementById('productType');
         typeInput.selectedIndex = 0; //resetea valor a "Selecciona una opción"
         typeInput.addEventListener("change", (e) => 
         {
-            //console.log("aaaaaaaaaaaaaaaaaaaaaaa");
-            
+
             var val = document.getElementById('productType').value
 
             const inputs = document.getElementById('optionalInput');
@@ -307,11 +305,79 @@ class Tienda
                     break;
                 }
         });
-
+        
+        console.log("Hola desde la linea 309");
+        document.addEventListener('DOMContentLoaded', function() {
+            const dragDropArea = document.getElementById('dragDropArea');
+            const productImageInput = document.getElementById('productImage');
+        
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dragDropArea.addEventListener(eventName, preventDefaults, false);
+            });
+        
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dragDropArea.addEventListener(eventName, () => dragDropArea.classList.add('highlight'), false);
+            });
+        
+            ['dragleave', 'drop'].forEach(eventName => {
+                dragDropArea.addEventListener(eventName, () => dragDropArea.classList.remove('highlight'), false);
+            });
+        
+            // Handle dropped files
+            dragDropArea.addEventListener('drop', handleDrop, false);
+        
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+        
+                handleFiles(files);
+            }
+        
+            // Handle files selected via input
+            productImageInput.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+        
+            function handleFiles(files) {
+                ([...files]).forEach(uploadFile);
+            }
+        
+            function uploadFile(file) {
+                // Here you can handle the file upload
+                // For example, display the image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100%';
+                    dragDropArea.innerHTML = '';
+                    dragDropArea.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        /*
         document.addEventListener("DOMContentLoaded", function () {
             const fileInput = document.getElementById("productImage");
             const dragDropArea = document.getElementById("dragDropArea");
+            console.log("Hola desde la linea 313");
             const allowedTypes = ["image/png", "image/webp", "image/jpeg"];
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dragDropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
         
             function handleFile(file) {
                 if (!allowedTypes.includes(file.type)) {
@@ -327,23 +393,19 @@ class Tienda
         
             ["dragover", "dragenter"].forEach(event => {
                 dragDropArea.addEventListener(event, (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                    console.log("Entra el drag");
                     dragDropArea.style.border = "2px solid green";
                 });
             });
         
             ["dragleave", "drop"].forEach(event => {
                 dragDropArea.addEventListener(event, (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                    console.log("Sale el drag")
                     dragDropArea.style.border = "2px dashed #ccc";
                 });
             });
         
             dragDropArea.addEventListener("drop", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
                 if (e.dataTransfer.files.length > 1) {
                     alert("Solo se puede subir un archivo a la vez.");
                     return;
@@ -360,40 +422,8 @@ class Tienda
                 handleFile(fileInput.files[0]);
             });
         });
+        */
         
-        /*
-        function fileDragHover(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            e.target.className = (e.type == "dragover" ? "hover" : "");
-        }
-
-               //hola ander
-        function fileSelectHandler(e) {
-            // cancel event and hover styling
-            fileDragHover(e);
-    
-            // fetch FileList object
-            var files = e.target.files || e.dataTransfer.files;
-            if (files.length > 1) { //limita a un archivo
-                alert("Solo puedes subir un archivo.");
-                return;
-            } 
-        
-            if (files.length === 1) {
-                var file = files[0];
-                console.log(file.name);
-                parseFile(file);
-            }
-    
-            // files can be added by drag&drop or clicking on form's button 
-            // if the later, append files to form files field
-            var formFiles = $id("upload").fileselect;
-            if (formFiles.files.length == 0){
-                formFiles.files = files;
-            }
-        }
-*/
         function parseFile(file) {
             console.log(file.name);
             output(
@@ -411,6 +441,7 @@ class Tienda
         
         var val = document.getElementById('productType').value;
 
+
         const datos = {
             nombre: document.getElementById('productName').value,
             precio: document.getElementById('productPrice').value,
@@ -421,7 +452,9 @@ class Tienda
         if(datos.precio<0){ //no debería de hacer falta, pero introducir aquí condiciones adicionales
             document.getElementById('productPrice').value = "";
             alert("Introduzca un precio válido.");
-        }else{
+        }
+        else
+        {
         
         //datos.nombre = document.getElementById('productName').value;
         //datos.precio = document.getElementById('productPrice').value;
@@ -443,7 +476,7 @@ class Tienda
                 datos.autor = document.getElementById('optionalInputAutor').value;
                 datos.isbn = document.getElementById('optionalInputIsbn').value;
                 datos.paginas = document.getElementById('optionalInputPaginas').value;
-                datos.tamano = document.getElementById('optionalInputTamano').value;ç
+                datos.tamano = document.getElementById('optionalInputTamano').value;
                 alert(datos.tamano);
                 break;
 
@@ -463,10 +496,48 @@ class Tienda
                 alert("Default");
                 break;
             }
-//
-     //
-     agregarNuevoProducto(val, datos);
 
+             // VVVV   NO OS PREOCUPEIS NO TENGO NI IDEA DE QUE ESTOY HACIENDO    VVVV
+        //const foto = document.getElementById("productImage").files[0]; // Asegúrate de que este ID coincida con el de tu input de archivo
+        //const formData = new FormData();
+        //formData.append("foto", foto);
+//
+        //// Subir la imagen y los datos
+        //fetch('/upload/image', {
+        //    method: "POST",
+        //    body: formData
+        //})
+        //.then(response => response.json()) // Aquí podrías procesar la respuesta del servidor
+        //.then(data => {
+      //
+        //    // Ahora agregamos el producto
+        //    agregarNuevoProducto(val, datos);
+        //    this.productos = obtenerProductos();
+        //    this.filtrarProductos();
+        //    this.mostrarProductos();
+        //})
+        //.catch(error => {
+        //    console.error('Error al subir la imagen:', error);
+        //});
+
+        //const formData = new FormData();  
+        //formData.append("photo", document.getElementById("image-file").files[0]);  
+//
+        //fetch('/upload/img', {
+        //    method: 'POST',              // Usamos el método 'POST' porque vamos a enviar datos
+        //    body: formData              // Los datos que vamos a enviar están dentro del FormData
+        //})
+        //.then(response => response.json())  // Cuando el servidor responda, lo convertimos en JSON
+        //.then(data => console.log(data))    // Mostramos la respuesta del servidor
+        //.catch(error => console.log(error)); // Si hay un error, lo mostramos
+
+        const response = fetch("/post", 
+            {
+                body: document.getElementById("productImage"),
+            });
+
+     agregarNuevoProducto(val, datos); 
+//
      this.productos = obtenerProductos();
      this.filtrarProductos();
      this.mostrarProductos();
@@ -484,7 +555,7 @@ class Tienda
         gridContainer.innerHTML = '';
         
         paginatedProducts.forEach(producto => {
-            console.log("Esto deberia decir algo : "+producto.imagen);
+            
             const card = `
                 <div class="col">
                     <div class="card h-100 position-relative">
@@ -578,9 +649,9 @@ class Tienda
             this.carrito.delete(productId);
         } else if (newQuantity > this.maxCopias) {
             this.mostrarMensajeMaximoCopias(productId);
-            // Resetear el input a 20
             const input = document.querySelector(`input[data-product-id="${productId}"]`);
-            if (input) input.value = this.maxCopias;
+            // Restaurar la cantidad anterior
+            if (input) input.value = this.carrito.get(productId).cantidad;
             return;
         } else {
             this.carrito.get(productId).cantidad = newQuantity;
@@ -810,12 +881,6 @@ class Tienda
         const start = (this.currentPage - 1) * this.productosPerPage + 1;
         const end = Math.min(this.currentPage * this.productosPerPage, this.productosFiltrados.length);
         return { start, end };
-    }
-
-    initializePageNavigation() {
-        // Ya no necesitamos este método ya que los eventos se manejan en renderPagination
-        // Pues borralo no????
-        return;
     }
 
    // ============================== Utilidades ==============================
