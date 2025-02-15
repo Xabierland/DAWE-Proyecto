@@ -306,7 +306,7 @@ class Tienda
                 }
         });
         
-        console.log("Hola desde la linea 309");
+        //console.log("Hola desde la linea 309");
         document.addEventListener('DOMContentLoaded', function() {
             const dragDropArea = document.getElementById('dragDropArea');
             const productImageInput = document.getElementById('productImage');
@@ -435,35 +435,38 @@ class Tienda
         }
         //checkear egela-drive
     
+
+    // Zona de recoger los datos del formulario para crear el objeto
     const searchInput = document.getElementById('productForm');
-    searchInput.addEventListener('submit', (e) => {
+    searchInput.addEventListener('submit', async (e) => {
         e.preventDefault(); 
+
+
+
         
+        // Se guarda el tipo de archivo para saber que datos recoger
         var val = document.getElementById('productType').value;
 
-
-        const datos = {
+        const datos = 
+        {
             nombre: document.getElementById('productName').value,
             precio: document.getElementById('productPrice').value,
             descripcion: document.getElementById('productDescription').value,
-            imagen: document.getElementById('productImage').value
-          };
+            imagen: URL.createObjectURL(document.getElementById('productImage').files[0])
+            // document.getElementById('productImage').value
+        };
 
-        if(datos.precio<0){ //no debería de hacer falta, pero introducir aquí condiciones adicionales
-            document.getElementById('productPrice').value = "";
-            alert("Introduzca un precio válido.");
-        }
-        else
+        // Comprobaciones iniciales
+        if(datos.precio<0)
+            { 
+                document.getElementById('productPrice').value = "";
+                alert("Introduzca un precio válido.");
+                return;
+            }
+
+            
+        switch(val) 
         {
-        
-        //datos.nombre = document.getElementById('productName').value;
-        //datos.precio = document.getElementById('productPrice').value;
-        //datos.descripcion = document.getElementById('productDescription').value;
-        //datos.imagen = document.getElementById('productImage').value;
-
-        
-    
-        switch(val) {
             case 'libro_Fisico':
             
                 datos.autor = document.getElementById('optionalInputAutor').value;
@@ -495,53 +498,14 @@ class Tienda
             default:
                 alert("Default");
                 break;
-            }
-
-             // VVVV   NO OS PREOCUPEIS NO TENGO NI IDEA DE QUE ESTOY HACIENDO    VVVV
-        //const foto = document.getElementById("productImage").files[0]; // Asegúrate de que este ID coincida con el de tu input de archivo
-        //const formData = new FormData();
-        //formData.append("foto", foto);
-//
-        //// Subir la imagen y los datos
-        //fetch('/upload/image', {
-        //    method: "POST",
-        //    body: formData
-        //})
-        //.then(response => response.json()) // Aquí podrías procesar la respuesta del servidor
-        //.then(data => {
-      //
-        //    // Ahora agregamos el producto
-        //    agregarNuevoProducto(val, datos);
-        //    this.productos = obtenerProductos();
-        //    this.filtrarProductos();
-        //    this.mostrarProductos();
-        //})
-        //.catch(error => {
-        //    console.error('Error al subir la imagen:', error);
-        //});
-
-        //const formData = new FormData();  
-        //formData.append("photo", document.getElementById("image-file").files[0]);  
-//
-        //fetch('/upload/img', {
-        //    method: 'POST',              // Usamos el método 'POST' porque vamos a enviar datos
-        //    body: formData              // Los datos que vamos a enviar están dentro del FormData
-        //})
-        //.then(response => response.json())  // Cuando el servidor responda, lo convertimos en JSON
-        //.then(data => console.log(data))    // Mostramos la respuesta del servidor
-        //.catch(error => console.log(error)); // Si hay un error, lo mostramos
-
-        const response = fetch("/post", 
-            {
-                body: document.getElementById("productImage"),
-            });
+        }
 
      agregarNuevoProducto(val, datos); 
-//
+
      this.productos = obtenerProductos();
      this.filtrarProductos();
      this.mostrarProductos();
-        }
+        
      return;
 
     });

@@ -2,8 +2,9 @@ import {Libro, Ebook, Ereader, Marcapaginas, Funda} from './productos.js';
 
 // Lista de productos base
 const listaProductos = [
-   // Libros Físicos
-   new Libro("El tunel", 1, "Hay un tunel", "Ernesto Sabato", 1, 100, '/img/productos/ElTunel.jpg'),
+   // Libros Físicos                            //TODO: Si las imagens no cargan es que he quitado la / al principio
+                                                // Que si no en mi portatil no funcionaba
+   new Libro("El tunel", 1, "Hay un tunel", "Ernesto Sabato", 1, 100, 'img/productos/ElTunel.jpg'),
    new Libro("Viento y verdad", 5, "Viaje antes que destino", "Brandon Sanderson", 3, 1400, '/img/productos/VientoYVerdad.jpg'),
    new Libro("El nombre del viento", 20, "La historia de un músico, mago y leyenda", "Patrick Rothfuss", 5, 800, '/img/productos/ElNombreDelViento.jpg'),
    
