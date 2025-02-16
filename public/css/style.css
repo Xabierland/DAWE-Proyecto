@@ -130,3 +130,14 @@ ul {
 .producto-detalles::-webkit-scrollbar-thumb:hover {
     background-color: rgba(255, 255, 255, 0.3);
 }
+
+.border-dashed {
+    border: 2px dashed #ccc; /* Borde gris punteado */
+    transition: border-color 0.3s ease; /* Transición suave para el borde */
+}
+
+/* Estilo cuando el usuario arrastra un archivo sobre el área */
+.border-dashed.hover {
+    border-color: #28a745; /* Borde verde */
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5); /* Brillo verde */
+}

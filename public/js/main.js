@@ -306,133 +306,65 @@ class Tienda
                 }
         });
         
-        //console.log("Hola desde la linea 309");
-        document.addEventListener('DOMContentLoaded', function() {
-            const dragDropArea = document.getElementById('dragDropArea');
-            const productImageInput = document.getElementById('productImage');
-        
-            // Prevent default drag behaviors
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dragDropArea.addEventListener(eventName, preventDefaults, false);
-            });
-        
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        
-            // Highlight drop area when item is dragged over it
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dragDropArea.addEventListener(eventName, () => dragDropArea.classList.add('highlight'), false);
-            });
-        
-            ['dragleave', 'drop'].forEach(eventName => {
-                dragDropArea.addEventListener(eventName, () => dragDropArea.classList.remove('highlight'), false);
-            });
-        
-            // Handle dropped files
-            dragDropArea.addEventListener('drop', handleDrop, false);
-        
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-        
-                handleFiles(files);
-            }
-        
-            // Handle files selected via input
-            productImageInput.addEventListener('change', function() {
-                handleFiles(this.files);
-            });
-        
-            function handleFiles(files) {
-                ([...files]).forEach(uploadFile);
-            }
-        
-            function uploadFile(file) {
-                // Here you can handle the file upload
-                // For example, display the image preview
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.maxWidth = '100%';
-                    dragDropArea.innerHTML = '';
-                    dragDropArea.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        /*
-        document.addEventListener("DOMContentLoaded", function () {
-            const fileInput = document.getElementById("productImage");
-            const dragDropArea = document.getElementById("dragDropArea");
-            console.log("Hola desde la linea 313");
-            const allowedTypes = ["image/png", "image/webp", "image/jpeg"];
+        var dropbox = document.getElementById("dragDropArea")
+        var dropText = document.getElementById("dropText"); // Referencia al texto
+        var originalText = dropText.textContent; // Guarda el texto original
+        var productImageInput = document.getElementById("productImage");
 
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dragDropArea.addEventListener(eventName, preventDefaults, false);
-            });
+        dropbox.addEventListener("dragenter", dragOver); // entras en esa capa arrastrando algo
+        dropbox.addEventListener("dragexit", dragOut); // sales de esa capa
+        dropbox.addEventListener("dragover", dragOver); // te mueves arrastrando algo en la capa
+        dropbox.addEventListener("drop", gestorFicheros); // sueltas los ficheros
 
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
+        function dragOver(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
         
-            function handleFile(file) {
-                if (!allowedTypes.includes(file.type)) {
-                    alert("Solo se permiten archivos PNG, WEBP y JPG.");
-                    return;
-                }
-        
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                fileInput.files = dataTransfer.files;
-                parseFile(file)
-            }
-        
-            ["dragover", "dragenter"].forEach(event => {
-                dragDropArea.addEventListener(event, (e) => {
-                    console.log("Entra el drag");
-                    dragDropArea.style.border = "2px solid green";
-                });
-            });
-        
-            ["dragleave", "drop"].forEach(event => {
-                dragDropArea.addEventListener(event, (e) => {
-                    console.log("Sale el drag")
-                    dragDropArea.style.border = "2px dashed #ccc";
-                });
-            });
-        
-            dragDropArea.addEventListener("drop", (e) => {
-                if (e.dataTransfer.files.length > 1) {
-                    alert("Solo se puede subir un archivo a la vez.");
-                    return;
-                }
-                handleFile(e.dataTransfer.files[0]);
-            });
-        
-            fileInput.addEventListener("change", function () {
-                if (fileInput.files.length > 1) {
-                    alert("Solo se puede subir un archivo a la vez.");
-                    fileInput.value = "";
-                    return;
-                }
-                handleFile(fileInput.files[0]);
-            });
-        });
-        */
-        
-        function parseFile(file) {
-            console.log(file.name);
-            output(
-                "<p>Datos del fichero: <strong>" + file.name +
-                "</strong> Tipo: <strong>" + file.type +
-                "</strong> Tamaño: <strong>" + file.size +
-                "</strong> bytes</p>"
-            );
+            evt.target.classList.add("hover");
+
         }
+
+        function dragOut(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+
+            evt.target.classList.remove("hover");
+        }
+
+        function gestorFicheros(evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+        
+            // Elimina la clase "hover" al soltar el archivo
+            evt.target.classList.remove("hover");
+
+            // Cambia el texto a "¡Elemento añadido!"
+            dropText.textContent = "¡Elemento añadido!";
+
+            // Restaura el texto original después de 2 segundos
+            setTimeout(() => {
+                dropText.textContent = originalText;
+            }, 2000);
+        
+            // Obtiene el archivo soltado
+            const files = evt.dataTransfer.files;
+
+            // Verifica si se soltó un archivo y si es una imagen
+            if (files.length > 0 && files[0].type.startsWith("image/")) {
+                // Asigna el archivo al input file
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(files[0]);
+                productImageInput.files = dataTransfer.files;
+
+                // Muestra el nombre del archivo en la consola
+                console.log("Archivo asignado al input:", files[0].name);
+            } else {
+                alert("Por favor, suelta solo archivos de imagen.");
+            }
+        }
+            
+        
+        
         //checkear egela-drive
     
 
