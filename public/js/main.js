@@ -312,7 +312,7 @@ class Tienda
         var productImageInput = document.getElementById("productImage");
 
         dropbox.addEventListener("dragenter", dragOver); // entras en esa capa arrastrando algo
-        dropbox.addEventListener("dragexit", dragOut); // sales de esa capa
+        dropbox.addEventListener("dragleave", dragOut); // sales de esa capa
         dropbox.addEventListener("dragover", dragOver); // te mueves arrastrando algo en la capa
         dropbox.addEventListener("drop", gestorFicheros); // sueltas los ficheros
 
@@ -328,6 +328,13 @@ class Tienda
             evt.stopPropagation();
             evt.preventDefault();
 
+            if (dragDropArea.contains(evt.relatedTarget)) 
+            {
+                // Cuando haces hover sobre el texto se quita el glow verde y esto lo solciona, pero tiene otros problemas
+                // Entonces no quita lo de hover, pero no funciona bien del todo
+                // return;
+            }
+
             evt.target.classList.remove("hover");
         }
 
@@ -337,41 +344,77 @@ class Tienda
         
             // Elimina la clase "hover" al soltar el archivo
             evt.target.classList.remove("hover");
-
-            // Cambia el texto a "¡Elemento añadido!"
-            dropText.textContent = "¡Elemento añadido!";
-
-            // Restaura el texto original después de 2 segundos
-            setTimeout(() => {
-                dropText.textContent = originalText;
-            }, 2000);
         
             // Obtiene el archivo soltado
             const files = evt.dataTransfer.files;
 
-            // Verifica si se soltó un archivo y si es una imagen
-            if (files.length > 0 && files[0].type.startsWith("image/")) {
-                // Asigna el archivo al input file
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(files[0]);
-                productImageInput.files = dataTransfer.files;
-
-                // Muestra el nombre del archivo en la consola
-                console.log("Archivo asignado al input:", files[0].name);
-            } else {
-                alert("Por favor, suelta solo archivos de imagen.");
+            if (files.length > 1 )
+            {
+                errorFormulario('Solo se puede añadir un fichero');
+                //alert("Por favor, suelta solo una imagen.");
+                return;
             }
-        }
+
+            if (!files[0].type.startsWith("image/"))
+            {
+                errorFormulario('Solo se pueden añadir imagenes');
+                
+                //alert("Por favor, suelta solo archivos de imagen.");
+                return;
+            }
+
             
+            if (files.length < 0)
+            {
+                errorFormulario('Esto no debería pasar');
+                //alert("Por favor, suelta solo archivos de imagen.");
+                return;
+            }
+                
+                
+            // Cambia el texto a "¡Elemento añadido!"
+            dropText.textContent = "¡Elemento añadido!";
+
+            // Restaura el texto original después de 2 segundos
+            setTimeout(() => 
+            {
+                dropText.textContent = originalText;
+            }, 2000);
+                
+            // Asigna el archivo al input file
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(files[0]);
+            productImageInput.files = dataTransfer.files;
+
+            // Muestra el nombre del archivo en la consola
+            console.log("Archivo asignado al input:", files[0].name);
+        }
+
+        function errorFormulario(error)
+        {
+            const form = document.getElementById("productForm");
+            if (!form) return;
+    
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'alert alert-danger mt-2 mb-0';
+            errorMessage.textContent = error;
+    
+            form.appendChild(errorMessage);
+    
+            setTimeout(() => {
+                errorMessage.remove();
+            }, 1500);
+        }
+
         
         
         //checkear egela-drive
     
 
-    // Zona de recoger los datos del formulario para crear el objeto
-    const searchInput = document.getElementById('productForm');
-    searchInput.addEventListener('submit', async (e) => {
-        e.preventDefault(); 
+        // Zona de recoger los datos del formulario para crear el objeto
+        const searchInput = document.getElementById('productForm');
+        searchInput.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
 
 
 
