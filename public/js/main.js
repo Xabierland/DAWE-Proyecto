@@ -555,7 +555,7 @@ class Tienda
         });
     }
 
-    // Agregar un producto al carrito
+    // Agregar un producto al carrito mediante los botones de añadir
     agregarAlCarrito(productId) {
         const producto = this.productos.find(p => p.id === productId);
         if (!producto) return;
@@ -566,7 +566,7 @@ class Tienda
                 this.carrito.get(productId).cantidad++;
                 this.mostrarMensajeExito(productId);
             } else {
-                this.mostrarMensajeMaximoCopias(productId);
+                this.mostrarMensajeError(productId);
             }
         } else {
             this.carrito.set(productId, {
@@ -615,7 +615,7 @@ class Tienda
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item mb-3 border-bottom pb-3';
             itemElement.innerHTML = `
-                <div class="d-flex">
+                <div class="d-flex align-items-center">
                     <img src="${item.producto.imagen}" 
                          alt="${item.producto.nombre}" 
                          class="cart-item-image me-3" 
@@ -629,18 +629,25 @@ class Tienda
                                    class="form-control form-control-sm product-quantity" 
                                    value="${item.cantidad}"
                                    min="0"
-                                   max="${this.maxCopias}"
+                                   max="${this.maxCopias}+1"
                                    style="width: 70px"
                                    data-product-id="${productId}">
                         </div>
                         <p class="mb-1">Subtotal: ${subtotal.toFixed(2)}€</p>
                     </div>
+                    <button class="btn btn-danger btn-sm remove-item" data-product-id="${productId}" title="Eliminar producto">x</button>
                 </div>
             `;
+            // Evento que llama a actualizarCantidad poniendo la cantidad a 0 para eliminar el producto
+            const removeButton = itemElement.querySelector('.remove-item');
+            removeButton.addEventListener('click', () => {
+                this.actualizarCantidad(productId, 0);
+            });
 
+            // Añadir al DOM
             cartItems.appendChild(itemElement);
         });
-
+        // Actualizar el total
         cartTotal.textContent = total.toFixed(2);
     }
 
@@ -666,6 +673,22 @@ class Tienda
 
         setTimeout(() => {
             successMessage.remove();
+        }, 1500);
+    }
+
+    mostrarMensajeError(productId) {
+        const button = document.querySelector(`button[data-product-id="${productId}"]`);
+        if (!button) return;
+
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'position-absolute top-0 end-0 m-2 alert alert-danger';
+        errorMessage.style.zIndex = '1000';
+        errorMessage.textContent = '¡Máximo de copias alcanzado!';
+
+        button.parentElement.appendChild(errorMessage);
+
+        setTimeout(() => {
+            errorMessage.remove();
         }, 1500);
     }
 
@@ -847,5 +870,4 @@ document.addEventListener('DOMContentLoaded', () => {
 // Como odio a Xabier Gabiña 🤢 - JavaScript
 // Como odio a Xabier Gabiña 🤢 - CloudFare
 // Como odio a Xabier Gabiña 🤢 - Discord
-// Como odio a Xabier Gabiña 🤢 - Elon Mask
 // Como odio a Xabier Gabiña 🤢 - El putisimo codigo del formulario
