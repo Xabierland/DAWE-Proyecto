@@ -660,24 +660,27 @@ class Tienda
     }
 
     // Mostrar mensaje de éxito al añadir al carrito
-    mostrarMensajeExito(productId) {
-        const button = document.querySelector(`button[data-product-id="${productId}"]`);
-        if (!button) return;
+    mostrarMensajeExito(productId) 
+    {
+        const button = document.querySelector(`.card button[data-product-id="${productId}"]`);
+        if (!button) return;  
 
         const successMessage = document.createElement('div');
         successMessage.className = 'position-absolute top-0 end-0 m-2 alert alert-success';
         successMessage.style.zIndex = '1000';
         successMessage.textContent = '¡Añadido al carrito!';
-
+      
         button.parentElement.appendChild(successMessage);
 
         setTimeout(() => {
             successMessage.remove();
         }, 1500);
-    }
+
+        
+    } 
 
     mostrarMensajeError(productId) {
-        const button = document.querySelector(`button[data-product-id="${productId}"]`);
+        const button = document.querySelector(`.card button[data-product-id="${productId}"]`);
         if (!button) return;
 
         const errorMessage = document.createElement('div');
