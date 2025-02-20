@@ -196,21 +196,18 @@ class Tienda
     }
 
     // ============================== Logica Formulario DE ASIDE  ==============================
-    //    
-    //  N   N   OOO      TTTTTTT  OOO    CCC    AAA    RRR
-    //  NN  N  O   O        T    O   O  C      A   A  R   R
-    //  N N N  O   O        T    O   O  C      AAAAA  RRRR
-    //  N  NN  O   O        T    O   O  C      A   A  R   R
-    //  N   N   OOO         T     OOO    CCC   A   A  R    R
-    //
-    // O Gabiña muere
     mostrarFormulario() 
     {
         const typeInput = document.getElementById('productType');
         typeInput.selectedIndex = 0; //resetea valor a "Selecciona una opción"
         typeInput.addEventListener("change", (e) => 
         {
+            renderizarFormulario();
+            
+        });
 
+        function renderizarFormulario()
+        {
             var val = document.getElementById('productType').value
 
             const inputs = document.getElementById('optionalInput');
@@ -304,7 +301,7 @@ class Tienda
                     `;
                     break;
                 }
-        });
+        }
         
         var dropbox = document.getElementById("dragDropArea")
         var dropText = document.getElementById("dropText"); // Referencia al texto
@@ -390,12 +387,7 @@ class Tienda
             console.log("Archivo asignado al input:", files[0].name);
         }
 
-        function limiarFormulario()
-        {
 
-        }
-
-        
         function errorFormulario(error)
         {
             const form = document.getElementById("productForm");
@@ -412,6 +404,12 @@ class Tienda
             }, 1500);
         }
 
+        function limiarFormulario()
+        {
+            document.getElementById("productForm").reset();
+            renderizarFormulario();
+            return;
+        }
         
         
         //checkear egela-drive
@@ -472,7 +470,6 @@ class Tienda
                 datos.isbn = document.getElementById('optionalInputIsbn').value;
                 datos.paginas = document.getElementById('optionalInputPaginas').value;
                 datos.tamano = document.getElementById('optionalInputTamano').value;
-                alert(datos.tamano);
                 break;
 
             case 'ereader':
@@ -498,6 +495,8 @@ class Tienda
      this.filtrarProductos();
      this.mostrarProductos();
         
+     limiarFormulario();
+
      return;
 
     });
@@ -885,9 +884,3 @@ class Tienda
 document.addEventListener('DOMContentLoaded', () => {
     new Tienda();
 });
-
-// Como odio JavaScript 🤢 - Xabier Gabiña
-// Como odio a Xabier Gabiña 🤢 - JavaScript
-// Como odio a Xabier Gabiña 🤢 - CloudFare
-// Como odio a Xabier Gabiña 🤢 - Discord
-// Como odio a Xabier Gabiña 🤢 - El putisimo codigo del formulario
