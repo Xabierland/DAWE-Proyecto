@@ -4,66 +4,54 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
 ## Tareas
 
-### Requisitos tecnológicos
+### Requisitos de diseño
 
-- HTML
-- CSS
-- JavaScript
-- Bootstrap
-
-### Tareas "HTML" realizar
-
-- [ ] Favicono - Eneko
-- [X] Fondo - Luken
-- [X] Contenedor - Xabier
-- [X] Cabecera - Xabier
-- [X] Menú navegador - Xabier
-- [X] Footer - Xabier
+- [X] Favicono - Eneko Etxaniz
+- [X] Fondo - Luken Bilbao
+- [X] Contenedor - Xabier Gabiña
+- [X] Cabecera - Xabier Gabiña
+- [X] Menú navegador - Xabier Gabiña
+- [X] Contenido principal
+  - [X] Main - Xabier Gabiña
+  - [X] Aside - Eneko Etxaniz y Ander Gutierrez
+- [X] Footer - Xabier Gabiña
+- [X] Carrito de compra - Xabier Gabiña
+- [X] Descripcción de producto - Xabier Gabiña
 
 ### JS
 
-- [X] productos.js - Xabier
-  - [X] Productos
-    - [X] Libros físicos
-    - [X] Libros digitales
-    - [X] Ereaders
-    - [X] Fundas de ereader
-    - [X] Marcapáginas
-  - [X] Foto Default
-- [ ] tienda.js - Eneko
-- [ ] main.js
-  - [X] Buscador de productos - Xabier
-    - [X] Buscar por nombre
-    - [X] Actualizar el titulo del buscador
-  - [X] Carrito - Xabier
-    - [X] Añadir al carrito
-    - [X] Eliminar del carrito
-    - [X] Actualizar el carrito
-  - [ ] Formulario - Eneko
-    - [ ] Campos de formulario por producto
-    - [ ] Validación de formulario
-    - [ ] Añadir al carrito
-    - [ ] Drag and drop
-  - [X] Productos - Xabier
+- [X] productos.js - Xabier Gabiña
+  - [X] Superclase - Xabier Gabiña
+    - [X] Productos - Xabier Gabiña
+  - [X] Subclases - Xabier Gabiña
+    - [X] Libros físicos - Xabier Gabiña
+    - [X] Libros digitales - Xabier Gabiña
+    - [X] Ereaders - Xabier Gabiña
+    - [X] Fundas de ereader - Xabier Gabiña
+    - [X] Marcapáginas - Xabier Gabiña
+- [X] tienda.js - Eneko Etxaniz
+- [X] main.js - Todos
+  - [X] Buscador de productos - Xabier Gabiña
+    - [X] Buscar por nombre - Xabier Gabiña
+    - [X] Actualizar el titulo del buscador - Xabier Gabiña
+  - [X] Carrito - Xabier Gabiña
+    - [X] Añadir al carrito - Xabier Gabiña
+    - [X] Eliminar del carrito - Xabier Gabiña
+    - [X] Actualizar cantidad del producto - Xabier Gabiña
+  - [X] Formulario - Eneko Etxaniz
+    - [X] Campos de formulario por producto - Eneko Etxaniz
+    - [X] Validación de formulario - Luken Bilbao
+    - [X] Drag and drop - Eneko Etxaniz y Ander Gutierrez
+  - [X] Productos - Xabier Gabiña
     - [X] Tarjeta de producto
     - [X] Vista extendida de producto
-  - [X] Paginación - Xabier
+  - [X] Paginación - Xabier Gabiña
     - [X] Mostrar paginación
     - [X] Mostrar productos por página
 
-### Tareas añadir producto
-
-- [ ] Añadir a "datos" los diferentes parametros para diferentes productos
-- [ ] Ver que las imagenes se añaden bien
-- [X] Limpiar formulario - Luken (sanitizado por HTML para evitar inputs sin sentido, reseteado valor de productType al recargar página)
-
-### Opcional si alguien se aburre
-
-- [X] En la barra de "Buscar productos..." quitan el recuadro donde iria la lupa
-- [X] Bloquear el scroll de la página cuando se abre una tarjeta de producto - Luken
-
-
 ### Función extra
-- [ ] Filtro avanzado de busquedá
-  - [ ] Ordénar por précio
-  - [ ] Filtrar por précio mínimo y máximo
+
+- [X] Filtro avanzado de busquedá - Xabier Gabiña
+  - [X] Filtrar por tipo de producto - Xabier Gabiña
+  - [X] Filtrar por rango de precios - Xabier Gabiña
+  - [X] Ordenar por précio mínimo y máximo - Xabier Gabiña

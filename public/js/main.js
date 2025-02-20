@@ -312,16 +312,16 @@ class Tienda
         var productImageInput = document.getElementById("productImage");
 
         dropbox.addEventListener("dragenter", dragOver); // entras en esa capa arrastrando algo
-        dropbox.addEventListener("dragleave", dragOut); // sales de esa capa
+        dropbox.addEventListener("dragexit", dragOut); // sales de esa capa
         dropbox.addEventListener("dragover", dragOver); // te mueves arrastrando algo en la capa
         dropbox.addEventListener("drop", gestorFicheros); // sueltas los ficheros
 
-        function dragOver(evt) {
+        function dragOver(evt) 
+        {
             evt.stopPropagation();
             evt.preventDefault();
         
             evt.target.classList.add("hover");
-
         }
 
         function dragOut(evt) {
@@ -390,6 +390,12 @@ class Tienda
             console.log("Archivo asignado al input:", files[0].name);
         }
 
+        function limiarFormulario()
+        {
+
+        }
+
+        
         function errorFormulario(error)
         {
             const form = document.getElementById("productForm");
