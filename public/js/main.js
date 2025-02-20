@@ -427,9 +427,20 @@ class Tienda
             nombre: document.getElementById('productName').value,
             precio: document.getElementById('productPrice').value,
             descripcion: document.getElementById('productDescription').value,
-            imagen: URL.createObjectURL(document.getElementById('productImage').files[0])
             // document.getElementById('productImage').value
         };
+
+        var inputFile = document.getElementById('productImage')
+        console.log(inputFile.files.length)
+        if(inputFile.files.length > 0)
+            {
+                datos.imagen = URL.createObjectURL(document.getElementById('productImage').files[0])
+                console.log("Hay imagen")
+            } else {
+                datos.imagen = 'img/default.png'
+                console.log("No hay imagen")
+                
+            }
 
         // Comprobaciones iniciales
         if(datos.precio<0)
