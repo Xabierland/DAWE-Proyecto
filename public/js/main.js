@@ -303,36 +303,29 @@ class Tienda
                 }
         }
         
-        var dropbox = document.getElementById("dragDropArea")
-        var dropText = document.getElementById("dropText"); // Referencia al texto
-        var originalText = dropText.textContent; // Guarda el texto original
+
         var productImageInput = document.getElementById("productImage");
-
-        dropbox.addEventListener("dragenter", dragOver); // entras en esa capa arrastrando algo
-        dropbox.addEventListener("dragexit", dragOut); // sales de esa capa
-        dropbox.addEventListener("dragover", dragOver); // te mueves arrastrando algo en la capa
-        dropbox.addEventListener("drop", gestorFicheros); // sueltas los ficheros
-
-        function dragOver(evt) 
-        {
+        var dropbox = document.getElementById("dragDropArea");
+        var dropText = document.getElementById("dropText");
+        var originalText = dropText.textContent;
+        
+        dropbox.addEventListener("dragenter", dragOver);
+        dropbox.addEventListener("dragleave", dragOut);
+        dropbox.addEventListener("dragover", dragOver);
+        dropbox.addEventListener("drop", gestorFicheros);
+        
+        function dragOver(evt) {
             evt.stopPropagation();
             evt.preventDefault();
-        
-            evt.target.classList.add("hover");
+            console.log("Over");
+            dropbox.classList.add("hover"); // Se aplica al contenedor principal
         }
-
+        
         function dragOut(evt) {
             evt.stopPropagation();
             evt.preventDefault();
-
-            if (dragDropArea.contains(evt.relatedTarget)) 
-            {
-                // Cuando haces hover sobre el texto se quita el glow verde y esto lo solciona, pero tiene otros problemas
-                // Entonces no quita lo de hover, pero no funciona bien del todo
-                // return;
-            }
-
-            evt.target.classList.remove("hover");
+            console.log("Out");
+            dropbox.classList.remove("hover"); // Se quita la clase del contenedor principal
         }
 
         function gestorFicheros(evt) {
