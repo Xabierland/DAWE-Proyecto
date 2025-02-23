@@ -1,3 +1,4 @@
+/* ==================== Estilos generales ==================== */
 html {
     height: 100%;
 }
@@ -27,6 +28,8 @@ footer {
     /*position: relative !important; /*puede ponerse para desfijarlo del borde inferior*/
 }
 
+/* ==================== Estilos para el contenedor principal ==================== */
+
 .contenedor {
     /*El div ya ocupa el 90& del ancho*/
     width: 90%;
@@ -44,6 +47,52 @@ footer {
     height: 100%;
 }
 
+/* ==================== Estilos para el Nav ==================== */
+
+/* Estilos para los enlaces del nav */
+.navbar-nav .nav-link {
+    background-color: #ffc107; /* Color amarillo de Bootstrap */
+    color: #000 !important; /* Texto negro */
+    border-radius: 5px;
+    padding: 8px 16px;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover */
+.navbar-nav .nav-link:hover {
+    background-color: #ffcd39; /* Amarillo más claro al pasar el ratón */
+    transform: translateY(-2px);
+}
+
+/* Estilo para el estado activo */
+.navbar-nav .nav-link.active {
+    background-color: #e6ad06; /* Amarillo más oscuro para el estado activo */
+    color: #000 !important;
+}
+
+/* Estilos para el separador */
+.navbar-nav .text-light {
+    color: #ffc107 !important; /* Mismo color amarillo */
+    font-family: inherit; /* Hereda la tipografía del body */
+    font-size: 1.2rem;
+}
+
+/* Estilos para el contador del carrito */
+.badge.cart-count {
+    font-family: inherit; /* Hereda la tipografía del body */
+    background-color: #000 !important; /* Fondo negro */
+    color: #ffc107 !important; /* Texto amarillo */
+    margin-left: 5px;
+}
+
+/* Ajuste del fondo del navbar */
+.navbar.bg-dark {
+    background-color: #212529 !important; /* Asegura que el fondo se mantenga oscuro */
+    padding: 1rem;
+}
+
+/* ==================== Estilos los botones ==================== */
 .btn {
     --bs-btn-bg: #F6CA1B; /*background-color*/
     --bs-btn-color: #000000; /* color: #000000 !important;*/
@@ -62,6 +111,7 @@ footer {
     --bs-badge-color: #000000;
 }
 
+/* ==================== Estilos para la vista extendida ==================== */
 /*Animacion para la descripción extendida de un producto*/
 .modal-overlay {
     animation: fadeIn 0.3s ease-out;
@@ -126,3 +176,5 @@ footer {
     border-color: #28a745; /* Borde verde */
     box-shadow: 0 0 10px rgba(40, 167, 69, 0.5); /* Brillo verde */
 }
+
+/* ==================== FIN ==================== */

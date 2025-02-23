@@ -514,7 +514,7 @@ class Tienda
                             <h5 class="card-title text-truncate">${producto.nombre}</h5>
                             <p class="card-text"><strong>Precio: </strong>${producto.precio}€</p>
                             <p class="card-text"><small class="text-muted">${this.getExtraField(producto)}</small></p>
-                            <p class="card-text description-truncate">${producto.descripcion.length > 100 ? producto.descripcion.substring(0, 100) + '...' : producto.descripcion}</p>
+                            <p class="card-text description-truncate" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${producto.descripcion}</p>
                         </div>
                     </div>
                 </div>
