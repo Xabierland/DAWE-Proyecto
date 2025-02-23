@@ -436,6 +436,7 @@ class Tienda
                 : 'img/default.png';
     
             // Obtener campos específicos según el tipo
+            //! NOTA DE XABIER: Lo de que te deje poner dos case seguidos sin el break para que se junten y luego hacer un if para diferenciarlos es una cosa que solo podria pasar con javascript JAJAJA
             switch (tipo) {
                 case 'libro_Fisico':
                 case 'libro_Digital':
