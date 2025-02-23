@@ -40,8 +40,8 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
     - [X] Actualizar cantidad del producto - Xabier Gabiña
   - [X] Formulario - Eneko Etxaniz
     - [X] Campos de formulario por producto - Eneko Etxaniz
-    - [X] Validación de formulario - Luken Bilbao
-    - [X] Drag and drop - Eneko Etxaniz y Ander Gutierrez
+    - [X] Validación de formulario - Luken Bilbao y Xabier Gabiña
+    - [X] Drag and drop - Eneko Etxaniz, Ander Gutierrez y Xabier Gabiña
   - [X] Productos - Xabier Gabiña
     - [X] Tarjeta de producto
     - [X] Vista extendida de producto
