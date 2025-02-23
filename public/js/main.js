@@ -495,7 +495,6 @@ class Tienda
         gridContainer.innerHTML = '';
         
         paginatedProducts.forEach(producto => {
-            
             const card = `
                 <div class="col">
                     <div class="card h-100 position-relative">
@@ -504,12 +503,15 @@ class Tienda
                                 data-product-id="${producto.id}">
                             <i class="bi bi-cart-plus-fill"></i>
                         </button>
-    
-                        <img src="${producto.imagen}" 
-                             class="card-img-top producto-imagen" 
-                             alt="${producto.nombre}"
-                             data-product-id="${producto.id}"
-                             style="cursor: pointer;">
+        
+                        <div class="ratio ratio-1x1"> <!-- Contenedor con ratio fijo -->
+                            <img src="${producto.imagen}" 
+                                 class="card-img-top producto-imagen object-fit-cover" 
+                                 alt="${producto.nombre}"
+                                 data-product-id="${producto.id}"
+                                 style="cursor: pointer;">
+                        </div>
+        
                         <div class="card-body">
                             <h5 class="card-title text-truncate">${producto.nombre}</h5>
                             <p class="card-text"><strong>Precio: </strong>${producto.precio}€</p>
