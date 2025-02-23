@@ -4,13 +4,12 @@ html {
 
 body {
     /*Imagen de fondo*/
-    background-image: url(../img/fondo.png);
+    background-image: url(../img/fondo.jpg);
     /*Tamano de la imagen*/
     background-size: 10em;
     /*Hace que se quede fija la imagen al hacer scroll*/
     background-attachment: fixed;
     flex-direction: column;
-    height: 100%;
 }
 
 ul {
@@ -53,16 +52,6 @@ footer {
     --bs-btn-hover-bg: #F6CA1B; /*background-color: #F6CA1B !important;*/
     --bs-btn-hover-color: #FFFFFF; /*color: #FFFFFF !important;*/
     --bs-btn-hover-border-color: #FFFFFF; /*border-color: #FFFFFF !important;*/
-}
-
-.nav-link {
-    background-color: #F6CA1B;
-    color: #000000 !important;
-}
-
-.nav-link:hover {
-    background-color: #F6CA1B;
-    color: #FFFFFF !important;
 }
 
 :root {
