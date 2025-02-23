@@ -195,6 +195,7 @@ class Tienda
     }
 
     // ============================== Logica Formulario DE ASIDE  ==============================
+    // Logica del formulario
     mostrarFormulario() {
         // Inicializar el select de tipo
         const typeInput = document.getElementById('productType');
@@ -481,6 +482,7 @@ class Tienda
     }
 
     // ============================== Logica Productos ==============================
+    // Obtener los productos de la página actual
     mostrarProductos() {
         const gridContainer = document.getElementById('productsGrid');
         const paginatedProducts = this.getPaginatedProducts();
