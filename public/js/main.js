@@ -313,6 +313,10 @@ class Tienda
         }
     
         function renderizarFormulario() {
+            // Restaurar los placeholders por defecto
+            document.getElementById('productName').placeholder = "Ej: Nombre del producto";
+            document.getElementById('productPrice').placeholder = "Ej: 0.00";
+            document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
             const tipo = document.getElementById('productType').value;
             const contenedorInputs = document.getElementById('optionalInput');
             contenedorInputs.innerHTML = '';
