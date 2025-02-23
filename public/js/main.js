@@ -19,11 +19,16 @@ class Tienda
         this.carrito = carrito;
         // Número máximo de copias de un producto en el carrito
         this.maxCopias = 20;
-        // Valor minimo de precio
-        this.minPrice = 0;
-        // Valor maximo de precio
-        this.maxPrice = 100000000000000;
+        // Valor de filtro
+        this.filtroActual = {
+            tipo: 'all',
+            precioMin: 0,
+            precioMax: Number.MAX_SAFE_INTEGER,
+            ordenamiento: null
+        };
     
+        // Resetear filtros
+        this.resetearFiltros();
         // Inicializamos el buscador
         this.mostrarBuscador();
         // Inicializamos el filtro
@@ -44,27 +49,22 @@ class Tienda
     // ============================== Logica Filtro ==============================
     mostrarFiltro() {
         // Obtener elementos del DOM
-        const dropdownMenu = document.querySelector('.dropdown-menu');
+        const filterContainer = document.getElementById('filterContainer');
+        
+        // Configurar el botón de reset
+        const resetButton = document.getElementById('resetFilters');
+        if (resetButton) {
+            resetButton.addEventListener('click', () => {
+                this.resetearFiltros();
+            });
+        }
         
         // 1. Filtro por tipo de producto
-        dropdownMenu.querySelectorAll('[data-filter]').forEach(filterItem => {
+        filterContainer.querySelectorAll('[data-filter]').forEach(filterItem => {
             filterItem.addEventListener('click', (e) => {
-                e.preventDefault();
                 const filterValue = e.target.dataset.filter;
-                
-                // Reiniciar los productos filtrados
-                if (filterValue === 'all') {
-                    this.productosFiltrados = [...this.productos];
-                } else {
-                    // Filtrar usando el getter tipo
-                    this.productosFiltrados = this.productos.filter(producto => {
-                        return producto.tipo === filterValue;
-                    });
-                }
-                
-                // Actualizar la visualización
-                this.currentPage = 1;
-                this.mostrarProductos();
+                this.filtroActual.tipo = filterValue;
+                this.aplicarTodosFiltros();
                 
                 // Actualizar el título
                 const mainTitle = document.getElementById('mainTitle');
@@ -83,87 +83,82 @@ class Tienda
                 }
             });
         });
-    
-        // 2. Filtro de rango de precios
-        const priceContainer = document.createElement('div');
-        priceContainer.className = 'px-3';
-        priceContainer.innerHTML = `
-            <div class="price-inputs d-flex gap-2 mt-2">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text">€</span>
-                    <input type="number" class="form-control" id="minPrice" placeholder="Min" min="0">
-                </div>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text">€</span>
-                    <input type="number" class="form-control" id="maxPrice" placeholder="Max" min="0">
-                </div>
-            </div>
-        `;
-        
-        // Insertar después del divisor de precio
-        const priceRangeLabel = dropdownMenu.querySelector('label[for="priceRangeMin"]');
-        priceRangeLabel.parentNode.appendChild(priceContainer);
-    
-        // 3. Ordenar por precio
-        const sortContainer = document.createElement('li');
-        sortContainer.className = 'px-3';
-        sortContainer.innerHTML = `
-            <div class="btn-group btn-group-sm w-100">
-                <button class="btn btn-outline-secondary" data-sort="asc">
-                    <i class="bi bi-sort-numeric-down"></i> Menor precio
-                </button>
-                <button class="btn btn-outline-secondary" data-sort="desc">
-                    <i class="bi bi-sort-numeric-up"></i> Mayor precio
-                </button>
-            </div>
-        `;
-        dropdownMenu.appendChild(sortContainer);
-    
-        // Obtener referencias a los inputs de precio
+
+        // 2. Filtro de rango de precio
         const minInput = document.getElementById('minPrice');
         const maxInput = document.getElementById('maxPrice');
-    
-        // Función para aplicar filtros de precio
-        const aplicarFiltroPrecio = () => {
-            const min = Number(minInput.value) || 0;
-            const max = Number(maxInput.value) || Number.MAX_SAFE_INTEGER;
-            
-            this.productosFiltrados = this.productos.filter(producto => 
-                producto.precio >= min && producto.precio <= max
-            );
-            
-            this.currentPage = 1;
-            this.mostrarProductos();
+
+        const actualizarFiltroPrecio = () => {
+            this.filtroActual.precioMin = Number(minInput.value) || 0;
+            this.filtroActual.precioMax = Number(maxInput.value) || Number.MAX_SAFE_INTEGER;
+            this.aplicarTodosFiltros();
         };
-    
-        // Eventos para los inputs de precio
+
         [minInput, maxInput].forEach(input => {
-            input.addEventListener('change', () => {
-                aplicarFiltroPrecio();
-            });
+            input.addEventListener('change', actualizarFiltroPrecio);
         });
-    
-        // Eventos para ordenar por precio
+
+        // 3. Ordenamiento por precio
+        const sortContainer = document.getElementById('sortContainer');
         sortContainer.querySelectorAll('[data-sort]').forEach(button => {
             button.addEventListener('click', (e) => {
                 const sortDirection = e.target.closest('[data-sort]').dataset.sort;
-                
-                this.productosFiltrados.sort((a, b) => {
-                    return sortDirection === 'asc' 
-                        ? a.precio - b.precio 
-                        : b.precio - a.precio;
-                });
-                
-                this.currentPage = 1;
-                this.mostrarProductos();
+                this.filtroActual.ordenamiento = sortDirection;
+                this.aplicarTodosFiltros();
             });
         });
-    
-        // Aplicar filtro inicial para mostrar todos los productos
-        this.productosFiltrados = [...this.productos];
+
+        // Aplicación inicial de filtros
+        this.aplicarTodosFiltros();
+    }
+
+    aplicarTodosFiltros() {
+        // 1. Comenzar con todos los productos
+        let resultados = [...this.productos];
+
+        // 2. Aplicar filtro por tipo
+        if (this.filtroActual.tipo !== 'all') {
+            resultados = resultados.filter(producto => 
+                producto.tipo === this.filtroActual.tipo
+            );
+        }
+
+        // 3. Aplicar filtro por rango de precio
+        resultados = resultados.filter(producto => 
+            producto.precio >= this.filtroActual.precioMin && 
+            producto.precio <= this.filtroActual.precioMax
+        );
+
+        // 4. Aplicar ordenamiento
+        if (this.filtroActual.ordenamiento) {
+            resultados.sort((a, b) => {
+                return this.filtroActual.ordenamiento === 'asc'
+                    ? a.precio - b.precio
+                    : b.precio - a.precio;
+            });
+        }
+
+        // 5. Actualizar productos filtrados y mostrar
+        this.productosFiltrados = resultados;
+        this.currentPage = 1;
         this.mostrarProductos();
     }
-    
+
+    // Método para restablecer todos los filtros
+    resetearFiltros() {
+        this.filtroActual = {
+            tipo: 'all',
+            precioMin: 0,
+            precioMax: Number.MAX_SAFE_INTEGER,
+            ordenamiento: null
+        };
+        
+        // Resetear valores en la UI
+        document.getElementById('minPrice').value = '';
+        document.getElementById('maxPrice').value = '';
+        
+        this.aplicarTodosFiltros();
+    }
     // ============================== Logica Buscador ==============================
     // Crea el elemento buscador y añade un evento input para filtrar los productos
     mostrarBuscador() {

@@ -80,19 +80,45 @@
                                 <i class="bi bi-funnel-fill"></i> Filtrar
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" data-filter="all">Todos</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="libro_Fisico">Libros Físicos</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="libro_Digital">Libros Digitales</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="ereader">Ereaders</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="funda">Fundas Ereader</a></li>
-                                <li><a class="dropdown-item" href="#" data-filter="marcapaginas">Marcapáginas</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="px-3">
-                                    <label for="priceRangeMin" class="form-label text-light">Rango de precios:</label>
-                                    <!--Logica del slice-->
+                                <li class="px-3" id="filterContainer">
+                                    <a class="dropdown-item" href="#" data-filter="all">Todos</a>
+                                    <a class="dropdown-item" href="#" data-filter="libro_Fisico">Libros Físicos</a>
+                                    <a class="dropdown-item" href="#" data-filter="libro_Digital">Libros Digitales</a>
+                                    <a class="dropdown-item" href="#" data-filter="ereader">Ereaders</a>
+                                    <a class="dropdown-item" href="#" data-filter="funda">Fundas Ereader</a>
+                                    <a class="dropdown-item" href="#" data-filter="marcapaginas">Marcapáginas</a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <!--Logica del ordenar-->
+                                <li class="px-3" id="priceRangeContainer">
+                                    <label for="priceRangeMin" class="form-label text-light">Rango de precios:</label>
+                                    <div class="price-inputs d-flex gap-2 mt-2">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">€</span>
+                                            <input type="number" class="form-control" id="minPrice" placeholder="Min" min="0">
+                                        </div>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">€</span>
+                                            <input type="number" class="form-control" id="maxPrice" placeholder="Max" min="0">
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="px-3" id="sortContainer">
+                                    <div class="btn-group btn-group-sm w-100">
+                                        <button class="btn btn-outline-secondary" data-sort="asc">
+                                            <i class="bi bi-sort-numeric-down"></i> Menor precio
+                                        </button>
+                                        <button class="btn btn-outline-secondary" data-sort="desc">
+                                            <i class="bi bi-sort-numeric-up"></i> Mayor precio
+                                        </button>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="px-3">
+                                    <button class="btn btn-outline-secondary" id="resetFilters">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Restablecer
+                                    </button>
+                                </li>
                             </ul>
                             <input type="text" class="form-control" id="searchInput" placeholder="Buscar productos...">
                         </div>
