@@ -1,10 +1,10 @@
-import { obtenerProductos, agregarNuevoProducto, obtenerCarrito } from './tienda.js';
+import { agregarNuevoProducto, listaProductos, carrito, imprimirCarrito } from './tienda.js';
 
 class Tienda 
 {
     constructor() {
         // Lista de los productos
-        this.productos = obtenerProductos();
+        this.productos = listaProductos;
         // Copia de los productos para poder filtrar
         this.productosFiltrados = [...this.productos];
         // Número de productos por página
@@ -16,7 +16,7 @@ class Tienda
         //! Como tal, obtenerCarrito() manda un puntero a la variable carrito en tienda.js
         //! Por lo que añadir o modificar this.carrito afecta a la variable carrito en tienda.js
         //! Por lo que entiendo que cumplo con el enunciado
-        this.carrito = obtenerCarrito();
+        this.carrito = carrito;
         // Número máximo de copias de un producto en el carrito
         this.maxCopias = 20;
         // Valor minimo de precio
@@ -469,7 +469,7 @@ class Tienda
             
             if (exito) {
                 mostrarMensaje('success', '¡Producto añadido correctamente!');
-                this.productos = obtenerProductos();
+                this.productos = listaProductos;
                 this.productosFiltrados = [...this.productos];
                 this.mostrarProductos();
                 // Retrasamos la limpieza del formulario para que se vea el mensaje
@@ -603,6 +603,7 @@ class Tienda
             this.carrito.get(productId).cantidad = newQuantity;
         }
 
+        imprimirCarrito();
         this.actualizarCarritoUI();
         this.actualizarContadorCarrito();
     }

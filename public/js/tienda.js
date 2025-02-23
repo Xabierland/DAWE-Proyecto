@@ -1,7 +1,7 @@
 import {Libro, Ebook, Ereader, Marcapaginas, Funda} from './productos.js';
 
 // Lista de productos base
-const listaProductos = [
+export const listaProductos = [
     // Momento de añadir toda la biblioteca de Dostoievski
     // by Xabier Gabiña
     new Libro("Los hermanos Karamazov", 15, "Fiódor Pávlovich Karamázov, un terrateniente borracho, arbitrario y corrompido, tiene cuatro hijos: Dmitri, de carácter violento; Iván, un intelectual frío y materialista; Aliosha, el hijo pequeño, pasivo y religioso; y Smerdiakov, el hijo bastardo y resentido. La novela gira en torno a las relaciones perversas que se establecen entre el padre y los hijos hasta que éste es asesinado y su presunto asesino, Dmitri, juzgado y condenado. Odio, amor, crueldad, compasión, sentimientos radicalmente contrarios y enfrentados...", "Fiódor Mijáilovich Dostoievski", 9788491050056, 1144, 'img/productos/LosHermanosKaramazov.jpg'),
@@ -43,12 +43,7 @@ const listaProductos = [
     new Funda("Funda Universal", 15, "Compatible con varios modelos", "Plastico", 'img/productos/FundaUniversal.jpg')
 ];
 
-const carrito = new Map();
-
-// === Funciones de productos ===
-export function obtenerProductos() {
-   return listaProductos;
-}
+export const carrito = new Map();
 
 // Función para añadir nuevo producto
 export function agregarNuevoProducto(tipo, datos) {
@@ -116,12 +111,7 @@ export function agregarNuevoProducto(tipo, datos) {
     return true;
 }
 
-//  === Funciones de carrito ===
-export function obtenerCarrito() {
-    return carrito;
-}
-
 // DEBUG
-//export function imprimirCarrito() {
-//    console.log(carrito);
-//}
+export function imprimirCarrito() {
+    console.log(carrito);
+}
