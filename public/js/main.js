@@ -318,6 +318,33 @@ class Tienda
     
             if (!tipo) return;
     
+            // Cambiar los placeholders de los campos principales segun el tipo de producto
+            if (tipo === 'libro_Fisico') {
+                document.getElementById('productName').placeholder = "Ej: El Señor de los Anillos";
+                document.getElementById('productPrice').placeholder = "Ej: 19.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+            else if (tipo === 'libro_Digital') {
+                document.getElementById('productName').placeholder = "Ej: Juego de Tronos";
+                document.getElementById('productPrice').placeholder = "Ej: 9.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+            else if (tipo === 'ereader') {
+                document.getElementById('productName').placeholder = "Ej: Kindle Paperwhite";
+                document.getElementById('productPrice').placeholder = "Ej: 129.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+            else if (tipo === 'funda') {
+                document.getElementById('productName').placeholder = "Ej: Funda de cuero para Kindle";
+                document.getElementById('productPrice').placeholder = "Ej: 24.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+            else if (tipo === 'marcapaginas') {
+                document.getElementById('productName').placeholder = "Ej: Marcapáginas magnético";
+                document.getElementById('productPrice').placeholder = "Ej: 3.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+
             const camposExtra = {
                 'libro_Fisico': `
                     <div class="mb-3">
@@ -370,33 +397,6 @@ class Tienda
                     </div>
                 `
             };
-    
-            // Cambiar los placeholders de los campos principales segun el tipo de producto
-            if (tipo === 'libro_Fisico') {
-                document.getElementById('productName').placeholder = "Ej: El Señor de los Anillos";
-                document.getElementById('productPrice').placeholder = "Ej: 19.99";
-                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
-            }
-            else if (tipo === 'libro_Digital') {
-                document.getElementById('productName').placeholder = "Ej: Juego de Tronos";
-                document.getElementById('productPrice').placeholder = "Ej: 9.99";
-                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
-            }
-            else if (tipo === 'ereader') {
-                document.getElementById('productName').placeholder = "Ej: Kindle Paperwhite";
-                document.getElementById('productPrice').placeholder = "Ej: 129.99";
-                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
-            }
-            else if (tipo === 'funda') {
-                document.getElementById('productName').placeholder = "Ej: Funda de cuero para Kindle";
-                document.getElementById('productPrice').placeholder = "Ej: 24.99";
-                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
-            }
-            else if (tipo === 'marcapaginas') {
-                document.getElementById('productName').placeholder = "Ej: Marcapáginas magnético";
-                document.getElementById('productPrice').placeholder = "Ej: 3.99";
-                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
-            }
 
             // Mostrar campos extra según el tipo
             if (camposExtra[tipo]) {
