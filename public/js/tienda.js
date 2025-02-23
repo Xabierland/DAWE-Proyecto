@@ -1,7 +1,7 @@
 import {Libro, Ebook, Ereader, Marcapaginas, Funda} from './productos.js';
 
 // Lista de productos base
-const listaProductos1 = [
+const listaProductos = [
    // Libros Físicos
    new Libro("El tunel", 1, "Hay un tunel", "Ernesto Sabato", 16846984, 100, 'img/productos/ElTunel.jpg'),
    new Libro("Viento y verdad", 5, "Viaje antes que destino", "Brandon Sanderson", 3654166141, 1400, 'img/productos/VientoYVerdad.jpg'),
@@ -37,8 +37,6 @@ const listaProductos1 = [
     new Funda("Funda Kindle Paperwhite", 20, "Enfunda", "Plastico duro", 'img/productos/KindlePaperwhite.jpg'),
     new Funda("Funda Universal", 15, "Compatible con varios modelos", "Plastico", 'img/productos/FundaUniversal.jpg')
 ];
-
-const listaProductos = [];
 
 const carrito = new Map();
 
