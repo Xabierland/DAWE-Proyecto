@@ -13,7 +13,7 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 - [X] Menú navegador - Xabier Gabiña
 - [X] Contenido principal
   - [X] Main - Xabier Gabiña
-  - [X] Aside - Eneko Etxaniz y Ander Gutierrez
+  - [X] Aside - Eneko Etxaniz, Ander Gutierrez y Xabier Gabiña
 - [X] Footer - Xabier Gabiña
 - [X] Carrito de compra - Xabier Gabiña
 - [X] Descripcción de producto - Xabier Gabiña
@@ -38,7 +38,7 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
     - [X] Añadir al carrito - Xabier Gabiña
     - [X] Eliminar del carrito - Xabier Gabiña
     - [X] Actualizar cantidad del producto - Xabier Gabiña
-  - [X] Formulario - Eneko Etxaniz
+  - [X] Formulario - Todos
     - [X] Campos de formulario por producto - Eneko Etxaniz
     - [X] Validación de formulario - Luken Bilbao y Xabier Gabiña
     - [X] Drag and drop - Eneko Etxaniz, Ander Gutierrez y Xabier Gabiña
