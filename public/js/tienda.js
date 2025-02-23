@@ -1,11 +1,11 @@
 import {Libro, Ebook, Ereader, Marcapaginas, Funda} from './productos.js';
 
 // Lista de productos base
-const listaProductos = [
+const listaProductos1 = [
    // Libros Físicos
-   new Libro("El tunel", 1, "Hay un tunel", "Ernesto Sabato", 1, 100, 'img/productos/ElTunel.jpg'),
-   new Libro("Viento y verdad", 5, "Viaje antes que destino", "Brandon Sanderson", 3, 1400, 'img/productos/VientoYVerdad.jpg'),
-   new Libro("El nombre del viento", 20, "La historia de un músico, mago y leyenda", "Patrick Rothfuss", 5, 800, 'img/productos/ElNombreDelViento.jpg'),
+   new Libro("El tunel", 1, "Hay un tunel", "Ernesto Sabato", 16846984, 100, 'img/productos/ElTunel.jpg'),
+   new Libro("Viento y verdad", 5, "Viaje antes que destino", "Brandon Sanderson", 3654166141, 1400, 'img/productos/VientoYVerdad.jpg'),
+   new Libro("El nombre del viento", 20, "La historia de un músico, mago y leyenda", "Patrick Rothfuss", 5558675848, 800, 'img/productos/ElNombreDelViento.jpg'),
    
     // Momento de añadir toda la biblioteca de Dostoievski
     new Libro("Los hermanos Karamazov", 15, "Fiódor Pávlovich Karamázov, un terrateniente borracho, arbitrario y corrompido, tiene cuatro hijos: Dmitri, de carácter violento; Iván, un intelectual frío y materialista; Aliosha, el hijo pequeño, pasivo y religioso; y Smerdiakov, el hijo bastardo y resentido. La novela gira en torno a las relaciones perversas que se establecen entre el padre y los hijos hasta que éste es asesinado y su presunto asesino, Dmitri, juzgado y condenado. Odio, amor, crueldad, compasión, sentimientos radicalmente contrarios y enfrentados...", "Fiódor Mijáilovich Dostoievski", 9788491050056, 1144, 'img/productos/LosHermanosKaramazov.jpg'),
@@ -38,16 +38,13 @@ const listaProductos = [
     new Funda("Funda Universal", 15, "Compatible con varios modelos", "Plastico", 'img/productos/FundaUniversal.jpg')
 ];
 
+const listaProductos = [];
+
 const carrito = new Map();
 
-// Funciones de productos
+// === Funciones de productos ===
 export function obtenerProductos() {
    return listaProductos;
-}
-
-// 
-export function obtenerCarrito() {
-    return carrito;
 }
 
 // Función para añadir nuevo producto
@@ -115,3 +112,13 @@ export function agregarNuevoProducto(tipo, datos) {
 
     return true;
 }
+
+//  === Funciones de carrito ===
+export function obtenerCarrito() {
+    return carrito;
+}
+
+// DEBUG
+//export function imprimirCarrito() {
+//    console.log(carrito);
+//}

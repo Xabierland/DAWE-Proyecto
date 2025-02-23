@@ -1,6 +1,6 @@
 body {
     /*Imagen de fondo*/
-    background-image: url(../img/patroncuadros.png);
+    background-image: url(../img/fondo.png);
     /*Tamano de la imagen*/
     background-size: 10em;
     /*Hace que se quede fija la imagen al hacer scroll*/

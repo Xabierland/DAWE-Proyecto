@@ -12,6 +12,10 @@ class Tienda
         // Página por defecto
         this.currentPage = 1;
         // Variable que guarde el carrito
+        //! En el enunciado pone que los productos se añade en el carrito creado en tienda.js
+        //! Como tal, obtenerCarrito() manda un puntero a la variable carrito en tienda.js
+        //! Por lo que añadir o modificar this.carrito afecta a la variable carrito en tienda.js
+        //! Por lo que entiendo que cumplo con el enunciado
         this.carrito = obtenerCarrito();
         // Número máximo de copias de un producto en el carrito
         this.maxCopias = 20;
@@ -119,11 +123,6 @@ class Tienda
         const minInput = document.getElementById('minPrice');
         const maxInput = document.getElementById('maxPrice');
     
-        // Calcular precios mínimo y máximo del catálogo
-        const precios = this.productos.map(p => p.precio);
-        const precioMinimo = Math.min(...precios);
-        const precioMaximo = Math.max(...precios);
-    
         // Función para aplicar filtros de precio
         const aplicarFiltroPrecio = () => {
             const min = Number(minInput.value) || 0;
@@ -196,303 +195,245 @@ class Tienda
     }
 
     // ============================== Logica Formulario DE ASIDE  ==============================
-    mostrarFormulario() 
-    {
+    mostrarFormulario() {
+        // Inicializar el select de tipo
         const typeInput = document.getElementById('productType');
-        typeInput.selectedIndex = 0; //resetea valor a "Selecciona una opción"
-        typeInput.addEventListener("change", (e) => 
-        {
+        typeInput.selectedIndex = 0;
+    
+        // Limpiar el input de imagen al cargar la página
+        const productImageInput = document.getElementById("productImage");
+        if (productImageInput) {
+            productImageInput.value = '';
+        }
+    
+        // Renderizar campos adicionales al cambiar el tipo
+        typeInput.addEventListener("change", () => {
             renderizarFormulario();
-            
         });
-
-        function renderizarFormulario()
-        {
-            var val = document.getElementById('productType').value
-
-            const inputs = document.getElementById('optionalInput');
-            inputs.innerHTML = '';
-
-            switch(val) {
-                case 'libro_Fisico':
-                    inputs.innerHTML += 
-                    `
-                    
-                                <div class="mb-3">
-                                    <label for="optionalInputAutor" class="form-label">Autor:</label>
-                                    <input type="text" class="form-control" id="optionalInputAutor" placeholder="Nombre Apellido" required>
-                                </div>
-                                
     
-                                <div class="mb-3">
-                                    <label for="optionalInputIsbn" class="form-label">ISBN:</label>
-                                    <input type="text" class="form-control" id="optionalInputIsbn" placeholder="ISBN" required>
-                                </div>
+        // Configuración del drag & drop
+        const dropbox = document.getElementById("dragDropArea");
+        const dropText = document.getElementById("dropText");
+        const originalText = dropText.textContent;
     
+        // Eventos de drag & drop
+        dropbox.addEventListener("dragenter", handleDragOver);
+        dropbox.addEventListener("dragleave", handleDragOut);
+        dropbox.addEventListener("dragover", handleDragOver);
+        dropbox.addEventListener("drop", handleFileDrop);
     
-                                <div class="mb-3">
-                                    <label for="optionalInputPaginas" class="form-label">Número de páginas:</label>
-                                    <input type="number" min="1" step="0" class="form-control" id="optionalInputPaginas" min="1" placeholder=0 required>
-                                </div>
-    
-                    `;
-                    break;
-
-                case 'libro_Digital':
-                    inputs.innerHTML += 
-                    `
-                    
-                                <div class="mb-3">
-                                    <label for="optionalInputAutor" class="form-label">Autor:</label>
-                                    <input type="text" class="form-control" id="optionalInputAutor" placeholder="Nombre Apellido" required>
-                                </div>
-                                
-    
-                                <div class="mb-3">
-                                    <label for="optionalInputIsbn" class="form-label">ISBN:</label>
-                                    <input type="text" class="form-control" id="optionalInputIsbn" placeholder="ISBN" required>
-                                </div>
-    
-    
-                                <div class="mb-3">
-                                    <label for="optionalInputPaginas" class="form-label">Número de páginas:</label>
-                                    <input type="number" min="1" step="0" class="form-control" id="optionalInputPaginas" min="1" placeholder=0 required>
-                                </div>
-    
-    
-                                <div class="mb-3">
-                                    <label for="optionalInputTamano" class="form-label">Tamaño (kb):</label>
-                                    <input type="number" min="0" step="0.01" class="form-control" id="optionalInputPaginas" min="0" placeholder="0" required>
-                                </div>
-        
-
-    
-                    `;
-                    break;
-
-                case 'ereader':
-                    inputs.innerHTML += 
-                    `
-                                <div class="mb-3">
-                                    <label for="optionalInputResolucion" class="form-label">Resolución:</label>
-                                    <input type="number" min="1" step="0" class="form-control" id="optionalInputResolucion" placeholder="Ingrese la resolucion en ppp" required>
-                                </div>
-    
-                    `;
-                    break;
-
-                case 'funda':
-                    inputs.innerHTML += 
-                    `
-                                <div class="mb-3">
-                                    <label for="optionalInputMaterial" class="form-label">Material:</label>
-                                    <input type="text" class="form-control" id="optionalInputMaterial" placeholder="Ingrese el material" required>
-                                </div>     
-                    `;
-                    break;
-
-                case 'marcapaginas':
-                    inputs.innerHTML += 
-                    `
-                                <div class="mb-3">
-                                    <label for="optionalInputColor" class="form-label">Color:</label>
-                                    <input type="text" class="form-control" id="optionalInputColor" placeholder="Ingrese el color" required>
-                                </div>
-                    `;
-                    break;
-                }
-        }
-        
-
-        var productImageInput = document.getElementById("productImage");
-        var dropbox = document.getElementById("dragDropArea");
-        var dropText = document.getElementById("dropText");
-        var originalText = dropText.textContent;
-        
-        dropbox.addEventListener("dragenter", dragOver);
-        dropbox.addEventListener("dragleave", dragOut);
-        dropbox.addEventListener("dragover", dragOver);
-        dropbox.addEventListener("drop", gestorFicheros);
-        
-        function dragOver(evt) {
+        function handleDragOver(evt) {
             evt.stopPropagation();
             evt.preventDefault();
-            console.log("Over");
-            dropbox.classList.add("hover"); // Se aplica al contenedor principal
+            dropbox.classList.add("hover");
         }
-        
-        function dragOut(evt) {
+    
+        function handleDragOut(evt) {
             evt.stopPropagation();
             evt.preventDefault();
-            console.log("Out");
-            dropbox.classList.remove("hover"); // Se quita la clase del contenedor principal
+            dropbox.classList.remove("hover");
         }
-
-        function gestorFicheros(evt) {
+    
+        function handleFileDrop(evt) {
             evt.stopPropagation();
             evt.preventDefault();
-        
-            // Elimina la clase "hover" al soltar el archivo
-            evt.target.classList.remove("hover");
-        
-            // Obtiene el archivo soltado
+            dropbox.classList.remove("hover");
+    
             const files = evt.dataTransfer.files;
-
-            if (files.length > 1 )
-            {
-                errorFormulario('Solo se puede añadir un fichero');
-                //alert("Por favor, suelta solo una imagen.");
+    
+            // Validar cantidad de archivos
+            if (files.length > 1) {
+                mostrarMensaje('error', 'Solo se puede añadir un fichero');
                 return;
             }
-
-            if (!files[0].type.startsWith("image/"))
-            {
-                errorFormulario('Solo se pueden añadir imagenes');
-                
-                //alert("Por favor, suelta solo archivos de imagen.");
+    
+            // Validar tipo de archivo
+            const file = files[0];
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                mostrarMensaje('error', 'Solo se aceptan archivos JPG/JPEG o PNG');
                 return;
             }
-
-            
-            if (files.length < 0)
-            {
-                errorFormulario('Esto no debería pasar');
-                //alert("Por favor, suelta solo archivos de imagen.");
-                return;
-            }
-                
-                
-            // Cambia el texto a "¡Elemento añadido!"
-            dropText.textContent = "¡Elemento añadido!";
-
-            // Restaura el texto original después de 2 segundos
-            setTimeout(() => 
-            {
-                dropText.textContent = originalText;
-            }, 2000);
-                
-            // Asigna el archivo al input file
+    
+            // Asignar el nuevo archivo al input file
             const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(files[0]);
+            dataTransfer.items.add(file);
             productImageInput.files = dataTransfer.files;
-
-            // Muestra el nombre del archivo en la consola
-            console.log("Archivo asignado al input:", files[0].name);
+            
+            dropText.textContent = "¡Elemento añadido!";
+            setTimeout(() => {
+                dropText.textContent = originalText;
+                dropbox.classList.remove("hover");
+            }, 2000);
         }
-
-
-        function errorFormulario(error)
-        {
+    
+        function mostrarMensaje(tipo, mensaje) {
             const form = document.getElementById("productForm");
             if (!form) return;
     
-            const errorMessage = document.createElement('div');
-            errorMessage.className = 'alert alert-danger mt-2 mb-0';
-            errorMessage.textContent = error;
+            const mensajeElement = document.createElement('div');
+            mensajeElement.className = `alert alert-${tipo === 'error' ? 'danger' : 'success'} mt-2 mb-0`;
+            mensajeElement.textContent = mensaje;
     
-            form.appendChild(errorMessage);
+            form.appendChild(mensajeElement);
     
             setTimeout(() => {
-                errorMessage.remove();
+                mensajeElement.remove();
             }, 1500);
         }
-
-        function limiarFormulario()
-        {
-            document.getElementById("productForm").reset();
-            renderizarFormulario();
-            return;
-        }
-        
-        
-        //checkear egela-drive
     
-
-        // Zona de recoger los datos del formulario para crear el objeto
-        const searchInput = document.getElementById('productForm');
-        searchInput.addEventListener('submit', async (e) => {
-            e.preventDefault(); 
-
-
-
-        
-        // Se guarda el tipo de archivo para saber que datos recoger
-        var val = document.getElementById('productType').value;
-
-        const datos = 
-        {
-            nombre: document.getElementById('productName').value,
-            precio: document.getElementById('productPrice').value,
-            descripcion: document.getElementById('productDescription').value,
-            // document.getElementById('productImage').value
-        };
-
-        var inputFile = document.getElementById('productImage')
-        console.log(inputFile.files.length)
-        if(inputFile.files.length > 0)
-            {
-                datos.imagen = URL.createObjectURL(document.getElementById('productImage').files[0])
-                console.log("Hay imagen")
-            } else {
-                datos.imagen = 'img/default.png'
-                console.log("No hay imagen")
-                
+        function limpiarFormulario() {
+            const form = document.getElementById("productForm");
+            if (productImageInput) {
+                productImageInput.value = '';
             }
-
-        // Comprobaciones iniciales
-        if(datos.precio<0)
-            { 
-                document.getElementById('productPrice').value = "";
-                alert("Introduzca un precio válido.");
-                return;
-            }
-
-            
-        switch(val) 
-        {
-            case 'libro_Fisico':
-            
-                datos.autor = document.getElementById('optionalInputAutor').value;
-                datos.isbn = document.getElementById('optionalInputIsbn').value;
-                datos.paginas = document.getElementById('optionalInputPaginas').value;
-                
-                break;
-
-            case 'libro_Digital':
-                datos.autor = document.getElementById('optionalInputAutor').value;
-                datos.isbn = document.getElementById('optionalInputIsbn').value;
-                datos.paginas = document.getElementById('optionalInputPaginas').value;
-                datos.tamano = document.getElementById('optionalInputTamano').value;
-                break;
-
-            case 'ereader':
-                datos.resolucion = document.getElementById('optionalInputResolucion').value; 
-                break;
-
-            case 'funda':
-                datos.resolucion = document.getElementById('optionalInputMaterial').value; 
-                break;
-
-            case 'marcapaginas':
-                datos.resolucion = document.getElementById('optionalInputColor').value;
-                break;
-
-            default:
-                alert("Default");
-                break;
+            form.reset();
+            renderizarFormulario();
         }
-
-     agregarNuevoProducto(val, datos); 
-
-     this.productos = obtenerProductos();
-     this.filtrarProductos();
-     this.mostrarProductos();
-        
-     limiarFormulario();
-
-     return;
-
-    });
+    
+        function renderizarFormulario() {
+            const tipo = document.getElementById('productType').value;
+            const contenedorInputs = document.getElementById('optionalInput');
+            contenedorInputs.innerHTML = '';
+    
+            if (!tipo) return;
+    
+            const camposExtra = {
+                'libro_Fisico': `
+                    <div class="mb-3">
+                        <label for="optionalInputAutor" class="form-label">Autor:</label>
+                        <input type="text" class="form-control" id="optionalInputAutor" placeholder="Ej: J.R.R. Tolkien" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="optionalInputIsbn" class="form-label">ISBN:</label>
+                        <input type="number" class="form-control" id="optionalInputIsbn" placeholder="Ej: 9788445077566" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="optionalInputPaginas" class="form-label">Número de páginas:</label>
+                        <input type="number" min="1" class="form-control" id="optionalInputPaginas" placeholder="Ej: 392" required>
+                    </div>
+                `,
+                'libro_Digital': `
+                    <div class="mb-3">
+                        <label for="optionalInputAutor" class="form-label">Autor:</label>
+                        <input type="text" class="form-control" id="optionalInputAutor" placeholder="Ej: George R.R. Martin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="optionalInputIsbn" class="form-label">ISBN:</label>
+                        <input type="number" class="form-control" id="optionalInputIsbn" placeholder="Ej: 9788401032141" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="optionalInputPaginas" class="form-label">Número de páginas:</label>
+                        <input type="number" min="1" class="form-control" id="optionalInputPaginas" placeholder="Ej: 842" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="optionalInputTamano" class="form-label">Tamaño (KiB):</label>
+                        <input type="number" min="0" class="form-control" id="optionalInputTamano" placeholder="Ej: 2048" required>
+                    </div>
+                `,
+                'ereader': `
+                    <div class="mb-3">
+                        <label for="optionalInputResolucion" class="form-label">Resolución:</label>
+                        <input type="number" min="1" class="form-control" id="optionalInputResolucion" placeholder="Ej: 300 PPP" required>
+                    </div>
+                `,
+                'funda': `
+                    <div class="mb-3">
+                        <label for="optionalInputMaterial" class="form-label">Material:</label>
+                        <input type="text" class="form-control" id="optionalInputMaterial" placeholder="Ej: Cuero, Silicona, Tela" required>
+                    </div>
+                `,
+                'marcapaginas': `
+                    <div class="mb-3">
+                        <label for="optionalInputColor" class="form-label">Color:</label>
+                        <input type="text" class="form-control" id="optionalInputColor" placeholder="Ej: Rojo, Azul marino, Verde esmeralda" required>
+                    </div>
+                `
+            };
+    
+            if (camposExtra[tipo]) {
+                contenedorInputs.innerHTML = camposExtra[tipo];
+            }
+        }
+    
+        // Mejorar los placeholders de los campos principales
+        document.getElementById('productName').placeholder = "Ej: El Señor de los Anillos";
+        document.getElementById('productPrice').placeholder = "Ej: 19.99";
+        document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+    
+        // Manejar envío del formulario
+        const formulario = document.getElementById('productForm');
+        formulario.addEventListener('submit', (e) => {
+            e.preventDefault();
+    
+            const tipo = document.getElementById('productType').value;
+            if (!tipo) {
+                mostrarMensaje('error', 'Debe seleccionar un tipo de producto');
+                return false;
+            }
+    
+            const datos = {
+                nombre: document.getElementById('productName').value,
+                precio: parseFloat(document.getElementById('productPrice').value),
+                descripcion: document.getElementById('productDescription').value || ''
+            };
+    
+            // Validar precio
+            if (datos.precio < 0) {
+                mostrarMensaje('error', 'El precio no puede ser negativo');
+                return setTimeout(() => {
+                    document.getElementById('productPrice').value = '';
+                }, 1500);
+            }
+    
+            // Obtener imagen
+            const inputFile = document.getElementById('productImage');
+            datos.imagen = inputFile.files.length > 0 
+                ? URL.createObjectURL(inputFile.files[0])
+                : 'img/default.png';
+    
+            // Obtener campos específicos según el tipo
+            switch (tipo) {
+                case 'libro_Fisico':
+                case 'libro_Digital':
+                    datos.autor = document.getElementById('optionalInputAutor').value;
+                    datos.isbn = document.getElementById('optionalInputIsbn').value;
+                    datos.paginas = parseInt(document.getElementById('optionalInputPaginas').value);
+                    if (tipo === 'libro_Digital') {
+                        datos.tamano = parseInt(document.getElementById('optionalInputTamano').value);
+                    }
+                    break;
+                case 'ereader':
+                    datos.resolucion = parseInt(document.getElementById('optionalInputResolucion').value);
+                    break;
+                case 'funda':
+                    datos.material = document.getElementById('optionalInputMaterial').value;
+                    break;
+                case 'marcapaginas':
+                    datos.color = document.getElementById('optionalInputColor').value;
+                    break;
+            }
+    
+            // Crear nuevo producto
+            const exito = agregarNuevoProducto(tipo, datos);
+            
+            if (exito) {
+                mostrarMensaje('success', '¡Producto añadido correctamente!');
+                this.productos = obtenerProductos();
+                this.productosFiltrados = [...this.productos];
+                this.mostrarProductos();
+                // Retrasamos la limpieza del formulario para que se vea el mensaje
+                return setTimeout(() => {
+                    limpiarFormulario();
+                }, 1500);
+            } 
+            
+            mostrarMensaje('error', 'Error al añadir el producto');
+            return;
+        });
+    
+        // Limpiar el formulario al inicio
+        limpiarFormulario();
     }
 
     // ============================== Logica Productos ==============================
@@ -544,6 +485,7 @@ class Tienda
     }
     
     // ============================== Logica Carrito ==============================
+    // Mostrar el carrito y añadir eventos
     mostrarCarrito() {
         // Evento para botones de añadir al carrito
         document.addEventListener('click', (e) => {
@@ -568,23 +510,26 @@ class Tienda
     agregarAlCarrito(productId) {
         const producto = this.productos.find(p => p.id === productId);
         if (!producto) return;
-
+    
         if (this.carrito.has(productId)) {
-            const currentQuantity = this.carrito.get(productId).cantidad;
-            if (currentQuantity < this.maxCopias) {
-                this.carrito.get(productId).cantidad++;
+            const item = this.carrito.get(productId);
+            if (item.cantidad < this.maxCopias) {
+                item.cantidad++;
                 this.mostrarMensajeExito(productId);
             } else {
                 this.mostrarMensajeError(productId);
             }
         } else {
+            // Dice incluir unicamente estos valores y por eso he cambiado el producto: producto por producto.nombre, producto.precio, producto.imagen
             this.carrito.set(productId, {
-                producto: producto,
+                nombre: producto.nombre,
+                precio: producto.precio,
+                imagen: producto.imagen,
                 cantidad: 1
             });
             this.mostrarMensajeExito(productId);
         }
-
+    
         this.actualizarCarritoUI();
         this.actualizarContadorCarrito();
     }
@@ -614,24 +559,24 @@ class Tienda
         const cartItems = document.getElementById('cartItems');
         const cartTotal = document.getElementById('cartTotal');
         let total = 0;
-
+    
         cartItems.innerHTML = '';
-
+    
         this.carrito.forEach((item, productId) => {
-            const subtotal = item.producto.precio * item.cantidad;
+            const subtotal = item.precio * item.cantidad; // Cambiado a item.precio
             total += subtotal;
-
+    
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item mb-3 border-bottom pb-3';
             itemElement.innerHTML = `
                 <div class="d-flex align-items-center">
-                    <img src="${item.producto.imagen}" 
-                         alt="${item.producto.nombre}" 
+                    <img src="${item.imagen}" // Cambiado a item.imagen
+                         alt="${item.nombre}" // Cambiado a item.nombre
                          class="cart-item-image me-3" 
                          style="width: 100px; height: 100px; object-fit: cover;">
                     <div class="cart-item-details flex-grow-1">
-                        <h6 class="mb-1">${item.producto.nombre}</h6>
-                        <p class="mb-1">Precio: ${item.producto.precio}€</p>
+                        <h6 class="mb-1">${item.nombre}</h6> <!-- Cambiado a item.nombre -->
+                        <p class="mb-1">Precio: ${item.precio}€</p> <!-- Cambiado a item.precio -->
                         <div class="d-flex align-items-center mb-1">
                             <label class="me-2">Cantidad:</label>
                             <input type="number" 
@@ -647,16 +592,16 @@ class Tienda
                     <button class="btn btn-danger btn-sm remove-item" data-product-id="${productId}" title="Eliminar producto">x</button>
                 </div>
             `;
-            // Evento que llama a actualizarCantidad poniendo la cantidad a 0 para eliminar el producto
+            
+            // Resto del código permanece igual...
             const removeButton = itemElement.querySelector('.remove-item');
             removeButton.addEventListener('click', () => {
                 this.actualizarCantidad(productId, 0);
             });
-
-            // Añadir al DOM
+    
             cartItems.appendChild(itemElement);
         });
-        // Actualizar el total
+        
         cartTotal.textContent = total.toFixed(2);
     }
 
@@ -688,6 +633,7 @@ class Tienda
         
     } 
 
+    // Mostrar mensaje de error al añadir al carrito
     mostrarMensajeError(productId) {
         const button = document.querySelector(`.card button[data-product-id="${productId}"]`);
         if (!button) return;
@@ -858,22 +804,17 @@ class Tienda
     }
 
    // ============================== Utilidades ==============================
-    mostrarToast(productId) {
-        const toast = document.querySelector(`[data-product-id="${productId}"] .toast`);
-        const bsToast = new bootstrap.Toast(toast, { delay: 2000 });
-        bsToast.show();
-    }
-
     getExtraField(producto) {
         if (producto.isbn) return `ISBN: ${producto.isbn}`;
-        if (producto.tamano) return `Tamaño: ${producto.tamano}`;
-        if (producto.resolucion) return `Resolución: ${producto.resolucion}`;
+        if (producto.tamano) return `Tamaño: ${producto.tamano}KiB`;
+        if (producto.resolucion) return `Resolución: ${producto.resolucion}ppp`;
         if (producto.material) return `Material: ${producto.material}`;
         if (producto.color) return `Color: ${producto.color}`;
         return '';
     }
 }
 
+// Esperar a que el DOM esté cargado
 document.addEventListener('DOMContentLoaded', () => {
     new Tienda();
 });
