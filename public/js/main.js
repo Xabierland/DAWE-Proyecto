@@ -199,72 +199,92 @@ class Tienda
         // Inicializar el select de tipo
         const typeInput = document.getElementById('productType');
         typeInput.selectedIndex = 0;
-    
-        // Limpiar el input de imagen al cargar la página
+        
+        // Agregar evento para detectar cambios en el tipo
+        typeInput.addEventListener('change', renderizarFormulario);
+
+        // Obtener referencias a elementos
         const productImageInput = document.getElementById("productImage");
-        if (productImageInput) {
-            productImageInput.value = '';
-        }
-    
-        // Renderizar campos adicionales al cambiar el tipo
-        typeInput.addEventListener("change", () => {
-            renderizarFormulario();
-        });
-    
-        // Configuración del drag & drop
         const dropbox = document.getElementById("dragDropArea");
         const dropText = document.getElementById("dropText");
         const originalText = dropText.textContent;
-    
-        // Eventos de drag & drop
+
+        // Configurar validaciones del input
+        if (productImageInput) {
+            productImageInput.accept = 'image/jpeg,image/jpg,image/png';
+            
+            productImageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    if (!validarArchivo(file)) {
+                        e.target.value = '';  // Limpiar el input si no es válido
+                        return;
+                    }
+                    
+                    dropText.textContent = "¡Elemento añadido!";
+                    setTimeout(() => {
+                        dropText.textContent = originalText;
+                        dropbox.classList.remove("hover");
+                    }, 2000);
+                }
+            });
+        }
+
+        // Configuración del drag & drop
         dropbox.addEventListener("dragenter", handleDragOver);
         dropbox.addEventListener("dragleave", handleDragOut);
         dropbox.addEventListener("dragover", handleDragOver);
         dropbox.addEventListener("drop", handleFileDrop);
-    
+
+        function validarArchivo(file) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            
+            if (!validTypes.includes(file.type)) {
+                mostrarMensaje('error', 'Solo se aceptan archivos JPG/JPEG o PNG');
+                return false;
+            }
+            
+            return true;
+        }
+
         function handleDragOver(evt) {
             evt.stopPropagation();
             evt.preventDefault();
             dropbox.classList.add("hover");
         }
-    
+
         function handleDragOut(evt) {
             evt.stopPropagation();
             evt.preventDefault();
             dropbox.classList.remove("hover");
         }
-    
+
         function handleFileDrop(evt) {
             evt.stopPropagation();
             evt.preventDefault();
             dropbox.classList.remove("hover");
-    
+
             const files = evt.dataTransfer.files;
-    
+
             // Validar cantidad de archivos
             if (files.length > 1) {
                 mostrarMensaje('error', 'Solo se puede añadir un fichero');
                 return;
             }
-    
-            // Validar tipo de archivo
+
             const file = files[0];
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-            if (!validTypes.includes(file.type)) {
-                mostrarMensaje('error', 'Solo se aceptan archivos JPG/JPEG o PNG');
+            if (!validarArchivo(file)) {
                 return;
             }
-    
-            // Asignar el nuevo archivo al input file
+
+            // Asignar el archivo al input y disparar el evento change
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             productImageInput.files = dataTransfer.files;
             
-            dropText.textContent = "¡Elemento añadido!";
-            setTimeout(() => {
-                dropText.textContent = originalText;
-                dropbox.classList.remove("hover");
-            }, 2000);
+            // Disparar el evento change manualmente para que se ejecuten las validaciones del input
+            const changeEvent = new Event('change', { bubbles: true });
+            productImageInput.dispatchEvent(changeEvent);
         }
     
         function mostrarMensaje(tipo, mensaje) {
@@ -351,15 +371,38 @@ class Tienda
                 `
             };
     
+            // Cambiar los placeholders de los campos principales segun el tipo de producto
+            if (tipo === 'libro_Fisico') {
+                document.getElementById('productName').placeholder = "Ej: El Señor de los Anillos";
+                document.getElementById('productPrice').placeholder = "Ej: 19.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+            else if (tipo === 'libro_Digital') {
+                document.getElementById('productName').placeholder = "Ej: Juego de Tronos";
+                document.getElementById('productPrice').placeholder = "Ej: 9.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+            else if (tipo === 'ereader') {
+                document.getElementById('productName').placeholder = "Ej: Kindle Paperwhite";
+                document.getElementById('productPrice').placeholder = "Ej: 129.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+            else if (tipo === 'funda') {
+                document.getElementById('productName').placeholder = "Ej: Funda de cuero para Kindle";
+                document.getElementById('productPrice').placeholder = "Ej: 24.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+            else if (tipo === 'marcapaginas') {
+                document.getElementById('productName').placeholder = "Ej: Marcapáginas magnético";
+                document.getElementById('productPrice').placeholder = "Ej: 3.99";
+                document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
+            }
+
+            // Mostrar campos extra según el tipo
             if (camposExtra[tipo]) {
                 contenedorInputs.innerHTML = camposExtra[tipo];
             }
         }
-    
-        // Mejorar los placeholders de los campos principales
-        document.getElementById('productName').placeholder = "Ej: El Señor de los Anillos";
-        document.getElementById('productPrice').placeholder = "Ej: 19.99";
-        document.getElementById('productDescription').placeholder = "Describe el producto detalladamente...";
     
         // Manejar envío del formulario
         const formulario = document.getElementById('productForm');
