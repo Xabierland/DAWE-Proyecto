@@ -1,3 +1,7 @@
+html {
+    height: 100%;
+}
+
 body {
     /*Imagen de fondo*/
     background-image: url(../img/fondo.png);
@@ -9,15 +13,36 @@ body {
     height: 100%;
 }
 
-html {
-    height: 100%;
-    padding: 0;
-    margin: 0;
+ul {
+    --bs-pagination-color: #FFFFFF !important;
+    --bs-pagination-hover-color: #f8dd6e !important;
+    --bs-pagination-active-color: #000000 !important;
+    --bs-pagination-active-bg: #F6CA1B !important;
+    --bs-pagination-active-border-color: #FFFFFF !important;
+    --bs-pagination-focus-color: #f8dd6e !important;
+    --bs-pagination-focus-border-color: #f8dd6e !important;
 }
 
 footer {
     margin-bottom: 0%;
     /*position: relative !important; /*puede ponerse para desfijarlo del borde inferior*/
+}
+
+.contenedor {
+    /*El div ya ocupa el 90& del ancho*/
+    width: 90%;
+    /*Para que el div se centre en la pantalla*/
+    margin: 0 auto;
+    /*margenes interiores*/
+    padding: 2%;
+    /*Para que el div este pegado a los bordes superiores e inferiores*/
+    display: flex;
+    /*Para que el contenido se muestre de arriba a abajo*/
+    flex-direction: column;
+    /*Para el color de fondo*/
+    background-color: rgba(33, 37, 41, 0.95);
+    flex: 1;
+    height: 100%;
 }
 
 .btn {
@@ -44,35 +69,8 @@ footer {
     --bs-primary: #F6CA1B;
 }
 
-ul {
-    --bs-pagination-color: #FFFFFF !important;
-    --bs-pagination-hover-color: #f8dd6e !important;
-    --bs-pagination-active-color: #000000 !important;
-    --bs-pagination-active-bg: #F6CA1B !important;
-    --bs-pagination-active-border-color: #FFFFFF !important;
-    --bs-pagination-focus-color: #f8dd6e !important;
-    --bs-pagination-focus-border-color: #f8dd6e !important;
-}
-
 .badge {
     --bs-badge-color: #000000;
-}
-
-.contenedor {
-    /*El div ya ocupa el 90& del ancho*/
-    width: 90%;
-    /*Para que el div se centre en la pantalla*/
-    margin: 0 auto;
-    /*margenes interiores*/
-    padding: 2%;
-    /*Para que el div este pegado a los bordes superiores e inferiores*/
-    display: flex;
-    /*Para que el contenido se muestre de arriba a abajo*/
-    flex-direction: column;
-    /*Para el color de fondo*/
-    background-color: rgba(33, 37, 41, 0.95);
-    flex: 1;
-    height: 100%;
 }
 
 /*Animacion para la descripción extendida de un producto*/
