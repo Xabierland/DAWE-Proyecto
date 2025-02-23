@@ -23,6 +23,12 @@ ul {
     --bs-pagination-focus-border-color: #f8dd6e !important;
 }
 
+/* El titulo h1 del header más grande*/
+h1 {
+    font-size: 4rem;
+    font-weight: 700;
+}
+
 footer {
     margin-bottom: 0%;
     /*position: relative !important; /*puede ponerse para desfijarlo del borde inferior*/
@@ -43,8 +49,6 @@ footer {
     flex-direction: column;
     /*Para el color de fondo*/
     background-color: rgba(33, 37, 41, 0.95);
-    flex: 1;
-    height: 100%;
 }
 
 /* ==================== Estilos para el Nav ==================== */
