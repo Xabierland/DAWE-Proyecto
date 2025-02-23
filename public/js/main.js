@@ -499,12 +499,12 @@ class Tienda
                 <div class="col">
                     <div class="card h-100 position-relative">
                         <button class="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
-                                style="width: 40px; height: 40px;"
+                                style="width: 40px; height: 40px; z-index: 1;"
                                 data-product-id="${producto.id}">
                             <i class="bi bi-cart-plus-fill"></i>
                         </button>
         
-                        <div class="ratio ratio-1x1"> <!-- Contenedor con ratio fijo -->
+                        <div class="ratio ratio-1x1">
                             <img src="${producto.imagen}" 
                                  class="card-img-top producto-imagen object-fit-cover" 
                                  alt="${producto.nombre}"
