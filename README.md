@@ -2,7 +2,28 @@
 
 Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
-## Tareas
+## Miembros del grupo
+
+- Xabier Gabiña
+- Eneko Etxaniz
+- Luken Bilbao
+- Ander Gutierrez
+
+## Iniciar el proyecto
+
+### Instalar dependencias
+
+```bash
+npm install
+```
+
+### Iniciar el servidor
+
+```bash
+npm start
+```
+
+## Division de Tareas
 
 ### Requisitos de diseño
 
