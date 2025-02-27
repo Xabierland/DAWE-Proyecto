@@ -83,12 +83,12 @@ npm start
 # Iteración 2
 
 ## React
-- [ ] Cabecera - Ander
-- [ ] MenuNavegacion
+- [ ] Cabecera - Eneko
+- [ ] MenuNavegacion - Ander
 - [ ] BuscadorProductos - Luken
 - [ ] EscaparateProductos
   - [ ] Paginacion
-  - [ ] DetallesProducto - Ander
+  - [ ] DetallesProducto
 - [ ] FormularioNuevosProductos +Drag&Drop - Ander
 - [ ] Pie - Xabier
 - [ ] Carrito 
