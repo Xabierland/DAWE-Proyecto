@@ -78,3 +78,30 @@ npm start
   - [X] Filtrar por tipo de producto - Xabier Gabiña
   - [X] Filtrar por rango de precios - Xabier Gabiña
   - [X] Ordenar por précio mínimo y máximo - Xabier Gabiña
+
+
+# Iteración 2
+
+## React
+- [ ] Cabecera - Ander
+- [ ] MenuNavegacion
+- [ ] BuscadorProductos - Luken
+- [ ] EscaparateProductos
+  - [ ] Paginacion
+  - [ ] DetallesProducto - Ander
+- [ ] FormularioNuevosProductos +Drag&Drop - Ander
+- [ ] Pie - Xabier
+- [ ] Carrito 
+
+## Carrito almacenado en localStorage
+- [ ] GuardarEnCarrito - Eneko
+- [ ] Borra un producto por su ID del localStorage - Eneko
+- [ ] CargarCarrito - Eneko
+
+## Offline
+- [ ] Formulario gris - Luken
+- [ ] Aviso rojo - Luken
+
+## Otros
+- [ ] Constantes : DIVISA y MAX_COPIAS
+
