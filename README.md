@@ -30,15 +30,15 @@ npm start
 ## Division de Tareas
 
 ### React
-- [ ] Cabecera - Eneko
+- [ ] Cabecera - Xabier
 - [ ] MenuNavegacion - Ander
 - [ ] BuscadorProductos - Luken
-- [ ] EscaparateProductos
+- [ ] EscaparateProductos - Xabier
   - [ ] Paginacion
   - [ ] DetallesProducto
 - [ ] FormularioNuevosProductos +Drag&Drop - Ander
 - [ ] Pie - Xabier
-- [ ] Carrito 
+- [ ] Carrito - Eneko
 
 ### Carrito almacenado en localStorage
 - [ ] GuardarEnCarrito - Eneko
