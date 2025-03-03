@@ -50,5 +50,5 @@ npm start
 - [ ] Aviso rojo - Luken
 
 ### Otros
-- [ ] Constantes : DIVISA y MAX_COPIAS
+- [ ] Constantes : DIVISA y MAX_COPIAS - Xabier
 

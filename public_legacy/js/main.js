@@ -39,6 +39,10 @@ class Tienda
         this.mostrarCarrito();
         // Inicializamos la lista de productos
         this.mostrarProductos();
+
+
+        // Se carga los items desde el storage
+        this.cargarCarritoDesdeStorage();
     }
 
     // ============================== Logica Filtro ==============================
@@ -558,12 +562,13 @@ class Tienda
     agregarAlCarrito(productId) {
         const producto = this.productos.find(p => p.id === productId);
         if (!producto) return;
-    
         if (this.carrito.has(productId)) {
             const item = this.carrito.get(productId);
             if (item.cantidad < this.maxCopias) {
                 item.cantidad++;
                 this.mostrarMensajeExito(productId);
+                // TODO: Pasar nombre a id
+                this.actualizarCantidadCarritoStorage(item.nombre, item.cantidad);
             } else {
                 this.mostrarMensajeError(productId);
             }
@@ -576,6 +581,8 @@ class Tienda
                 cantidad: 1
             });
             this.mostrarMensajeExito(productId);
+            // TODO: Pasar nombre a id
+            this.actualizarCantidadCarritoStorage(producto.nombre, 1);
         }
     
         this.actualizarCarritoUI();
@@ -586,16 +593,29 @@ class Tienda
     actualizarCantidad(productId, newQuantity) {
         if (!this.carrito.has(productId)) return;
 
-        if (newQuantity <= 0) {
+        if (newQuantity <= 0) 
+        {
+            // Se quita el elemento del storage
+            //TODO: Usar id en vez de nombre
+            const item = this.carrito.get(productId);
+            this.actualizarCantidadCarritoStorage(item.nombre, 0);
+
+
             this.carrito.delete(productId);
-        } else if (newQuantity > this.maxCopias) {
+        } 
+        else if (newQuantity > this.maxCopias) 
+        {
             this.mostrarMensajeMaximoCopias(productId);
             const input = document.querySelector(`input[data-product-id="${productId}"]`);
             // Restaurar la cantidad anterior
             if (input) input.value = this.carrito.get(productId).cantidad;
             return;
-        } else {
+        } 
+        else 
+        {
             this.carrito.get(productId).cantidad = newQuantity;
+            //TODO: Usar id en vez de nombre
+            this.actualizarCantidadCarritoStorage(this.carrito.get(productId).nombre, newQuantity);
         }
 
         imprimirCarrito();
@@ -714,6 +734,99 @@ class Tienda
             errorMessage.remove();
         }, 1500);
     }
+
+    // ================================  LocalStorage  Carrito ==================================
+
+    cargarCarritoDesdeStorage()
+    {
+        // localStorage guarda los elementos como string, asi que se se guarda la lista como json
+        var productosEnString = localStorage.getItem("productos");
+        console.log(productosEnString)
+        var productosGuardados = JSON.parse(productosEnString);
+        if(!productosGuardados || productosGuardados.length == 0)
+        {
+            return;
+        }
+        productosGuardados.forEach(idProducto => 
+            {
+                if(idProducto)
+                {
+                    var cantidadProducto = localStorage.getItem(idProducto);
+                    if(cantidadProducto && parseInt(cantidadProducto)>0)
+                    {
+                        cantidadProducto = parseInt(cantidadProducto);
+                        // TODO: Usar id en vez de nombre
+                        var producto = this.productos.find(p => p.nombre === idProducto);
+                        var idAux = producto.id;
+
+                        this.agregarAlCarrito(idAux);
+                        this.actualizarCantidad(idAux, cantidadProducto);
+                    }
+                }
+            });
+    }
+
+
+    // TODO : De momento se usa el nombre por que el id cambia al reiniciar la pagina
+    actualizarCantidadCarritoStorage(idProducto, cantidad)
+    {
+        // Obtenemos la lista del storage
+        var productosGuardados = JSON.parse(localStorage.getItem("productos"));
+
+        if(!productosGuardados)
+        {
+            console.log("Todavia no hay lista en storage");
+            // __-- Todavia no hay nada guardado --__
+            //       .    *    (º-   *     ·
+            //      * _ ·   .  (/)_    ·     *
+            //      ~~~~~~~~[ = = = ]~~~~~~~~
+
+             // Crear la lista
+            productosGuardados = [idProducto]
+           
+            localStorage.setItem("productos", JSON.stringify(productosGuardados))
+
+            // Y añadir cantidad
+            localStorage.setItem(idProducto, cantidad);
+
+            return;
+        } 
+
+        if(productosGuardados.includes(idProducto)) // Ya estaba guardado
+        {
+            // Borrar el producto
+            if (cantidad <= 0)
+            {
+                console.log("Borrar item de storage");
+                // Borrar de la lista
+                productosGuardados.splice(productosGuardados.indexOf(idProducto), 1);
+                localStorage.setItem("productos", JSON.stringify(productosGuardados))
+
+                // Borrar la cantidad
+                localStorage.removeItem(idProducto);
+
+                return;
+            }
+
+            // Actualizar cantidad
+            console.log("Actualizar cantidad en storage");
+            localStorage.setItem(idProducto, cantidad);
+            return;
+                
+        }
+
+        // Añadir producto nuevo a la lista
+        console.log("Nuevo producto");
+        productosGuardados.push(idProducto);
+        localStorage.setItem("productos", JSON.stringify(productosGuardados))
+
+        // Y añadir cantidad
+        localStorage.setItem(idProducto, cantidad);
+
+        return;
+
+    }
+
     // ============================== Logica Descripción extendida ==============================
     mostrarDetallesProducto(producto) {
         // Eliminar modal anterior si existe
