@@ -30,6 +30,7 @@ npm start
 ## Division de Tareas
 
 ### React
+
 - [ ] Cabecera - Xabier
 - [ ] MenuNavegacion - Ander
 - [ ] BuscadorProductos - Luken
@@ -41,14 +42,16 @@ npm start
 - [ ] Carrito - Eneko
 
 ### Carrito almacenado en localStorage
+
 - [ ] GuardarEnCarrito - Eneko
 - [ ] Borra un producto por su ID del localStorage - Eneko
 - [ ] CargarCarrito - Eneko
 
 ### Offline
+
 - [ ] Formulario gris - Luken
 - [ ] Aviso rojo - Luken
 
 ### Otros
-- [ ] Constantes : DIVISA y MAX_COPIAS - Xabier
 
+- [ ] Constantes : DIVISA y MAX_COPIAS - Xabier
