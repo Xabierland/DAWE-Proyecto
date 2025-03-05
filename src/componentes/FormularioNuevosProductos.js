@@ -404,6 +404,7 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
                                     fontSize: 'inherit',
                                     fontWeight: 'inherit'
                                 }}
+                                // Busca cualquier prop como ésta:
                                 children={
                                     <div>
                                         <i className="bi bi-cloud-upload mb-2"></i>
