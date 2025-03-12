@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileUploader } from "react-drag-drop-files";
-import { Libro, Ebook, Ereader, Funda, Marcapaginas } from '../tienda/productos';
+import { DIVISA, MAX_COPIAS } from '../tienda/tienda';
 
 const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
     const [formData, setFormData] = useState({
@@ -62,66 +62,34 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
             imagen: formData.imagen || '/img/default.png'
         };
         
-        // Crear producto según el tipo
-        let nuevoProducto;
-        
+        // Añadir campos específicos según el tipo
         switch (formData.tipo) {
             case 'libro_Fisico':
-                nuevoProducto = new Libro(
-                    datos.nombre,
-                    datos.precio,
-                    datos.descripcion,
-                    formData.autor,
-                    formData.isbn,
-                    parseInt(formData.paginas),
-                    datos.imagen
-                );
+                datos.autor = formData.autor;
+                datos.isbn = formData.isbn;
+                datos.paginas = parseInt(formData.paginas);
                 break;
             case 'libro_Digital':
-                nuevoProducto = new Ebook(
-                    datos.nombre,
-                    datos.precio,
-                    datos.descripcion,
-                    formData.autor,
-                    formData.isbn,
-                    parseInt(formData.paginas),
-                    parseInt(formData.tamano),
-                    datos.imagen
-                );
+                datos.autor = formData.autor;
+                datos.isbn = formData.isbn;
+                datos.paginas = parseInt(formData.paginas);
+                datos.tamano = parseInt(formData.tamano);
                 break;
             case 'ereader':
-                nuevoProducto = new Ereader(
-                    datos.nombre,
-                    datos.precio,
-                    datos.descripcion,
-                    parseInt(formData.resolucion),
-                    datos.imagen
-                );
+                datos.resolucion = parseInt(formData.resolucion);
                 break;
             case 'funda':
-                nuevoProducto = new Funda(
-                    datos.nombre,
-                    datos.precio,
-                    datos.descripcion,
-                    formData.material,
-                    datos.imagen
-                );
+                datos.material = formData.material;
                 break;
             case 'marcapaginas':
-                nuevoProducto = new Marcapaginas(
-                    datos.nombre,
-                    datos.precio,
-                    datos.descripcion,
-                    formData.color,
-                    datos.imagen
-                );
+                datos.color = formData.color;
                 break;
             default:
-                alert('Tipo de producto no válido');
-                return;
+                break;
         }
         
-        agregarNuevoProducto(nuevoProducto);
+        // Llamar a la función para agregar producto pasando tipo y datos
+        agregarNuevoProducto(datos);
         
         // Mostrar mensaje de éxito
         alert('Producto añadido correctamente');
@@ -356,7 +324,7 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
                     <div className="mb-3">
                         <label htmlFor="productPrice" className="form-label">Precio:</label>
                         <div className="input-group">
-                            <span className="input-group-text">€</span>
+                            <span className="input-group-text">{DIVISA}</span>
                             <input 
                                 type="number" 
                                 min="0" 
@@ -404,7 +372,6 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
                                     fontSize: 'inherit',
                                     fontWeight: 'inherit'
                                 }}
-                                // Busca cualquier prop como ésta:
                                 children={
                                     <div>
                                         <i className="bi bi-cloud-upload mb-2"></i>

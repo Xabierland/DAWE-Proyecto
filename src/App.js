@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { listaProductos } from './tienda/tienda';
+import { 
+  listaProductos, 
+  guardarEnCarrito, 
+  borrarDelCarrito, 
+  cargarCarrito,
+  agregarNuevoProducto as agregarProducto,  // Renombramos para evitar conflicto de nombres
+  DIVISA,                                   // Constante para el símbolo de divisa
+  MAX_COPIAS                                // Constante para el máximo de copias por producto
+} from './tienda/tienda';
 import './App.css';
 
 // Importar componentes
@@ -44,10 +52,20 @@ function App() {
 
   // Cargar carrito desde localStorage al iniciar
   useEffect(() => {
-    // Implementar carga del carrito desde localStorage
-    const carritoGuardado = cargarCarritoDesdeStorage();
-    if (carritoGuardado.size > 0) {
-      setCarrito(carritoGuardado);
+    // Implementar carga del carrito desde localStorage usando la función importada
+    const itemsCarrito = cargarCarrito();
+    if (itemsCarrito.length > 0) {
+      // Convertimos el array de items a un Map para mantener la misma estructura
+      const carritoMap = new Map();
+      itemsCarrito.forEach(item => {
+        carritoMap.set(item.id, {
+          nombre: item.nombre,
+          precio: item.precio,
+          imagen: item.imagen,
+          cantidad: item.cantidad
+        });
+      });
+      setCarrito(carritoMap);
     }
     
     // Configurar listeners para detectar estado de conexión
@@ -63,29 +81,6 @@ function App() {
   // Función para manejar cambios en la conexión
   const handleConnectionChange = () => {
     setIsOnline(navigator.onLine);
-  };
-  
-  // Cargar carrito desde localStorage
-  const cargarCarritoDesdeStorage = () => {
-    const tempCarrito = new Map();
-    try {
-      // Obtener todas las claves de localStorage
-      const keys = Object.keys(localStorage);
-      
-      // Filtrar solo las claves que comienzan con 'producto_'
-      const productoKeys = keys.filter(key => key.startsWith('producto_'));
-      
-      // Recorrer las claves y añadir al carrito
-      productoKeys.forEach(key => {
-        const item = JSON.parse(localStorage.getItem(key));
-        const productId = key.replace('producto_', '');
-        tempCarrito.set(productId, item);
-      });
-    } catch (error) {
-      console.error('Error al cargar el carrito:', error);
-    }
-    
-    return tempCarrito;
   };
   
   // Función para buscar productos
@@ -159,7 +154,7 @@ function App() {
   
   // Función para añadir producto al carrito
   const agregarAlCarrito = (productId) => {
-    const MAX_COPIAS = 20; // Máximo de copias por producto
+    // Usamos MAX_COPIAS importado de tienda.js en vez de definirlo localmente
     const producto = productos.find(p => p.id === productId);
     
     if (!producto) return;
@@ -173,11 +168,11 @@ function App() {
         item.cantidad++;
         nuevoCarrito.set(productId, item);
         
-        // Guardar en localStorage
+        // Usar la función importada para guardar en localStorage
         guardarEnCarrito(productId, item);
       } else {
         // Mostrar mensaje de error (implementar después)
-        console.log('Máximo de copias alcanzado');
+        console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
         return;
       }
     } else {
@@ -190,48 +185,30 @@ function App() {
       };
       nuevoCarrito.set(productId, item);
       
-      // Guardar en localStorage
+      // Usar la función importada para guardar en localStorage
       guardarEnCarrito(productId, item);
     }
     
     setCarrito(nuevoCarrito);
   };
   
-  // Función para guardar en localStorage
-  const guardarEnCarrito = (productId, item) => {
-    try {
-      localStorage.setItem(`producto_${productId}`, JSON.stringify(item));
-    } catch (error) {
-      console.error('Error al guardar en localStorage:', error);
-    }
-  };
-  
-  // Función para eliminar del localStorage
-  const borrarDelCarrito = (productId) => {
-    try {
-      localStorage.removeItem(`producto_${productId}`);
-    } catch (error) {
-      console.error('Error al borrar del localStorage:', error);
-    }
-  };
-  
   // Función para actualizar cantidad de producto
   const actualizarCantidad = (productId, newQuantity) => {
-    const MAX_COPIAS = 20;
+    // Usamos MAX_COPIAS importado de tienda.js
     const nuevoCarrito = new Map(carrito);
     
     if (!nuevoCarrito.has(productId)) return;
     
     if (newQuantity <= 0) {
-      // Eliminar producto
+      // Eliminar producto usando la función importada
       nuevoCarrito.delete(productId);
       borrarDelCarrito(productId);
     } else if (newQuantity > MAX_COPIAS) {
       // Mensaje de error (implementar después)
-      console.log('Máximo de copias alcanzado');
+      console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
       return;
     } else {
-      // Actualizar cantidad
+      // Actualizar cantidad usando la función importada
       const item = nuevoCarrito.get(productId);
       item.cantidad = newQuantity;
       nuevoCarrito.set(productId, item);
@@ -243,8 +220,14 @@ function App() {
   
   // Función para añadir nuevo producto
   const agregarNuevoProducto = (nuevoProducto) => {
+    // Actualizar la lista de productos
     const nuevosProductos = [...productos, nuevoProducto];
     setProductos(nuevosProductos);
+    
+    // Agregar a la lista global usando la función importada
+    // Nota: En este caso no la utilizamos directamente porque queremos
+    // también actualizar el estado local de productos
+    // agregarProducto(tipo, datos);
     
     // Si no hay filtros activos, también añadirlo a filtrados
     if (filtroActual.tipo === 'all' && 

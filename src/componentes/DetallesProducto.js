@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { DIVISA } from '../tienda/tienda';
 
 const DetallesProducto = ({ producto, onClose }) => {
     // Impedir scroll en el body cuando se muestra el modal
@@ -83,7 +84,7 @@ const DetallesProducto = ({ producto, onClose }) => {
                         ></button>
                         
                         <h3 className="display-6 mb-4 text-light">{producto.nombre}</h3>
-                        <p className="h4 text-warning">Precio: {producto.precio}€</p>
+                        <p className="h4 text-warning">Precio: {producto.precio}{DIVISA}</p>
                         <p className="text-muted">{getExtraField(producto)}</p>
                         <p className="lead">{producto.descripcion}</p>
                     </div>

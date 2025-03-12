@@ -1,4 +1,5 @@
 import React from 'react';
+import { DIVISA } from '../tienda/tienda';
 import BuscadorProductos from './BuscadorProductos';
 import Paginacion from './Paginacion';
 import DetallesProducto from './DetallesProducto';
@@ -66,7 +67,7 @@ const EscaparateProductos = ({
                             
                             <div className="card-body">
                                 <h5 className="card-title text-truncate">{producto.nombre}</h5>
-                                <p className="card-text"><strong>Precio: </strong>{producto.precio}€</p>
+                                <p className="card-text"><strong>Precio: </strong>{producto.precio}{DIVISA}</p>
                                 <p className="card-text">
                                     <small className="text-muted">{getExtraField(producto)}</small>
                                 </p>

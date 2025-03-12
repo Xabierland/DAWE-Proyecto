@@ -1,7 +1,7 @@
 import {Libro, Ebook, Ereader, Marcapaginas, Funda} from './productos.js';
 
 // Constantes requeridas
-export const DIVISA = '$';
+export const DIVISA = '€';
 export const MAX_COPIAS = 20;
 
 // Lista de productos base

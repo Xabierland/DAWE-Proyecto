@@ -1,4 +1,5 @@
 import React from 'react';
+import { DIVISA } from '../tienda/tienda';
 
 const Carrito = ({ carrito, actualizarCantidad, setShowCarrito }) => {
     // Calcular el total del carrito
@@ -33,7 +34,7 @@ const Carrito = ({ carrito, actualizarCantidad, setShowCarrito }) => {
                                 />
                                 <div className="cart-item-details flex-grow-1">
                                     <h6 className="mb-1">{item.nombre}</h6>
-                                    <p className="mb-1">Precio: {item.precio}€</p>
+                                    <p className="mb-1">Precio: {item.precio}{DIVISA}</p>
                                     <div className="d-flex align-items-center mb-1">
                                         <label className="me-2">Cantidad:</label>
                                         <input 
@@ -46,7 +47,7 @@ const Carrito = ({ carrito, actualizarCantidad, setShowCarrito }) => {
                                             onChange={(e) => actualizarCantidad(productId, parseInt(e.target.value))}
                                         />
                                     </div>
-                                    <p className="mb-1">Subtotal: {(item.precio * item.cantidad).toFixed(2)}€</p>
+                                    <p className="mb-1">Subtotal: {(item.precio * item.cantidad).toFixed(2)}{DIVISA}</p>
                                 </div>
                                 <button 
                                     className="btn btn-danger btn-sm remove-item" 
@@ -66,7 +67,7 @@ const Carrito = ({ carrito, actualizarCantidad, setShowCarrito }) => {
                     )}
                 </div>
                 <div className="cart-total border-top pt-3">
-                    <h6>Total: <span id="cartTotal">{calcularTotal()}</span>€</h6>
+                    <h6>Total: <span id="cartTotal">{calcularTotal()}</span>{DIVISA}</h6>
                 </div>
             </div>
         </div>
