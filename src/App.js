@@ -320,49 +320,50 @@ function App() {
   };
 
   return (
-    <div className="contenedor">
-      <Cabecera titulo="El Mono Infinito" />
-      
-      <MenuNavegacion 
-        carritoCount={Array.from(carrito.values()).reduce((total, item) => total + item.cantidad, 0)}
-        toggleCarrito={() => setShowCarrito(!showCarrito)} 
-        isOnline={isOnline}
-      />
-      
-      {showCarrito && (
-        <Carrito 
-          carrito={carrito}
-          actualizarCantidad={actualizarCantidad}
-          setShowCarrito={setShowCarrito}
-        />
-      )}
-      
-      <div className="row">
-        <main className="col-md-8 order-md-1">
-          <EscaparateProductos 
-            productos={productosFiltrados}
-            currentPage={currentPage}
-            productosPerPage={productosPerPage}
-            cambiarPagina={cambiarPagina}
-            agregarAlCarrito={agregarAlCarrito}
-            setProductoDetalle={setProductoDetalle}
-            productoDetalle={productoDetalle}
-            filtroActual={filtroActual}
-            actualizarFiltro={actualizarFiltro}
-            resetearFiltros={resetearFiltros}
-            buscarProductos={buscarProductos}
-            searchTerm={searchTerm}
-          />
-        </main>
+    <div>
+      <div className="contenedor">
+        <Cabecera titulo="El Mono Infinito" />
         
-        <aside className="col-md-4 order-md-2">
-          <FormularioNuevosProductos 
-            agregarNuevoProducto={agregarNuevoProducto} 
-            isOnline={isOnline}
+        <MenuNavegacion 
+          carritoCount={Array.from(carrito.values()).reduce((total, item) => total + item.cantidad, 0)}
+          toggleCarrito={() => setShowCarrito(!showCarrito)} 
+          isOnline={isOnline}
+        />
+        
+        {showCarrito && (
+          <Carrito 
+            carrito={carrito}
+            actualizarCantidad={actualizarCantidad}
+            setShowCarrito={setShowCarrito}
           />
-        </aside>
+        )}
+        
+        <div className="row">
+          <main className="col-md-8 order-md-1">
+            <EscaparateProductos 
+              productos={productosFiltrados}
+              currentPage={currentPage}
+              productosPerPage={productosPerPage}
+              cambiarPagina={cambiarPagina}
+              agregarAlCarrito={agregarAlCarrito}
+              setProductoDetalle={setProductoDetalle}
+              productoDetalle={productoDetalle}
+              filtroActual={filtroActual}
+              actualizarFiltro={actualizarFiltro}
+              resetearFiltros={resetearFiltros}
+              buscarProductos={buscarProductos}
+              searchTerm={searchTerm}
+            />
+          </main>
+          
+          <aside className="col-md-4 order-md-2">
+            <FormularioNuevosProductos 
+              agregarNuevoProducto={agregarNuevoProducto} 
+              isOnline={isOnline}
+            />
+          </aside>
+        </div>
       </div>
-      
       <Pie contenido="© 2025 El Mono Infinito. Todos los derechos reservados." />
     </div>
   );
