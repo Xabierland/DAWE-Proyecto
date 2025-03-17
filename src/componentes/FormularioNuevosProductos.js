@@ -357,7 +357,7 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
                         <label className="form-label">Subir imagen:</label>
                         <div 
                             id="dragDropArea" 
-                            className={`card p-3 text-center border-dashed ${dragging ? 'hover' : ''} ${!isOnline ? 'bg-light' : ''}`}
+                            className={`card p-3 text-center border-dashed ${dragging ? 'hover' : ''}`}
                         >
                             <FileUploader 
                                 handleChange={handleFileChange}
@@ -374,12 +374,16 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
                                 }}
                                 children={
                                     <div>
-                                        <i className="bi bi-cloud-upload mb-2"></i>
-                                        {dragging ? (
-                                            <p className="mb-0" id="dropText">Suelta la imagen</p>
+                                        <i className={`bi mb-2 ${!isOnline ? 'bi-exclamation-circle-fill text-danger' : 'bi-cloud-upload'}`}></i>
+                                        {isOnline ? (
+                                            dragging ? (
+                                                <p className="mb-0" id="dropText">Suelta la imagen</p>
+                                            ) : (
+                                                <p className="mb-0" id="dropText">Arrastre y suelte aquí</p>
+                                            )
                                         ) : (
-                                            <p className="mb-0" id="dropText">Arrastre y suelte aquí</p>
-                                        )}
+                                            <p className="mb-0 text-danger" id="dropText">No tienes conexión</p>
+                                        )}  
                                     </div>
                                 }
                             />

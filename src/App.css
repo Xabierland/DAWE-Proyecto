@@ -97,13 +97,16 @@ footer {
 
 /* ==================== Estilos los botones ==================== */
 .btn {
-  --bs-btn-bg: #F6CA1B; /*background-color*/
-  --bs-btn-color: #000000; /* color: #000000 !important;*/
-  --bs-btn-border-color: #000000; /*border-color: #000000 !important;*/
+  --bs-btn-bg: #F6CA1B !important;/*background-color*/
+  --bs-btn-color: #000000 !important;/* color: #000000 !important;*/
+  --bs-btn-border-color: #000000 !important; /*border-color: #000000 !important;*/
 
-  --bs-btn-hover-bg: #F6CA1B; /*background-color: #F6CA1B !important;*/
-  --bs-btn-hover-color: #FFFFFF; /*color: #FFFFFF !important;*/
-  --bs-btn-hover-border-color: #FFFFFF; /*border-color: #FFFFFF !important;*/
+  --bs-btn-hover-bg: #F6CA1B !important; /*background-color: #F6CA1B !important;*/
+  --bs-btn-hover-color: #FFFFFF !important; /*color: #FFFFFF !important;*/
+  --bs-btn-hover-border-color: #FFFFFF !important; /*border-color: #FFFFFF !important;*/
+
+  --bs-btn-disabled-bg: #f6ca1b8d !important;
+  --bs-btn-disabled-border-color: #000000 !important;
 }
 
 :root {
