@@ -48,24 +48,162 @@ export const listaProductos = [
 ];
 
 // Funciones para gestionar el carrito en localStorage
-export const guardarEnCarrito = (productId, item) => {
+export const guardarEnCarrito = (idProducto, item) => 
+{
+    if(!idProducto || !item)
+    {
+        return;
+    }
+
+    // Obtenemos la lista del storage
+    var productosGuardados = JSON.parse(localStorage.getItem("productos"));
+
+    // Se obtiene la cantidad
+    var cantidad = item.cantidad;
+    idProducto = item.nombre;
+
+    if(!productosGuardados)
+    {
+        console.log("Todavia no hay lista en storage");
+        // __-- Todavia no hay nada guardado --__
+        //       .    *    (º-   *     ·
+        //      * _ ·   .  (/)_    ·     *
+        //      ~~~~~~~~[ = = = ]~~~~~~~~
+
+        // Crear la lista
+        productosGuardados = [idProducto]
+        
+        localStorage.setItem("productos", JSON.stringify(productosGuardados))
+
+        // Y añadir cantidad
+        localStorage.setItem(idProducto, cantidad);
+
+        return;
+    } 
+
+    if(productosGuardados.includes(idProducto)) // Ya estaba guardado
+    {
+        // Borrar el producto
+        if (cantidad <= 0)
+        {
+            console.log("Borrar item de storage");
+            // Borrar de la lista
+            productosGuardados.splice(productosGuardados.indexOf(idProducto), 1);
+            localStorage.setItem("productos", JSON.stringify(productosGuardados))
+
+            // Borrar la cantidad
+            localStorage.removeItem(idProducto);
+
+            return;
+        }
+
+        // Actualizar cantidad
+        console.log("Actualizar cantidad en storage");
+        localStorage.setItem(idProducto, cantidad);
+        return;
+            
+    }
+
+    // Añadir producto nuevo a la lista
+    console.log("Nuevo producto");
+    productosGuardados.push(idProducto);
+    localStorage.setItem("productos", JSON.stringify(productosGuardados))
+
+    // Y añadir cantidad
+    localStorage.setItem(idProducto, cantidad);
+    console.log("Guardando : ")
+    console.log(idProducto + " : " + cantidad)
+
+
+    return;
+
+    /*
+
     try {
-        localStorage.setItem(`producto_${productId}`, JSON.stringify(item));
+        localStorage.setItem(`producto_${idProducto}`, JSON.stringify(item));
     } catch (error) {
         console.error('Error al guardar en localStorage:', error);
-    }
+    }*/
 };
 
 export const borrarDelCarrito = (productId) => {
-    try {
-        localStorage.removeItem(`producto_${productId}`);
-    } catch (error) {
+    try 
+    {
+        // Obtener producto
+        var producto = listaProductos.find(p => p.id === productId);
+
+        if(!producto)
+        {
+            return;
+        }
+
+        // Obtenemos la lista del storage
+        var productosGuardados = JSON.parse(localStorage.getItem("productos"));
+        productosGuardados.splice(productosGuardados.indexOf(producto.nombre), 1);
+        localStorage.setItem("productos", JSON.stringify(productosGuardados))
+
+        // Borrar la cantidad
+        localStorage.removeItem(producto.nombre);
+    } 
+    catch (error) 
+    {
         console.error('Error al borrar del localStorage:', error);
     }
 };
 
-export const cargarCarrito = () => {
+export const cargarCarrito = () => 
+{      
+    //localStorage.clear();
+
+    // localStorage guarda los elementos como string, asi que se se guarda la lista como json
+    var productosEnString = localStorage.getItem("productos");
+    var productosGuardados = JSON.parse(productosEnString);
+
+    console.log(productosGuardados)
+    // Se comprueba que se obtenga correctamente la lista
+    if(!productosGuardados || productosGuardados.length == 0)
+    {
+        return;
+    }
+
     const carritoTemporal = [];
+
+    // Se añade cada producto al carrito
+    productosGuardados.forEach(nombreProducto => 
+    {
+        if(nombreProducto)
+        {
+            var cantidadProducto = localStorage.getItem(nombreProducto);
+            if(cantidadProducto && parseInt(cantidadProducto)>0)
+            {
+                cantidadProducto = parseInt(cantidadProducto);
+                // TODO: Usar id en vez de nombre
+                var producto = listaProductos.find(p => p.nombre === nombreProducto);
+                // Si no se encuentra el elemento se supone que se ha borrado del catálogo
+                if(producto)
+                {
+                    var idAux = producto.id;
+                    const item = {
+                        nombre: producto.nombre,
+                        precio: producto.precio,
+                        imagen: producto.imagen,
+                        cantidad: cantidadProducto
+                      };
+                    carritoTemporal.push({id: idAux, ...item});
+                    
+                    //mapaProductos.set(idAux, cantidadProducto)
+                    //this.agregarAlCarrito(idAux);
+                    //this.actualizarCantidad(idAux, cantidadProducto);
+                }
+               
+            }
+        }
+    });
+
+    return carritoTemporal;
+        
+    /*
+    //const carritoTemporal = [];
     try {
         // Obtener todas las claves de localStorage
         const keys = Object.keys(localStorage);
@@ -86,7 +224,7 @@ export const cargarCarrito = () => {
         console.error('Error al cargar el carrito:', error);
     }
     
-    return carritoTemporal;
+    return carritoTemporal;*/
 };
 
 // Función para añadir nuevo producto

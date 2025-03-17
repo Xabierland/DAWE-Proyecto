@@ -1,9 +1,11 @@
 import React from 'react';
 import { DIVISA } from '../tienda/tienda';
 
-const Carrito = ({ carrito, actualizarCantidad, setShowCarrito }) => {
+const Carrito = ({ carrito, actualizarCantidad, setShowCarrito }) => 
+{
     // Calcular el total del carrito
-    const calcularTotal = () => {
+    const calcularTotal = () => 
+    {
         let total = 0;
         carrito.forEach((item) => {
             total += item.precio * item.cantidad;
