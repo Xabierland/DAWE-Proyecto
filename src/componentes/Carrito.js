@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DIVISA, MAX_COPIAS, guardarEnCarrito, borrarDelCarrito, cargarCarrito } from '../tienda/tienda';
 
 const Carrito = ({ setShowCarrito, setCarritoCount, carritoUpdated }) => {
     // Estado para el carrito
     const [carrito, setCarrito] = useState(new Map());
+    
+    // Memoizar la función updateCarritoCount para evitar recreaciones innecesarias
+    const updateCarritoCount = useCallback((carritoActual = carrito) => {
+        const count = Array.from(carritoActual.values()).reduce(
+            (total, item) => total + item.cantidad, 0
+        );
+        setCarritoCount(count);
+    }, [carrito, setCarritoCount]);
     
     // Cargar carrito desde localStorage al iniciar y cuando cambie carritoUpdated
     useEffect(() => {
@@ -28,15 +36,7 @@ const Carrito = ({ setShowCarrito, setCarritoCount, carritoUpdated }) => {
         // Actualizar contador de productos en el carrito
         updateCarritoCount(carritoMap);
         
-    }, [setCarritoCount, carritoUpdated]);
-    
-    // Función para actualizar el contador del carrito
-    const updateCarritoCount = (carritoActual = carrito) => {
-        const count = Array.from(carritoActual.values()).reduce(
-            (total, item) => total + item.cantidad, 0
-        );
-        setCarritoCount(count);
-    };
+    }, [carritoUpdated, updateCarritoCount]);
     
     // Función para actualizar cantidad de producto
     const actualizarCantidad = (productId, newQuantity) => {

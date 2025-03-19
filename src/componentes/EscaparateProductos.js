@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { listaProductos, guardarEnCarrito } from '../tienda/tienda';
 import { DIVISA, MAX_COPIAS } from '../tienda/tienda';
 import BuscadorProductos from './BuscadorProductos';
@@ -28,26 +28,22 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
     // Estado para mostrar detalles de producto
     const [productoDetalle, setProductoDetalle] = useState(null);
     
-    // Función para buscar productos
-    const buscarProductos = (term) => {
-        setSearchTerm(term);
-        const termLower = term.toLowerCase();
-        
-        if (!term) {
-            aplicarTodosFiltros(productos);
-        } else {
-            const filtrados = productos.filter(producto => 
-                producto.nombre.toLowerCase().includes(termLower)
-            );
-            aplicarTodosFiltros(filtrados);
+    // Memoizar función de contador de carrito para evitar recreaciones
+    const actualizarContadorCarrito = useCallback(() => {
+        // Recorrer localStorage y contar items del carrito
+        let total = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('producto_')) {
+                const item = JSON.parse(localStorage.getItem(key));
+                total += item.cantidad;
+            }
         }
-        
-        // Reset a la primera página
-        setCurrentPage(1);
-    };
+        updateCarritoCount(total);
+    }, [updateCarritoCount]);
     
-    // Función para aplicar todos los filtros
-    const aplicarTodosFiltros = (productosBase = productos) => {
+    // Memoizar función para aplicar todos los filtros
+    const aplicarTodosFiltros = useCallback((productosBase = productos) => {
         // 1. Comenzar con todos los productos o los filtrados por búsqueda
         let resultados = [...productosBase];
         
@@ -75,6 +71,24 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
         
         // 5. Actualizar productos filtrados
         setProductosFiltrados(resultados);
+    }, [filtroActual, productos]);
+    
+    // Función para buscar productos
+    const buscarProductos = (term) => {
+        setSearchTerm(term);
+        const termLower = term.toLowerCase();
+        
+        if (!term) {
+            aplicarTodosFiltros(productos);
+        } else {
+            const filtrados = productos.filter(producto => 
+                producto.nombre.toLowerCase().includes(termLower)
+            );
+            aplicarTodosFiltros(filtrados);
+        }
+        
+        // Reset a la primera página
+        setCurrentPage(1);
     };
     
     // Función para resetear filtros
@@ -136,20 +150,6 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
         
         // Notificar al App.js que el carrito ha sido actualizado
         updateCarrito();
-    };
-    
-    // Función para actualizar el contador del carrito
-    const actualizarContadorCarrito = () => {
-        // Recorrer localStorage y contar items del carrito
-        let total = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith('producto_')) {
-                const item = JSON.parse(localStorage.getItem(key));
-                total += item.cantidad;
-            }
-        }
-        updateCarritoCount(total);
     };
     
     // Función para cambiar página
@@ -234,7 +234,7 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
         aplicarTodosFiltros();
         // También cargar el contador del carrito al iniciar
         actualizarContadorCarrito();
-    }, [productos]);
+    }, [productos, aplicarTodosFiltros, actualizarContadorCarrito]);
     
     // Función para obtener campos extra según el tipo de producto
     const getExtraField = (producto) => {

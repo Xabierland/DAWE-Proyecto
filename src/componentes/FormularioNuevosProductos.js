@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileUploader } from "react-drag-drop-files";
-import { DIVISA, MAX_COPIAS, agregarNuevoProducto as agregarProductoTienda } from '../tienda/tienda';
+import { DIVISA, agregarNuevoProducto as agregarProductoTienda } from '../tienda/tienda';
 
 const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     const [formData, setFormData] = useState({

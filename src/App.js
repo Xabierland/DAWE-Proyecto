@@ -33,10 +33,10 @@ function useOnlineStatus() {
 }
 
 function App() {
+  // Estado para detectar conexión
+  const isOnline = useOnlineStatus();
   // Estado para mostrar carrito
   const [showCarrito, setShowCarrito] = useState(false);
-  // Estado para detectar conexión usando nuestro hook personalizado
-  const isOnline = useOnlineStatus();
   // Estado para carrito (ahora simplificado, la lógica real se mueve a Carrito.js)
   const [carritoCount, setCarritoCount] = useState(0);
   // Estado para señalizar actualizaciones del carrito
