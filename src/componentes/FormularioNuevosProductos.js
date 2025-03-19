@@ -64,6 +64,13 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         setFile(file);
     };
     
+    // Manejador para input file nativo
+    const handleInputFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            handleFileChange(e.target.files[0]);
+        }
+    };
+    
     const handleSubmit = (e) => {
         e.preventDefault();
         
@@ -382,6 +389,19 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                     
                     <div className="mb-3">
                         <label className="form-label">Subir imagen:</label>
+                        
+                        {/* Input file nativo añadido encima del área de drag & drop */}
+                        <div className="input-group mb-2">
+                            <input 
+                                type="file" 
+                                className="form-control" 
+                                id="fileInput"
+                                accept=".jpg,.jpeg,.png"
+                                onChange={handleInputFileChange}
+                                disabled={!isOnline}
+                            />
+                        </div>
+                        
                         <div 
                             id="dragDropArea" 
                             className={`card p-3 text-center border-dashed ${dragging ? 'hover' : ''} ${!isOnline ? 'file-uploader-disabled' : ''}`}
@@ -406,7 +426,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                             dragging ? (
                                                 <p className="mb-0" id="dropText">Suelta la imagen</p>
                                             ) : (
-                                                <p className="mb-0" id="dropText">Arrastre y suelte aquí</p>
+                                                <p className="mb-0" id="dropText">O arrastre y suelte aquí</p>
                                             )
                                         ) : (
                                             <p className="mb-0 text-danger" id="dropText">No tienes conexión</p>
