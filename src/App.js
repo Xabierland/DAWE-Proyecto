@@ -52,13 +52,14 @@ function App() {
 
   // Cargar carrito desde localStorage al iniciar
   useEffect(() => {
-    // Implementar carga del carrito desde localStorage usando la función importada
+    // Usar exclusivamente la función de tienda.js para cargar el carrito
     const itemsCarrito = cargarCarrito();
+    
     if (itemsCarrito.length > 0) {
-      // Convertimos el array de items a un Map para mantener la misma estructura
       const carritoMap = new Map();
       itemsCarrito.forEach(item => {
-        carritoMap.set(item.id, {
+        // Asegurarnos de usar string para la clave del Map
+        carritoMap.set(String(item.id), {
           nombre: item.nombre,
           precio: item.precio,
           imagen: item.imagen,
@@ -154,24 +155,24 @@ function App() {
   
   // Función para añadir producto al carrito
   const agregarAlCarrito = (productId) => {
-    // Usamos MAX_COPIAS importado de tienda.js en vez de definirlo localmente
+    // Buscar el producto por ID
     const producto = productos.find(p => p.id === productId);
     
     if (!producto) return;
     
     const nuevoCarrito = new Map(carrito);
+    const productoIdString = String(productId);
     
-    if (nuevoCarrito.has(productId)) {
+    if (nuevoCarrito.has(productoIdString)) {
       // Producto ya en carrito, aumentar cantidad
-      const item = nuevoCarrito.get(productId);
+      const item = nuevoCarrito.get(productoIdString);
       if (item.cantidad < MAX_COPIAS) {
         item.cantidad++;
-        nuevoCarrito.set(productId, item);
+        nuevoCarrito.set(productoIdString, item);
         
-        // Usar la función importada para guardar en localStorage
-        guardarEnCarrito(productId, item);
+        // Usar la función de tienda.js para guardar en localStorage
+        guardarEnCarrito(productoIdString, item);
       } else {
-        // Mostrar mensaje de error (implementar después)
         console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
         return;
       }
@@ -183,10 +184,10 @@ function App() {
         imagen: producto.imagen,
         cantidad: 1
       };
-      nuevoCarrito.set(productId, item);
+      nuevoCarrito.set(productoIdString, item);
       
-      // Usar la función importada para guardar en localStorage
-      guardarEnCarrito(productId, item);
+      // Usar la función de tienda.js para guardar en localStorage
+      guardarEnCarrito(productoIdString, item);
     }
     
     setCarrito(nuevoCarrito);
@@ -194,25 +195,24 @@ function App() {
   
   // Función para actualizar cantidad de producto
   const actualizarCantidad = (productId, newQuantity) => {
-    // Usamos MAX_COPIAS importado de tienda.js
+    const productoIdString = String(productId);
     const nuevoCarrito = new Map(carrito);
     
-    if (!nuevoCarrito.has(productId)) return;
+    if (!nuevoCarrito.has(productoIdString)) return;
     
     if (newQuantity <= 0) {
-      // Eliminar producto usando la función importada
-      nuevoCarrito.delete(productId);
-      borrarDelCarrito(productId);
+      // Eliminar producto usando la función de tienda.js
+      nuevoCarrito.delete(productoIdString);
+      borrarDelCarrito(productoIdString);
     } else if (newQuantity > MAX_COPIAS) {
-      // Mensaje de error (implementar después)
       console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
       return;
     } else {
-      // Actualizar cantidad usando la función importada
-      const item = nuevoCarrito.get(productId);
+      // Actualizar cantidad usando la función de tienda.js
+      const item = nuevoCarrito.get(productoIdString);
       item.cantidad = newQuantity;
-      nuevoCarrito.set(productId, item);
-      guardarEnCarrito(productId, item);
+      nuevoCarrito.set(productoIdString, item);
+      guardarEnCarrito(productoIdString, item);
     }
     
     setCarrito(nuevoCarrito);
@@ -223,11 +223,6 @@ function App() {
     // Actualizar la lista de productos
     const nuevosProductos = [...productos, nuevoProducto];
     setProductos(nuevosProductos);
-    
-    // Agregar a la lista global usando la función importada
-    // Nota: En este caso no la utilizamos directamente porque queremos
-    // también actualizar el estado local de productos
-    // agregarProducto(tipo, datos);
     
     // Si no hay filtros activos, también añadirlo a filtrados
     if (filtroActual.tipo === 'all' && 
