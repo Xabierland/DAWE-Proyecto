@@ -1,11 +1,71 @@
-import React from 'react';
-import { DIVISA } from '../tienda/tienda';
+import React, { useState, useEffect } from 'react';
+import { DIVISA, MAX_COPIAS, guardarEnCarrito, borrarDelCarrito, cargarCarrito } from '../tienda/tienda';
 
-const Carrito = ({ carrito, actualizarCantidad, setShowCarrito }) => 
-{
+const Carrito = ({ setShowCarrito, setCarritoCount, carritoUpdated }) => {
+    // Estado para el carrito
+    const [carrito, setCarrito] = useState(new Map());
+    
+    // Cargar carrito desde localStorage al iniciar y cuando cambie carritoUpdated
+    useEffect(() => {
+        // Usar exclusivamente la función de tienda.js para cargar el carrito
+        const itemsCarrito = cargarCarrito();
+        
+        const carritoMap = new Map();
+        if (itemsCarrito.length > 0) {
+            itemsCarrito.forEach(item => {
+                // Asegurarnos de usar string para la clave del Map
+                carritoMap.set(String(item.id), {
+                    nombre: item.nombre,
+                    precio: item.precio,
+                    imagen: item.imagen,
+                    cantidad: item.cantidad
+                });
+            });
+        }
+        
+        setCarrito(carritoMap);
+            
+        // Actualizar contador de productos en el carrito
+        updateCarritoCount(carritoMap);
+        
+    }, [setCarritoCount, carritoUpdated]);
+    
+    // Función para actualizar el contador del carrito
+    const updateCarritoCount = (carritoActual = carrito) => {
+        const count = Array.from(carritoActual.values()).reduce(
+            (total, item) => total + item.cantidad, 0
+        );
+        setCarritoCount(count);
+    };
+    
+    // Función para actualizar cantidad de producto
+    const actualizarCantidad = (productId, newQuantity) => {
+        const productoIdString = String(productId);
+        const nuevoCarrito = new Map(carrito);
+        
+        if (!nuevoCarrito.has(productoIdString)) return;
+        
+        if (newQuantity <= 0) {
+            // Eliminar producto usando la función de tienda.js
+            nuevoCarrito.delete(productoIdString);
+            borrarDelCarrito(productoIdString);
+        } else if (newQuantity > MAX_COPIAS) {
+            console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
+            return;
+        } else {
+            // Actualizar cantidad usando la función de tienda.js
+            const item = nuevoCarrito.get(productoIdString);
+            item.cantidad = newQuantity;
+            nuevoCarrito.set(productoIdString, item);
+            guardarEnCarrito(productoIdString, item);
+        }
+        
+        setCarrito(nuevoCarrito);
+        updateCarritoCount(nuevoCarrito);
+    };
+    
     // Calcular el total del carrito
-    const calcularTotal = () => 
-    {
+    const calcularTotal = () => {
         let total = 0;
         carrito.forEach((item) => {
             total += item.precio * item.cantidad;

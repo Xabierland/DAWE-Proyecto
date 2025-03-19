@@ -1,27 +1,240 @@
-import React from 'react';
-import { DIVISA } from '../tienda/tienda';
+import React, { useState, useEffect } from 'react';
+import { listaProductos, guardarEnCarrito } from '../tienda/tienda';
+import { DIVISA, MAX_COPIAS } from '../tienda/tienda';
 import BuscadorProductos from './BuscadorProductos';
 import Paginacion from './Paginacion';
 import DetallesProducto from './DetallesProducto';
 
-const EscaparateProductos = ({
-    productos,
-    currentPage,
-    productosPerPage,
-    cambiarPagina,
-    agregarAlCarrito,
-    setProductoDetalle,
-    productoDetalle,
-    filtroActual,
-    actualizarFiltro,
-    resetearFiltros,
-    buscarProductos,
-    searchTerm
-}) => {
-    // Obtener los productos de la página actual
+const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, productosUpdated }) => {
+    // Estado para el listado de productos y filtrados
+    const [productos, setProductos] = useState(listaProductos);
+    const [productosFiltrados, setProductosFiltrados] = useState([...productos]);
+    
+    // Estado para la paginación
+    const [currentPage, setCurrentPage] = useState(1);
+    const [productosPerPage] = useState(6);
+    
+    // Estado para filtros
+    const [filtroActual, setFiltroActual] = useState({
+        tipo: 'all',
+        precioMin: 0,
+        precioMax: Number.MAX_SAFE_INTEGER,
+        ordenamiento: null
+    });
+    
+    // Estado para búsqueda
+    const [searchTerm, setSearchTerm] = useState('');
+    
+    // Estado para mostrar detalles de producto
+    const [productoDetalle, setProductoDetalle] = useState(null);
+    
+    // Función para buscar productos
+    const buscarProductos = (term) => {
+        setSearchTerm(term);
+        const termLower = term.toLowerCase();
+        
+        if (!term) {
+            aplicarTodosFiltros(productos);
+        } else {
+            const filtrados = productos.filter(producto => 
+                producto.nombre.toLowerCase().includes(termLower)
+            );
+            aplicarTodosFiltros(filtrados);
+        }
+        
+        // Reset a la primera página
+        setCurrentPage(1);
+    };
+    
+    // Función para aplicar todos los filtros
+    const aplicarTodosFiltros = (productosBase = productos) => {
+        // 1. Comenzar con todos los productos o los filtrados por búsqueda
+        let resultados = [...productosBase];
+        
+        // 2. Aplicar filtro por tipo
+        if (filtroActual.tipo !== 'all') {
+            resultados = resultados.filter(producto => 
+                producto.tipo === filtroActual.tipo
+            );
+        }
+        
+        // 3. Aplicar filtro por rango de precio
+        resultados = resultados.filter(producto => 
+            producto.precio >= filtroActual.precioMin && 
+            producto.precio <= filtroActual.precioMax
+        );
+        
+        // 4. Aplicar ordenamiento
+        if (filtroActual.ordenamiento) {
+            resultados.sort((a, b) => {
+                return filtroActual.ordenamiento === 'asc'
+                    ? a.precio - b.precio
+                    : b.precio - a.precio;
+            });
+        }
+        
+        // 5. Actualizar productos filtrados
+        setProductosFiltrados(resultados);
+    };
+    
+    // Función para resetear filtros
+    const resetearFiltros = () => {
+        // Crear nuevo objeto de filtro con valores por defecto
+        const filtrosDefault = {
+            tipo: 'all',
+            precioMin: 0,
+            precioMax: Number.MAX_SAFE_INTEGER,
+            ordenamiento: null
+        };
+        
+        // Actualizar el estado
+        setFiltroActual(filtrosDefault);
+        
+        // Aplicar los filtros directamente, como en actualizarFiltro
+        const tempProductos = searchTerm ? 
+            productos.filter(p => p.nombre.toLowerCase().includes(searchTerm.toLowerCase())) : 
+            [...productos];
+        
+        // Simplemente actualizar con todos los productos (con búsqueda si existe)
+        setProductosFiltrados([...tempProductos]);
+        setCurrentPage(1);
+    };
+    
+    // Función para añadir producto al carrito
+    const agregarAlCarrito = (productId) => {
+        // Buscar el producto por ID
+        const producto = productos.find(p => p.id === productId);
+        
+        if (!producto) return;
+        
+        // Obtener el carrito actual del localStorage
+        const carritoItems = JSON.parse(localStorage.getItem(`producto_${productId}`)) || null;
+        
+        // Si el producto ya existe en el carrito
+        if (carritoItems) {
+            // Verificar si no excede el máximo de copias
+            if (carritoItems.cantidad < MAX_COPIAS) {
+                carritoItems.cantidad++;
+                guardarEnCarrito(productId, carritoItems);
+            } else {
+                console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
+                return;
+            }
+        } else {
+            // Si es un producto nuevo
+            const nuevoItem = {
+                nombre: producto.nombre,
+                precio: producto.precio,
+                imagen: producto.imagen,
+                cantidad: 1
+            };
+            guardarEnCarrito(productId, nuevoItem);
+        }
+        
+        // Actualizar el contador del carrito en el menú
+        actualizarContadorCarrito();
+        
+        // Notificar al App.js que el carrito ha sido actualizado
+        updateCarrito();
+    };
+    
+    // Función para actualizar el contador del carrito
+    const actualizarContadorCarrito = () => {
+        // Recorrer localStorage y contar items del carrito
+        let total = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('producto_')) {
+                const item = JSON.parse(localStorage.getItem(key));
+                total += item.cantidad;
+            }
+        }
+        updateCarritoCount(total);
+    };
+    
+    // Función para cambiar página
+    const cambiarPagina = (numeroPagina) => {
+        setCurrentPage(numeroPagina);
+    };
+    
+    // Función para actualizar filtros
+    const actualizarFiltro = (tipoFiltro, valor) => {
+        const nuevoFiltro = {...filtroActual};
+        
+        switch(tipoFiltro) {
+            case 'tipo':
+                nuevoFiltro.tipo = valor;
+                break;
+            case 'precioMin':
+                nuevoFiltro.precioMin = valor === '' ? 0 : Number(valor);
+                break;
+            case 'precioMax':
+                nuevoFiltro.precioMax = valor === '' ? Number.MAX_SAFE_INTEGER : Number(valor);
+                break;
+            case 'ordenamiento':
+                nuevoFiltro.ordenamiento = valor;
+                break;
+            default:
+                return;
+        }
+        
+        // Actualizar el estado
+        setFiltroActual(nuevoFiltro);
+        
+        // Aplicar los filtros directamente con el nuevo objeto, no con el estado actual
+        const tempProductos = searchTerm ? 
+            productos.filter(p => p.nombre.toLowerCase().includes(searchTerm.toLowerCase())) : 
+            [...productos];
+        
+        // 1. Comenzar con todos los productos o los filtrados por búsqueda
+        let resultados = [...tempProductos];
+        
+        // 2. Aplicar filtro por tipo con el nuevo filtro (no con filtroActual)
+        if (nuevoFiltro.tipo !== 'all') {
+            resultados = resultados.filter(producto => 
+                producto.tipo === nuevoFiltro.tipo
+            );
+        }
+        
+        // 3. Aplicar filtro por rango de precio con el nuevo filtro
+        resultados = resultados.filter(producto => 
+            producto.precio >= nuevoFiltro.precioMin && 
+            producto.precio <= nuevoFiltro.precioMax
+        );
+        
+        // 4. Aplicar ordenamiento con el nuevo filtro
+        if (nuevoFiltro.ordenamiento) {
+            resultados.sort((a, b) => {
+                return nuevoFiltro.ordenamiento === 'asc'
+                    ? a.precio - b.precio
+                    : b.precio - a.precio;
+            });
+        }
+        
+        // 5. Actualizar productos filtrados
+        setProductosFiltrados(resultados);
+        
+        // Resetear página
+        setCurrentPage(1);
+    };
+    
+    // Calcular productos de la página actual
     const indexOfLastProducto = currentPage * productosPerPage;
     const indexOfFirstProducto = indexOfLastProducto - productosPerPage;
-    const productosActuales = productos.slice(indexOfFirstProducto, indexOfLastProducto);
+    const productosActuales = productosFiltrados.slice(indexOfFirstProducto, indexOfLastProducto);
+    
+    // Recargar productos cuando se añada uno nuevo
+    useEffect(() => {
+        // Actualizar la lista de productos desde tienda.js
+        setProductos([...listaProductos]);
+    }, [productosUpdated]);
+    
+    // Aplicar filtros cuando cambia el listado de productos
+    useEffect(() => {
+        aplicarTodosFiltros();
+        // También cargar el contador del carrito al iniciar
+        actualizarContadorCarrito();
+    }, [productos]);
     
     // Función para obtener campos extra según el tipo de producto
     const getExtraField = (producto) => {
@@ -51,6 +264,7 @@ const EscaparateProductos = ({
                                 className="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
                                 style={{ width: '40px', height: '40px', zIndex: 1 }}
                                 onClick={() => agregarAlCarrito(producto.id)}
+                                disabled={!isOnline}
                             >
                                 <i className="bi bi-cart-plus-fill"></i>
                             </button>
@@ -89,7 +303,7 @@ const EscaparateProductos = ({
             </div>
             
             <Paginacion 
-                totalProductos={productos.length}
+                totalProductos={productosFiltrados.length}
                 productosActuales={productosActuales}
                 currentPage={currentPage}
                 productosPerPage={productosPerPage}

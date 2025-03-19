@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FileUploader } from "react-drag-drop-files";
-import { DIVISA, MAX_COPIAS } from '../tienda/tienda';
+import { DIVISA, MAX_COPIAS, agregarNuevoProducto as agregarProductoTienda } from '../tienda/tienda';
 
-const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
+const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     const [formData, setFormData] = useState({
         tipo: '',
         nombre: '',
@@ -107,31 +107,40 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
         }
         
         // Llamar a la función para agregar producto pasando tipo y datos
-        agregarNuevoProducto(datos);
+        const resultado = agregarProductoTienda(formData.tipo, datos);
         
-        // Mostrar mensaje de éxito
-        alert('Producto añadido correctamente');
-        
-        // Limpiar formulario
-        setFormData({
-            tipo: '',
-            nombre: '',
-            precio: '',
-            descripcion: '',
-            imagen: null,
-            autor: '',
-            isbn: '',
-            paginas: '',
-            tamano: '',
-            resolucion: '',
-            material: '',
-            color: ''
-        });
-        setFile(null);
-        setFilePreview('');
-        
-        // Reset del dropdown de tipo
-        document.getElementById('productType').selectedIndex = 0;
+        if (resultado) {
+            // Mostrar mensaje de éxito
+            alert('Producto añadido correctamente');
+            
+            // Limpiar formulario
+            setFormData({
+                tipo: '',
+                nombre: '',
+                precio: '',
+                descripcion: '',
+                imagen: null,
+                autor: '',
+                isbn: '',
+                paginas: '',
+                tamano: '',
+                resolucion: '',
+                material: '',
+                color: ''
+            });
+            setFile(null);
+            setFilePreview('');
+            
+            // Reset del dropdown de tipo
+            document.getElementById('productType').selectedIndex = 0;
+            
+            // Notificar que se ha añadido un nuevo producto
+            if (onProductoAdded) {
+                onProductoAdded();
+            }
+        } else {
+            alert('Error al añadir el producto');
+        }
     };
     
     // Renderizar campos adicionales según el tipo seleccionado
@@ -375,7 +384,7 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
                         <label className="form-label">Subir imagen:</label>
                         <div 
                             id="dragDropArea" 
-                            className={`card p-3 text-center border-dashed ${dragging ? 'hover' : ''}`}
+                            className={`card p-3 text-center border-dashed ${dragging ? 'hover' : ''} ${!isOnline ? 'file-uploader-disabled' : ''}`}
                         >
                             <FileUploader 
                                 handleChange={handleFileChange}
