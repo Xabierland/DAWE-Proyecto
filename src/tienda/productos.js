@@ -26,6 +26,21 @@ function guidGenerator() {
 En caso de que la imagen sea null (porque no la hemos metido), se debe de poner una imagen predefinida indicando la ausencia de imagen.
 */
 
+const cyrb53 = (str, seed = 0) => {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for(let i = 0, ch; i < str.length; i++) {
+        ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+};
+
 // Superclase: Producto
 class Producto {
     #id;
@@ -36,19 +51,12 @@ class Producto {
     #tipo;
 
     constructor(nombre, precio, descripcion, imagen, tipo) {
-        this.#id = this.guidGenerator();
+        this.#id = cyrb53(nombre);
         this.#nombre = nombre;
         this.#precio = precio;
         this.#descripcion = descripcion;
-        this.#imagen = imagen || '/img/default.png';
+        this.#imagen = imagen || '/img/productos/default.png';
         this.#tipo = tipo;
-    }
-
-    guidGenerator() {
-        var S4 = function() {
-           return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-        };
-        return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
     }
 
     get tipo() {

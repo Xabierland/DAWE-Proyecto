@@ -39,7 +39,25 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
     
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setFormData({ ...formData, [id.replace('product', '').toLowerCase()]: value });
+        
+        // Mapeo correcto de IDs a nombres de campo en español
+        const fieldMapping = {
+            'productName': 'nombre',
+            'productPrice': 'precio',
+            'productDescription': 'descripcion',
+            'productAutor': 'autor',
+            'productIsbn': 'isbn',
+            'productPaginas': 'paginas',
+            'productTamano': 'tamano',
+            'productResolucion': 'resolucion',
+            'productMaterial': 'material',
+            'productColor': 'color'
+        };
+        
+        // Utilizar el mapeo para obtener el nombre correcto del campo
+        const fieldName = fieldMapping[id] || id;
+        
+        setFormData({ ...formData, [fieldName]: value });
     };
     
     const handleFileChange = (file) => {
@@ -59,7 +77,7 @@ const FormularioNuevosProductos = ({ agregarNuevoProducto, isOnline }) => {
             nombre: formData.nombre,
             precio: parseFloat(formData.precio),
             descripcion: formData.descripcion || '',
-            imagen: formData.imagen || '/img/default.png'
+            imagen: formData.imagen || '/img/productos/default.png'
         };
         
         // Añadir campos específicos según el tipo
