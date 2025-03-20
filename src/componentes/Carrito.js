@@ -1,42 +1,31 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { DIVISA, MAX_COPIAS, guardarEnCarrito, borrarDelCarrito, cargarCarrito } from '../tienda/tienda';
 
-const Carrito = ({ setShowCarrito, setCarritoCount, carritoUpdated }) => {
-    // Estado para el carrito
-    const [carrito, setCarrito] = useState(new Map());
+const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, carrito, setCarrito}) => {
     
     // Memoizar la función updateCarritoCount para evitar recreaciones innecesarias
-    const updateCarritoCount = useCallback((carritoActual = carrito) => {
+    const updateCarritoCount =(carritoActual = carrito) => 
+    {
         const count = Array.from(carritoActual.values()).reduce(
             (total, item) => total + item.cantidad, 0
         );
-        setCarritoCount(count);
-    }, [carrito, setCarritoCount]);
+        setCarritoCountProp(count);
+    };
     
-    // Cargar carrito desde localStorage al iniciar y cuando cambie carritoUpdated
+    // Cargar carrito desde localStorage al iniciar y cuando cambie carritoUpdatedProp
     useEffect(() => {
         // Usar exclusivamente la función de tienda.js para cargar el carrito
-        const itemsCarrito = cargarCarrito();
-        
-        const carritoMap = new Map();
-        if (itemsCarrito.length > 0) {
-            itemsCarrito.forEach(item => {
-                // Asegurarnos de usar string para la clave del Map
-                carritoMap.set(String(item.id), {
-                    nombre: item.nombre,
-                    precio: item.precio,
-                    imagen: item.imagen,
-                    cantidad: item.cantidad
-                });
-            });
-        }
-        
+        // La funcion de tienda.js devuelve un Map()
+        const carritoMap = cargarCarrito();
+        // El cual se pasa al estado mapaCarrito
         setCarrito(carritoMap);
-            
+        
         // Actualizar contador de productos en el carrito
         updateCarritoCount(carritoMap);
-        
-    }, [carritoUpdated, updateCarritoCount]);
+
+        // Unicamente se ejecuta cuando salte este aviso
+        // Si se actualiza tambien cuando cambia el número de productos se genera un bucle infinito
+    }, [carritoUpdatedProp]);
     
     // Función para actualizar cantidad de producto
     const actualizarCantidad = (productId, newQuantity) => {
@@ -80,7 +69,7 @@ const Carrito = ({ setShowCarrito, setCarritoCount, carritoUpdated }) => {
                 <button 
                     type="button" 
                     className="btn-close" 
-                    onClick={() => setShowCarrito(false)}
+                    onClick={() => setShowCarritoProp(false)}
                 ></button>
             </div>
             <div className="offcanvas-body">

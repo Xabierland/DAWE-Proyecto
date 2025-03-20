@@ -35,9 +35,13 @@ function useOnlineStatus() {
 function App() {
   // Estado para detectar conexión
   const isOnline = useOnlineStatus();
+
+  // Se establece el contenido del carrito como un atributo de toda la pagina
+  const [carrito, setCarrito] = useState(new Map());
+
   // Estado para mostrar carrito
   const [showCarrito, setShowCarrito] = useState(false);
-  // Estado para carrito (ahora simplificado, la lógica real se mueve a Carrito.js)
+  // Estado : Numero de elementos en el carrito
   const [carritoCount, setCarritoCount] = useState(0);
   // Estado para señalizar actualizaciones del carrito
   const [carritoUpdated, setCarritoUpdated] = useState(0);
@@ -57,9 +61,11 @@ function App() {
         
         {showCarrito && (
           <Carrito 
-            setShowCarrito={setShowCarrito}
-            setCarritoCount={setCarritoCount}
-            carritoUpdated={carritoUpdated}
+            setShowCarritoProp={setShowCarrito}
+            setCarritoCountProp={setCarritoCount}
+            carritoUpdatedProp={carritoUpdated}
+            carrito={carrito}
+            setCarrito={setCarrito}
           />
         )}
         
@@ -70,6 +76,8 @@ function App() {
               updateCarrito={() => setCarritoUpdated(prev => prev + 1)}
               isOnline={isOnline}
               productosUpdated={productosUpdated}
+              mapaCarrito={carrito}
+              setCarrito={setCarrito}
             />
           </main>
           

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { listaProductos, guardarEnCarrito } from '../tienda/tienda';
+import { listaProductos, guardarEnCarrito, cargarCarrito } from '../tienda/tienda';
 import { DIVISA, MAX_COPIAS } from '../tienda/tienda';
 import BuscadorProductos from './BuscadorProductos';
 import Paginacion from './Paginacion';
 import DetallesProducto from './DetallesProducto';
 
-const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, productosUpdated }) => {
+const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, productosUpdated, mapaCarrito, setCarrito }) => {
     // Estado para el listado de productos y filtrados
     const [productos, setProductos] = useState(listaProductos);
     const [productosFiltrados, setProductosFiltrados] = useState([...productos]);
@@ -29,17 +29,30 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
     const [productoDetalle, setProductoDetalle] = useState(null);
     
     // Memoizar función de contador de carrito para evitar recreaciones
-    const actualizarContadorCarrito = useCallback(() => {
-        // Recorrer localStorage y contar items del carrito
+    const actualizarContadorCarrito = useCallback(() => 
+    {
         let total = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith('producto_')) {
-                const item = JSON.parse(localStorage.getItem(key));
-                total += item.cantidad;
-            }
+        var carritoActual = mapaCarrito;
+        if(!mapaCarrito || mapaCarrito.size == 0)
+        {
+            // Dado que la actualización mediante setCarrito() es asincrona, no usamos el valor de mapaCarrito
+            // Si no que usamos el recien obtenido mapaAux
+            var mapaAux = cargarCarrito();
+            setCarrito(mapaAux);
+            carritoActual = mapaAux;
         }
+        else
+        {
+            carritoActual = mapaCarrito;
+        }
+        carritoActual.forEach((item, id) => 
+        {
+            total += item.cantidad;
+        });
+
         updateCarritoCount(total);
+        // Se crea el aviso 
+        updateCarrito(); 
     }, [updateCarritoCount]);
     
     // Memoizar función para aplicar todos los filtros
@@ -121,15 +134,30 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
         
         if (!producto) return;
         
-        // Obtener el carrito actual del localStorage
-        const carritoItems = JSON.parse(localStorage.getItem(`producto_${productId}`)) || null;
+        // Si todavia no se ha cargado el carrito (o si esta vacio), se carga
+        var carritoActual = mapaCarrito;
+        if(!mapaCarrito || mapaCarrito.size == 0)
+        {
+            // Dado que la actualización mediante setCarrito() es asincrona, no usamos el valor de mapaCarrito
+            // Si no que usamos el recien obtenido mapaAux
+            var mapaAux = cargarCarrito();
+            setCarrito(mapaAux);
+            carritoActual = mapaAux;
+        }
+        else
+        {
+            carritoActual = mapaCarrito;
+        }
+
+        var carritoItem = carritoActual.get(""+productId);
         
+
         // Si el producto ya existe en el carrito
-        if (carritoItems) {
+        if (carritoItem) {
             // Verificar si no excede el máximo de copias
-            if (carritoItems.cantidad < MAX_COPIAS) {
-                carritoItems.cantidad++;
-                guardarEnCarrito(productId, carritoItems);
+            if (carritoItem.cantidad < MAX_COPIAS) {
+                carritoItem.cantidad++;
+                guardarEnCarrito(productId, carritoItem);
             } else {
                 console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
                 return;
