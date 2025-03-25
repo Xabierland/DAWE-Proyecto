@@ -411,6 +411,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 name="file"
                                 types={fileTypes}
                                 disabled={!isOnline}
+                                hoverTitle=' ' //el mensaje de hover se establece más abajo, esto quita el por defecto
                                 onDraggingStateChange={(dragging) => setDragging(dragging)}
                                 dropMessageStyle={{ 
                                     display: dragging ? 'block' : 'none',
@@ -419,8 +420,8 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                     fontSize: 'inherit',
                                     fontWeight: 'inherit'
                                 }}
-                                children={
-                                    <div>
+                                children={//linea de abajo establece el fondo a gris disabled cuando está offline
+                                    <div style={{backgroundColor: !isOnline ? "var(--bs-secondary-bg)" : "transparent"}}> 
                                         <i className={`bi mb-2 ${!isOnline ? 'bi-exclamation-circle-fill text-danger' : 'bi-cloud-upload'}`}></i>
                                         {isOnline ? (
                                             dragging ? (
