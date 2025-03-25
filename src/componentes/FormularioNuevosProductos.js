@@ -22,6 +22,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     const [file, setFile] = useState(null);
     const [filePreview, setFilePreview] = useState('');
     const [dragging, setDragging] = useState(false);
+    const [fileError, setFileError] = useState(null);
     
     const fileTypes = ["JPG", "JPEG", "PNG"];
     
@@ -59,18 +60,54 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         
         setFormData({ ...formData, [fieldName]: value });
     };
-    
+
+    const resetFileState = (errorMessage = null) => {
+        setFileError(errorMessage);
+        setFile(null);
+        setFilePreview('');
+    };
+
     const handleFileChange = (file) => {
+        if (Array.isArray(file)) {
+            resetFileState('Solo se puede subir un archivo a la vez');
+            return;
+        }
+        resetFileState();
         setFile(file);
     };
-    
-    // Manejador para input file nativo
+
+    const handleTypeError = () => {
+        resetFileState('Solo se permiten archivos PNG, JPG o JPEG');
+    };
+
+    const handleDrop = (files) => {
+        if (files.length > 1) {
+            resetFileState('Solo se puede subir un archivo a la vez');
+            return false;
+        }
+        return true;
+    };
+
     const handleInputFileChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            handleFileChange(e.target.files[0]);
+        resetFileState();
+        if (e.target.files && e.target.files.length > 1) {
+            resetFileState('Solo se puede subir un archivo a la vez');
+            e.target.value = '';
+            return;
+        }
+
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            const fileType = selectedFile.type.split('/')[1].toUpperCase();
+            if (!fileTypes.includes(fileType)) {
+                handleTypeError(); // Reutilizamos la lógica de error de tipo
+                e.target.value = '';
+                return;
+            }
+            handleFileChange(selectedFile);
         }
     };
-    
+
     const handleSubmit = (e) => {
         e.preventDefault();
         
@@ -390,7 +427,6 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                     <div className="mb-3">
                         <label className="form-label">Subir imagen:</label>
                         
-                        {/* Input file nativo añadido encima del área de drag & drop */}
                         <div className="input-group mb-2">
                             <input 
                                 type="file" 
@@ -411,8 +447,10 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 name="file"
                                 types={fileTypes}
                                 disabled={!isOnline}
-                                hoverTitle=' ' //el mensaje de hover se establece más abajo, esto quita el por defecto
+                                hoverTitle=' '
                                 onDraggingStateChange={(dragging) => setDragging(dragging)}
+                                onTypeError={handleTypeError}
+                                onDrop={handleDrop} // Usamos onDrop para manejar múltiples archivos
                                 dropMessageStyle={{ 
                                     display: dragging ? 'block' : 'none',
                                     background: 'transparent',
@@ -420,7 +458,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                     fontSize: 'inherit',
                                     fontWeight: 'inherit'
                                 }}
-                                children={//linea de abajo establece el fondo a gris disabled cuando está offline
+                                children={
                                     <div style={{backgroundColor: !isOnline ? "var(--bs-secondary-bg)" : "transparent"}}> 
                                         <i className={`bi mb-2 ${!isOnline ? 'bi-exclamation-circle-fill text-danger' : 'bi-cloud-upload'}`}></i>
                                         {isOnline ? (
@@ -446,12 +484,19 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 />
                             </div>
                         )}
+                        
+                        {fileError && (
+                            <div className="alert alert-danger mt-2">
+                                <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                {fileError}
+                            </div>
+                        )}
                     </div>
                     
                     <button 
                         type="submit" 
                         className="btn btn-primary w-100"
-                        disabled={!isOnline}
+                        disabled={!isOnline} // Eliminamos la condición de fileError para no bloquear el botón
                     >
                         Subir
                     </button>
