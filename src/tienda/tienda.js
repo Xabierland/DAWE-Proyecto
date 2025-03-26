@@ -51,7 +51,7 @@ export const listaProductos = [
 export const guardarEnCarrito = (idProducto, item) => 
 {
     try {
-        localStorage.setItem(`producto_${idProducto}`, item.cantidad); //JSON.stringify(item.cantidad));
+        localStorage.setItem(`producto_${idProducto}`, JSON.stringify(item));
     } catch (error) {
         console.error('Error al guardar en localStorage:', error);
     }
@@ -85,8 +85,8 @@ export const cargarCarrito = () =>
 
         // Recorrer las claves y añadir al carrito
         productoKeys.forEach(key => {
-            //const item = JSON.parse(localStorage.getItem(key));
-            const cantidad = Number(localStorage.getItem(key));
+            const item = JSON.parse(localStorage.getItem(key));
+            //const cantidad = Number(localStorage.getItem(key));
             const productId = key.replace('producto_', '');
 
             var producto = listaProductos.find(p => p.id === Number(productId));
@@ -98,13 +98,7 @@ export const cargarCarrito = () =>
             }
             else
             {
-                carritoTemporal.set(String(productId), 
-                {
-                    nombre: producto.nombre,
-                    precio: producto.precio,
-                    imagen: producto.imagen,
-                    cantidad: cantidad
-                });
+                carritoTemporal.set(String(productId), item);
             }
         });
     } catch (error) {
