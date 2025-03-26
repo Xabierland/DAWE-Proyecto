@@ -22,10 +22,29 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     const [file, setFile] = useState(null);
     const [filePreview, setFilePreview] = useState('');
     const [dragging, setDragging] = useState(false);
-    const [fileError, setFileError] = useState(null);
-    const [fileSucess, setFileSucess] = useState(null);
+    
+    // Estado unificado para mensajes
+    const [mensaje, setMensaje] = useState({
+        texto: '',
+        tipo: '', // 'success', 'danger', 'warning', 'info'
+        mostrar: false
+    });
     
     const fileTypes = ["JPG", "JPEG", "PNG"];
+    
+    // Función para mostrar mensajes
+    const mostrarMensaje = (texto, tipo = 'danger') => {
+        setMensaje({
+            texto,
+            tipo,
+            mostrar: true
+        });
+        
+        // Limpiar todos los mensajes después de 2 segundos
+        setTimeout(() => {
+            setMensaje(prev => ({...prev, mostrar: false}));
+        }, 2000);
+    };
     
     // Efecto para actualizar vista previa del archivo
     useEffect(() => {
@@ -63,7 +82,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     };
 
     const resetFileState = (errorMessage = null) => {
-        setFileError(errorMessage);
+        if (errorMessage) {
+            mostrarMensaje(errorMessage, 'danger');
+        }
         setFile(null);
         setFilePreview('');
     };
@@ -73,8 +94,12 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             resetFileState('Solo se puede subir un archivo a la vez');
             return;
         }
-        resetFileState();
+        
+        // Limpiar cualquier mensaje de error previo
+        setMensaje(prev => prev.mostrar ? {...prev, mostrar: false} : prev);
+        
         setFile(file);
+        mostrarMensaje('Imagen seleccionada correctamente', 'success');
     };
 
     const handleTypeError = () => {
@@ -90,7 +115,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     };
 
     const handleInputFileChange = (e) => {
-        resetFileState();
+        // Limpiar cualquier mensaje de error previo
+        setMensaje(prev => prev.mostrar ? {...prev, mostrar: false} : prev);
+        
         if (e.target.files && e.target.files.length > 1) {
             resetFileState('Solo se puede subir un archivo a la vez');
             e.target.value = '';
@@ -113,7 +140,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         e.preventDefault();
         
         if (!formData.tipo) {
-            alert('Debe seleccionar un tipo de producto');
+            mostrarMensaje('Debe seleccionar un tipo de producto', 'warning');
             return;
         }
         
@@ -156,7 +183,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         
         if (resultado) {
             // Mostrar mensaje de éxito
-            setFileSucess(true);
+            mostrarMensaje('Producto agregado correctamente', 'success');
             
             // Limpiar formulario
             setFormData({
@@ -184,7 +211,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                 onProductoAdded();
             }
         } else {
-            alert('Error al añadir el producto');
+            mostrarMensaje('Error al añadir el producto', 'danger');
         }
     };
     
@@ -349,6 +376,31 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         }
     };
     
+    // Función para renderizar el mensaje de estado
+    const renderMensaje = () => {
+        if (!mensaje.mostrar) return null;
+        
+        const iconos = {
+            'success': 'bi-check-circle-fill',
+            'danger': 'bi-exclamation-triangle-fill',
+            'warning': 'bi-exclamation-circle-fill',
+            'info': 'bi-info-circle-fill'
+        };
+        
+        return (
+            <div className={`alert alert-${mensaje.tipo} mt-2 d-flex align-items-center`}>
+                <i className={`bi ${iconos[mensaje.tipo]} me-2`}></i>
+                <div>{mensaje.texto}</div>
+                <button 
+                    type="button" 
+                    className="btn-close ms-auto" 
+                    onClick={() => setMensaje(prev => ({...prev, mostrar: false}))}
+                    aria-label="Close"
+                ></button>
+            </div>
+        );
+    };
+    
     return (
         <div className="card">
             <div className="card-header">
@@ -486,26 +538,14 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                             </div>
                         )}
                         
-                        {fileError && (
-                            <div className="alert alert-danger mt-2">
-                                <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                                {fileError}
-                            </div>
-                        )}
-                        {fileSucess && (
-                            <div className="alert alert-success mt-2">
-                                <i className="bi bi-check-circle-fill me-2"></i>
-                                Archivo subido correctamente
-                            </div>
-                        )
-
-                        }
+                        {/* Sistema unificado de mensajes */}
+                        {renderMensaje()}
                     </div>
                     
                     <button 
                         type="submit" 
                         className="btn btn-primary w-100"
-                        disabled={!isOnline} // Eliminamos la condición de fileError para no bloquear el botón
+                        disabled={!isOnline}
                     >
                         Subir
                     </button>
