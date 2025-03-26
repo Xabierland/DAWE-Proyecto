@@ -23,8 +23,3 @@ root.render(
 // con algunas desventajas.
 // Más información sobre service workers: https://cra.link/PWA
 serviceWorkerRegistration.register();
-
-// Si quieres empezar a medir el rendimiento en tu aplicación, pasa una función
-// para registrar los resultados (por ejemplo: reportWebVitals(console.log))
-// o enviar a un punto final de análisis. Más información: https://bit.ly/CRA-vitals
-reportWebVitals();
