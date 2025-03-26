@@ -1,7 +1,12 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DIVISA, MAX_COPIAS, guardarEnCarrito, borrarDelCarrito, cargarCarrito } from '../tienda/tienda';
 
 const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, carrito, setCarrito}) => {
+    // Estado para manejar los mensajes de error de cantidad máxima
+    const [maxCantidadError, setMaxCantidadError] = useState({});
+    
+    // Estado local para manejar los valores del input durante la edición
+    const [inputValues, setInputValues] = useState({});
     
     // Memoizar la función con useCallback para evitar recreaciones
     const updateCarritoCount = useCallback((carritoActual) => {
@@ -17,6 +22,13 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
         const carritoMap = cargarCarrito();
         setCarrito(carritoMap);
         updateCarritoCount(carritoMap);
+        
+        // Inicializar los valores de input con las cantidades del carrito
+        const initialInputValues = {};
+        carritoMap.forEach((item, id) => {
+            initialInputValues[id] = item.cantidad.toString();
+        });
+        setInputValues(initialInputValues);
     }, [carritoUpdatedProp, setCarrito, updateCarritoCount]);
     
     // Función para actualizar cantidad de producto
@@ -30,8 +42,21 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
             // Eliminar producto usando la función de tienda.js
             nuevoCarrito.delete(productoIdString);
             borrarDelCarrito(productoIdString);
+            
+            // Eliminar también del estado de inputs
+            setInputValues(prev => {
+                const newInputs = {...prev};
+                delete newInputs[productoIdString];
+                return newInputs;
+            });
         } else if (newQuantity > MAX_COPIAS) {
-            console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
+            // No actualizamos el carrito, solo el input, porque esto se manejará en handleInputBlur
+            setInputValues(prev => ({
+                ...prev,
+                [productoIdString]: MAX_COPIAS.toString()
+            }));
+            
+            // El mensaje de error se maneja en handleInputBlur
             return;
         } else {
             // Actualizar cantidad usando la función de tienda.js
@@ -43,6 +68,78 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
         
         setCarrito(nuevoCarrito);
         updateCarritoCount(nuevoCarrito);
+    };
+    
+    // Función para manejar cambios en los inputs
+    const handleInputChange = (productId, value) => {
+        // Actualizar siempre el valor del input para permitir la edición
+        setInputValues(prev => ({
+            ...prev,
+            [productId]: value
+        }));
+        
+        // Procesar el valor numérico si existe
+        const parsedValue = parseInt(value);
+        
+        // Si es un número válido, realizar acciones inmediatas
+        if (!isNaN(parsedValue)) {
+            if (parsedValue <= 0) {
+                // Si el valor es 0 o negativo, eliminar el producto inmediatamente
+                actualizarCantidad(productId, 0);
+            } else if (parsedValue > MAX_COPIAS) {
+                // Si excede el máximo, mostrar mensaje y ajustar
+                setMaxCantidadError({ [productId]: true });
+                
+                setTimeout(() => {
+                    setInputValues(prev => ({
+                        ...prev,
+                        [productId]: MAX_COPIAS.toString()
+                    }));
+                    
+                    // Actualizar también el carrito real
+                    const item = carrito.get(productId);
+                    if (item) {
+                        const nuevoItem = {...item, cantidad: MAX_COPIAS};
+                        const nuevoCarrito = new Map(carrito);
+                        nuevoCarrito.set(productId, nuevoItem);
+                        setCarrito(nuevoCarrito);
+                        guardarEnCarrito(productId, nuevoItem);
+                        updateCarritoCount(nuevoCarrito);
+                    }
+                }, 100);
+                
+                setTimeout(() => {
+                    setMaxCantidadError(prevErrors => {
+                        const newErrors = { ...prevErrors };
+                        delete newErrors[productId];
+                        return newErrors;
+                    });
+                }, 2000);
+            } else {
+                // Si es un valor válido en el rango permitido, actualizar carrito
+                const item = carrito.get(productId);
+                if (item && item.cantidad !== parsedValue) {
+                    const nuevoItem = {...item, cantidad: parsedValue};
+                    const nuevoCarrito = new Map(carrito);
+                    nuevoCarrito.set(productId, nuevoItem);
+                    setCarrito(nuevoCarrito);
+                    guardarEnCarrito(productId, nuevoItem);
+                    updateCarritoCount(nuevoCarrito);
+                }
+            }
+        }
+    };
+    
+    // Función para manejar cuando el input pierde el foco
+    const handleInputBlur = (productId) => {
+        const value = inputValues[productId] || '';
+        const parsedValue = parseInt(value);
+        
+        if (value === '' || isNaN(parsedValue)) {
+            // Si está vacío o no es un número, eliminar el producto
+            actualizarCantidad(productId, 0);
+        }
+        // El resto de casos ya se manejan en handleInputChange
     };
     
     // Calcular el total del carrito
@@ -83,14 +180,27 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                                         <input 
                                             type="number" 
                                             className="form-control form-control-sm product-quantity" 
-                                            value={item.cantidad}
+                                            value={inputValues[productId] || ''}
                                             min="0"
-                                            max="20"
+                                            max={MAX_COPIAS + 1}
                                             style={{ width: '70px' }}
-                                            onChange={(e) => actualizarCantidad(productId, parseInt(e.target.value))}
+                                            onChange={(e) => handleInputChange(productId, e.target.value)}
+                                            onBlur={() => handleInputBlur(productId)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.target.blur(); // Quitar el foco para activar onBlur
+                                                }
+                                            }}
                                         />
                                     </div>
                                     <p className="mb-1">Subtotal: {(item.precio * item.cantidad).toFixed(2)}{DIVISA}</p>
+                                    
+                                    {/* Mensaje de error por exceder el máximo */}
+                                    {maxCantidadError[productId] && (
+                                        <div className="alert alert-warning py-1 px-2 mt-1 mb-0">
+                                            <small>Máximo de copias alcanzado ({MAX_COPIAS})</small>
+                                        </div>
+                                    )}
                                 </div>
                                 <button 
                                     className="btn btn-danger btn-sm remove-item" 
