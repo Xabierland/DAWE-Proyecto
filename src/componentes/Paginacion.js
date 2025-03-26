@@ -30,16 +30,13 @@ const Paginacion = ({
             <ul className="pagination justify-content-center">
                 {currentPage > 1 && (
                     <li className="page-item">
-                        <a 
+                        {/* Cambiado de <a> a <button> */}
+                        <button 
                             className="page-link" 
-                            href="#" 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                cambiarPagina(currentPage - 1);
-                            }}
+                            onClick={() => cambiarPagina(currentPage - 1)}
                         >
                             Anterior
-                        </a>
+                        </button>
                     </li>
                 )}
                 
@@ -48,31 +45,25 @@ const Paginacion = ({
                         key={page} 
                         className={`page-item ${page === currentPage ? 'active' : ''}`}
                     >
-                        <a 
+                        {/* Cambiado de <a> a <button> */}
+                        <button 
                             className="page-link" 
-                            href="#" 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                cambiarPagina(page);
-                            }}
+                            onClick={() => cambiarPagina(page)}
                         >
                             {page}
-                        </a>
+                        </button>
                     </li>
                 ))}
                 
                 {currentPage < totalPages && (
                     <li className="page-item">
-                        <a 
+                        {/* Cambiado de <a> a <button> */}
+                        <button 
                             className="page-link" 
-                            href="#" 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                cambiarPagina(currentPage + 1);
-                            }}
+                            onClick={() => cambiarPagina(currentPage + 1)}
                         >
                             Siguiente
-                        </a>
+                        </button>
                     </li>
                 )}
             </ul>

@@ -21,7 +21,6 @@ const BuscadorProductos = ({
     };
 
     const handleFilterTypeClick = (e, filterValue) => {
-        e.preventDefault();
         actualizarFiltro('tipo', filterValue);
     };
 
@@ -72,12 +71,12 @@ const BuscadorProductos = ({
                     </button>
                     <ul className="dropdown-menu">
                         <li className="px-3" id="filterContainer">
-                            <a className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'all')}>Todos</a>
-                            <a className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'libro_Fisico')}>Libros Físicos</a>
-                            <a className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'libro_Digital')}>Libros Digitales</a>
-                            <a className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'ereader')}>Ereaders</a>
-                            <a className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'funda')}>Fundas Ereader</a>
-                            <a className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'marcapaginas')}>Marcapáginas</a>
+                            <button className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'all')}>Todos</button>
+                            <button className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'libro_Fisico')}>Libros Físicos</button>
+                            <button className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'libro_Digital')}>Libros Digitales</button>
+                            <button className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'ereader')}>Ereaders</button>
+                            <button className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'funda')}>Fundas Ereader</button>
+                            <button className="dropdown-item" href="#" onClick={(e) => handleFilterTypeClick(e, 'marcapaginas')}>Marcapáginas</button>
                         </li>
                         <li><hr className="dropdown-divider" /></li>
                         <li className="px-3" id="priceRangeContainer">

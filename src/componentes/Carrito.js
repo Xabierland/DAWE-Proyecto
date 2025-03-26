@@ -1,31 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { DIVISA, MAX_COPIAS, guardarEnCarrito, borrarDelCarrito, cargarCarrito } from '../tienda/tienda';
 
 const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, carrito, setCarrito}) => {
     
-    // Memoizar la función updateCarritoCount para evitar recreaciones innecesarias
-    const updateCarritoCount =(carritoActual = carrito) => 
-    {
+    // Memoizar la función con useCallback para evitar recreaciones
+    const updateCarritoCount = useCallback((carritoActual) => {
         const count = Array.from(carritoActual.values()).reduce(
             (total, item) => total + item.cantidad, 0
         );
         setCarritoCountProp(count);
-    };
+    }, [setCarritoCountProp]);
     
-    // Cargar carrito desde localStorage al iniciar y cuando cambie carritoUpdatedProp
+    // Efecto para cargar el carrito cuando cambia carritoUpdatedProp
     useEffect(() => {
-        // Usar exclusivamente la función de tienda.js para cargar el carrito
-        // La funcion de tienda.js devuelve un Map()
+        // Este efecto SOLO debe ejecutarse cuando carritoUpdatedProp cambia
         const carritoMap = cargarCarrito();
-        // El cual se pasa al estado mapaCarrito
         setCarrito(carritoMap);
-        
-        // Actualizar contador de productos en el carrito
         updateCarritoCount(carritoMap);
-
-        // Unicamente se ejecuta cuando salte este aviso
-        // Si se actualiza tambien cuando cambia el número de productos se genera un bucle infinito
-    }, [carritoUpdatedProp]);
+    }, [carritoUpdatedProp, setCarrito, updateCarritoCount]);
     
     // Función para actualizar cantidad de producto
     const actualizarCantidad = (productId, newQuantity) => {

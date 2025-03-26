@@ -6,15 +6,19 @@ const MenuNavegacion = ({ carritoCount, toggleCarrito, isOnline }) => {
             <div className="container-fluid">
                 <ul className="navbar-nav me-auto">
                     <li className="nav-item">
-                        <a className="nav-link" aria-current="page" href="#">Inicio</a>
+                        {/* Cambiado de <a> a <button> */}
+                        <button className="nav-link btn btn-link" aria-current="page">
+                            Inicio
+                        </button>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="#" onClick={(e) => {
-                            e.preventDefault();
-                            toggleCarrito();
-                        }}>
+                        {/* Cambiado de <a> a <button> */}
+                        <button 
+                            className="nav-link btn btn-link" 
+                            onClick={toggleCarrito}
+                        >
                             Carrito <span className="badge cart-count">{carritoCount}</span>
-                        </a>
+                        </button>
                     </li>
                 </ul>
                 

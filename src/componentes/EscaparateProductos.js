@@ -29,31 +29,25 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
     const [productoDetalle, setProductoDetalle] = useState(null);
     
     // Memoizar función de contador de carrito para evitar recreaciones
-    const actualizarContadorCarrito = useCallback(() => 
-    {
+    const actualizarContadorCarrito = useCallback(() => {
         let total = 0;
-        var carritoActual = mapaCarrito;
-        if(!mapaCarrito || mapaCarrito.size == 0)
-        {
-            // Dado que la actualización mediante setCarrito() es asincrona, no usamos el valor de mapaCarrito
-            // Si no que usamos el recien obtenido mapaAux
-            var mapaAux = cargarCarrito();
-            setCarrito(mapaAux);
-            carritoActual = mapaAux;
+        
+        // Preferimos usar mapaCarrito directamente si está disponible
+        if (mapaCarrito && mapaCarrito.size > 0) {
+            mapaCarrito.forEach((item) => {
+                total += item.cantidad;
+            });
+            updateCarritoCount(total);
+        } else {
+            // Solo usar cargarCarrito como fallback
+            const carritoActual = cargarCarrito();
+            carritoActual.forEach((item) => {
+                total += item.cantidad;
+            });
+            updateCarritoCount(total);
+            // No llamamos a setCarrito aquí para evitar bucles
         }
-        else
-        {
-            carritoActual = mapaCarrito;
-        }
-        carritoActual.forEach((item, id) => 
-        {
-            total += item.cantidad;
-        });
-
-        updateCarritoCount(total);
-        // Se crea el aviso 
-        updateCarrito(); 
-    }, [updateCarritoCount]);
+    }, [mapaCarrito, updateCarritoCount]);
     
     // Memoizar función para aplicar todos los filtros
     const aplicarTodosFiltros = useCallback((productosBase = productos) => {
@@ -134,30 +128,18 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
         
         if (!producto) return;
         
-        // Si todavia no se ha cargado el carrito (o si esta vacio), se carga
-        var carritoActual = mapaCarrito;
-        if(!mapaCarrito || mapaCarrito.size == 0)
-        {
-            // Dado que la actualización mediante setCarrito() es asincrona, no usamos el valor de mapaCarrito
-            // Si no que usamos el recien obtenido mapaAux
-            var mapaAux = cargarCarrito();
-            setCarrito(mapaAux);
-            carritoActual = mapaAux;
-        }
-        else
-        {
-            carritoActual = mapaCarrito;
-        }
-
-        var carritoItem = carritoActual.get(""+productId);
-        
+        // Crear una copia local del carrito actual
+        const carritoActual = new Map(mapaCarrito);
+        const productoIdString = String(productId);
+        const carritoItem = carritoActual.get(productoIdString);
 
         // Si el producto ya existe en el carrito
         if (carritoItem) {
             // Verificar si no excede el máximo de copias
             if (carritoItem.cantidad < MAX_COPIAS) {
                 carritoItem.cantidad++;
-                guardarEnCarrito(productId, carritoItem);
+                carritoActual.set(productoIdString, carritoItem);
+                guardarEnCarrito(productoIdString, carritoItem);
             } else {
                 console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
                 return;
@@ -170,13 +152,21 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
                 imagen: producto.imagen,
                 cantidad: 1
             };
-            guardarEnCarrito(productId, nuevoItem);
+            carritoActual.set(productoIdString, nuevoItem);
+            guardarEnCarrito(productoIdString, nuevoItem);
         }
         
-        // Actualizar el contador del carrito en el menú
-        actualizarContadorCarrito();
+        // Actualizar el estado del carrito
+        setCarrito(carritoActual);
         
-        // Notificar al App.js que el carrito ha sido actualizado
+        // Calcular y actualizar el contador
+        let total = 0;
+        carritoActual.forEach((item) => {
+            total += item.cantidad;
+        });
+        updateCarritoCount(total);
+        
+        // Notificar que el carrito ha sido actualizado
         updateCarrito();
     };
     
@@ -260,9 +250,13 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
     // Aplicar filtros cuando cambia el listado de productos
     useEffect(() => {
         aplicarTodosFiltros();
-        // También cargar el contador del carrito al iniciar
+    }, [aplicarTodosFiltros, productos]); // Solo dependencias necesarias
+    
+    // Cargar el contador del carrito de forma independiente
+    useEffect(() => {
+        // Solo actualizamos el contador, no el carrito
         actualizarContadorCarrito();
-    }, [productos, aplicarTodosFiltros, actualizarContadorCarrito]);
+    }, [actualizarContadorCarrito, mapaCarrito]);
     
     // Función para obtener campos extra según el tipo de producto
     const getExtraField = (producto) => {

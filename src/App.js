@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
 // Importar componentes
@@ -36,17 +36,26 @@ function App() {
   // Estado para detectar conexión
   const isOnline = useOnlineStatus();
 
-  // Se establece el contenido del carrito como un atributo de toda la pagina
+  // Estado para el carrito
   const [carrito, setCarrito] = useState(new Map());
 
   // Estado para mostrar carrito
   const [showCarrito, setShowCarrito] = useState(false);
-  // Estado : Numero de elementos en el carrito
+  
+  // Estado: Número de elementos en el carrito
   const [carritoCount, setCarritoCount] = useState(0);
-  // Estado para señalizar actualizaciones del carrito
+  
+  // Estado para señalizar actualizaciones del carrito (usando función para evitar dependencias)
   const [carritoUpdated, setCarritoUpdated] = useState(0);
-  // Estado para señalizar nuevos productos añadidos
+  const updateCarrito = useCallback(() => {
+    setCarritoUpdated(prev => prev + 1);
+  }, []);
+  
+  // Estado para señalizar nuevos productos añadidos (usando función para evitar dependencias)
   const [productosUpdated, setProductosUpdated] = useState(0);
+  const onProductoAdded = useCallback(() => {
+    setProductosUpdated(prev => prev + 1);
+  }, []);
 
   return (
     <div>
@@ -73,7 +82,7 @@ function App() {
           <main className="col-md-8 order-md-1">
             <EscaparateProductos 
               updateCarritoCount={setCarritoCount}
-              updateCarrito={() => setCarritoUpdated(prev => prev + 1)}
+              updateCarrito={updateCarrito}
               isOnline={isOnline}
               productosUpdated={productosUpdated}
               mapaCarrito={carrito}
@@ -84,7 +93,7 @@ function App() {
           <aside className="col-md-4 order-md-2">
             <FormularioNuevosProductos 
               isOnline={isOnline}
-              onProductoAdded={() => setProductosUpdated(prev => prev + 1)}
+              onProductoAdded={onProductoAdded}
             />
           </aside>
         </div>
