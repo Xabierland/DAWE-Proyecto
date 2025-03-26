@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { DIVISA, MAX_COPIAS, guardarEnCarrito, borrarDelCarrito, cargarCarrito } from '../tienda/tienda';
 
 const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, carrito, setCarrito}) => {
@@ -7,6 +7,9 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
     
     // Estado local para manejar los valores del input durante la edición
     const [inputValues, setInputValues] = useState({});
+    
+    // Referencia al elemento del carrito para detectar clics fuera
+    const carritoRef = useRef(null);
     
     // Memoizar la función con useCallback para evitar recreaciones
     const updateCarritoCount = useCallback((carritoActual) => {
@@ -30,6 +33,35 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
         });
         setInputValues(initialInputValues);
     }, [carritoUpdatedProp, setCarrito, updateCarritoCount]);
+    
+    // Efecto para manejar clics fuera del carrito
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Si el clic fue fuera del carrito, cerrarlo
+            if (carritoRef.current && !carritoRef.current.contains(event.target)) {
+                setShowCarritoProp(false);
+            }
+        };
+        
+        // Agregar listener cuando el componente se monta
+        document.addEventListener('mousedown', handleClickOutside);
+        
+        // Remover listener cuando el componente se desmonta
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [setShowCarritoProp]);
+    
+    // Efecto para bloquear el scroll del body cuando el carrito está abierto
+    useEffect(() => {
+        // Bloquear el scroll del body
+        document.body.style.overflow = 'hidden';
+        
+        // Restaurar el scroll cuando el componente se desmonta
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
     
     // Función para actualizar cantidad de producto
     const actualizarCantidad = (productId, newQuantity) => {
@@ -88,7 +120,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                 actualizarCantidad(productId, 0);
             } else if (parsedValue > MAX_COPIAS) {
                 // Si excede el máximo, mostrar mensaje y ajustar
-                setMaxCantidadError({ [productId]: true });
+                setMaxCantidadError(prev => ({ ...prev, [productId]: true }));
                 
                 setTimeout(() => {
                     setInputValues(prev => ({
@@ -152,78 +184,103 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
     };
     
     return (
-        <div className="offcanvas offcanvas-start show" tabIndex="-1" id="cartOffcanvas">
-            <div className="offcanvas-header">
-                <h5 className="offcanvas-title">Carrito de Compra</h5>
-                <button 
-                    type="button" 
-                    className="btn-close" 
-                    onClick={() => setShowCarritoProp(false)}
-                ></button>
-            </div>
-            <div className="offcanvas-body">
-                <div id="cartItems" className="mb-3">
-                    {Array.from(carrito.entries()).map(([productId, item]) => (
-                        <div className="cart-item mb-3 border-bottom pb-3" key={productId}>
-                            <div className="d-flex align-items-center">
-                                <img 
-                                    src={item.imagen} 
-                                    alt={item.nombre} 
-                                    className="cart-item-image me-3" 
-                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                />
-                                <div className="cart-item-details flex-grow-1">
-                                    <h6 className="mb-1">{item.nombre}</h6>
-                                    <p className="mb-1">Precio: {item.precio}{DIVISA}</p>
-                                    <div className="d-flex align-items-center mb-1">
-                                        <label className="me-2">Cantidad:</label>
-                                        <input 
-                                            type="number" 
-                                            className="form-control form-control-sm product-quantity" 
-                                            value={inputValues[productId] || ''}
-                                            min="0"
-                                            max={MAX_COPIAS + 1}
-                                            style={{ width: '70px' }}
-                                            onChange={(e) => handleInputChange(productId, e.target.value)}
-                                            onBlur={() => handleInputBlur(productId)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.target.blur(); // Quitar el foco para activar onBlur
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                    <p className="mb-1">Subtotal: {(item.precio * item.cantidad).toFixed(2)}{DIVISA}</p>
-                                    
-                                    {/* Mensaje de error por exceder el máximo */}
-                                    {maxCantidadError[productId] && (
-                                        <div className="alert alert-warning py-1 px-2 mt-1 mb-0">
-                                            <small>Máximo de copias alcanzado ({MAX_COPIAS})</small>
+        <>
+            {/* Overlay oscuro para el fondo */}
+            <div 
+                className="modal-overlay"
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    zIndex: 1040,
+                }}
+                onClick={() => setShowCarritoProp(false)}
+            ></div>
+            
+            {/* Contenido del carrito */}
+            <div 
+                className="offcanvas offcanvas-start show" 
+                tabIndex="-1" 
+                id="cartOffcanvas" 
+                ref={carritoRef}
+                style={{ zIndex: 1050 }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="offcanvas-header">
+                    <h5 className="offcanvas-title">Carrito de Compra</h5>
+                    <button 
+                        type="button" 
+                        className="btn-close" 
+                        onClick={() => setShowCarritoProp(false)}
+                    ></button>
+                </div>
+                <div className="offcanvas-body">
+                    <div id="cartItems" className="mb-3">
+                        {Array.from(carrito.entries()).map(([productId, item]) => (
+                            <div className="cart-item mb-3 border-bottom pb-3" key={productId}>
+                                <div className="d-flex align-items-center">
+                                    <img 
+                                        src={item.imagen} 
+                                        alt={item.nombre} 
+                                        className="cart-item-image me-3" 
+                                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                                    />
+                                    <div className="cart-item-details flex-grow-1">
+                                        <h6 className="mb-1">{item.nombre}</h6>
+                                        <p className="mb-1">Precio: {item.precio}{DIVISA}</p>
+                                        <div className="d-flex align-items-center mb-1">
+                                            <label className="me-2">Cantidad:</label>
+                                            <input 
+                                                type="number" 
+                                                className="form-control form-control-sm product-quantity" 
+                                                value={inputValues[productId] || ''}
+                                                min="0"
+                                                max={MAX_COPIAS + 1}
+                                                style={{ width: '70px' }}
+                                                onChange={(e) => handleInputChange(productId, e.target.value)}
+                                                onBlur={() => handleInputBlur(productId)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.target.blur(); // Quitar el foco para activar onBlur
+                                                    }
+                                                }}
+                                            />
                                         </div>
-                                    )}
+                                        <p className="mb-1">Subtotal: {(item.precio * item.cantidad).toFixed(2)}{DIVISA}</p>
+                                    </div>
+                                    <button 
+                                        className="btn btn-danger btn-sm remove-item" 
+                                        title="Eliminar producto"
+                                        onClick={() => actualizarCantidad(productId, 0)}
+                                    >
+                                        x
+                                    </button>
                                 </div>
-                                <button 
-                                    className="btn btn-danger btn-sm remove-item" 
-                                    title="Eliminar producto"
-                                    onClick={() => actualizarCantidad(productId, 0)}
-                                >
-                                    x
-                                </button>
+                                
+                                {/* Mensaje de error por exceder el máximo - Ahora fuera del flex container y en rojo */}
+                                {maxCantidadError[productId] && (
+                                    <div className="alert alert-danger py-1 px-2 mt-2 mb-0">
+                                        <small><strong>Error:</strong> Máximo de copias alcanzado ({MAX_COPIAS})</small>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    ))}
-                    
-                    {carrito.size === 0 && (
-                        <div className="text-center py-4">
-                            <p className="mb-0 text-muted">El carrito está vacío</p>
-                        </div>
-                    )}
-                </div>
-                <div className="cart-total border-top pt-3">
-                    <h6>Total: <span id="cartTotal">{calcularTotal()}</span>{DIVISA}</h6>
+                        ))}
+                        
+                        {carrito.size === 0 && (
+                            <div className="text-center py-4">
+                                <p className="mb-0 text-muted">El carrito está vacío</p>
+                            </div>
+                        )}
+                    </div>
+                    <div className="cart-total border-top pt-3">
+                        <h6>Total: <span id="cartTotal">{calcularTotal()}</span>{DIVISA}</h6>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
