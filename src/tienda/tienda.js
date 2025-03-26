@@ -111,7 +111,6 @@ export const cargarCarrito = () =>
         console.error('Error al cargar el carrito:', error);
     }
 
-    console.log(carritoTemporal);
     return carritoTemporal;
 };
     
