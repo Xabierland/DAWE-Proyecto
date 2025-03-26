@@ -43,7 +43,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         // Limpiar todos los mensajes después de 2 segundos
         setTimeout(() => {
             setMensaje(prev => ({...prev, mostrar: false}));
-        }, 2000);
+        }, 1500);
     };
     
     // Efecto para actualizar vista previa del archivo

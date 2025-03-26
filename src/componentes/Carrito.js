@@ -146,7 +146,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                         delete newErrors[productId];
                         return newErrors;
                     });
-                }, 2000);
+                }, 1500);
             } else {
                 // Si es un valor válido en el rango permitido, actualizar carrito
                 const item = carrito.get(productId);

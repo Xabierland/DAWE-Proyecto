@@ -132,14 +132,14 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
             [productId]: { mensaje, tipo }
         }));
         
-        // Ocultar después de 3 segundos
+        // Ocultar después de 2 segundos
         setTimeout(() => {
             setNotificaciones(prev => {
                 const nuevasNotificaciones = { ...prev };
                 delete nuevasNotificaciones[productId];
                 return nuevasNotificaciones;
             });
-        }, 3000);
+        }, 1500);
     };
     
     // Función para añadir producto al carrito
@@ -318,49 +318,35 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
                         <div className="card h-100 position-relative">
                             <div className="position-relative">
                                 {/* Notificación sobre el botón de añadir al carrito */}
-                                {notificaciones[producto.id] && (
+                                {notificaciones[producto.id] ? (
                                     <div 
-                                        className={`toast show align-items-center text-white bg-${notificaciones[producto.id].tipo} border-0 position-absolute end-0 bottom-100 mb-1`}
+                                        className={`alert alert-${notificaciones[producto.id].tipo} position-absolute end-0 top-0 m-2`}
                                         role="alert"
                                         aria-live="assertive"
                                         aria-atomic="true"
                                         style={{
                                             zIndex: 1060,
                                             fontSize: '0.8rem',
-                                            minWidth: '140px',
-                                            right: '0px'
+                                            padding: '0.25rem 0.5rem',
+                                            margin: '0.5rem',
+                                            borderRadius: '0.25rem'
                                         }}
                                     >
-                                        <div className="d-flex">
-                                            <div className="toast-body py-1 px-2">
-                                                <i className={`bi bi-${notificaciones[producto.id].tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-1`}></i>
-                                                {notificaciones[producto.id].mensaje}
-                                            </div>
-                                            <button 
-                                                type="button" 
-                                                className="btn-close btn-close-white m-auto me-1" 
-                                                style={{ fontSize: '0.6rem' }}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setNotificaciones(prev => {
-                                                        const nuevas = {...prev};
-                                                        delete nuevas[producto.id];
-                                                        return nuevas;
-                                                    });
-                                                }}
-                                            ></button>
+                                        <div className="d-flex align-items-center">
+                                            <i className={`bi bi-${notificaciones[producto.id].tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-1`}></i>
+                                            <span>{notificaciones[producto.id].mensaje}</span>
                                         </div>
                                     </div>
+                                ) : (
+                                    <button 
+                                        className="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
+                                        style={{ width: '40px', height: '40px', zIndex: 1 }}
+                                        onClick={() => agregarAlCarrito(producto.id)}
+                                        disabled={!isOnline}
+                                    >
+                                        <i className="bi bi-cart-plus-fill"></i>
+                                    </button>
                                 )}
-                                
-                                <button 
-                                    className="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
-                                    style={{ width: '40px', height: '40px', zIndex: 1 }}
-                                    onClick={() => agregarAlCarrito(producto.id)}
-                                    disabled={!isOnline}
-                                >
-                                    <i className="bi bi-cart-plus-fill"></i>
-                                </button>
                             </div>
                             
                             <div className="ratio ratio-1x1">
