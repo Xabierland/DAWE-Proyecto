@@ -28,6 +28,10 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
     // Estado para mostrar detalles de producto
     const [productoDetalle, setProductoDetalle] = useState(null);
     
+    // Estado para mensajes toast/notificación sobre cada producto
+    const [notificaciones, setNotificaciones] = useState({});
+    // Estructura: { [productId]: { mensaje: string, tipo: string } }
+    
     // Memoizar función de contador de carrito para evitar recreaciones
     const actualizarContadorCarrito = useCallback(() => {
         let total = 0;
@@ -121,12 +125,38 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
         setCurrentPage(1);
     };
     
+    // Función para mostrar el toast/notificación sobre un producto específico
+    const mostrarNotificacion = (productId, mensaje, tipo = 'success') => {
+        setNotificaciones(prev => ({
+            ...prev,
+            [productId]: { mensaje, tipo }
+        }));
+        
+        // Ocultar después de 3 segundos
+        setTimeout(() => {
+            setNotificaciones(prev => {
+                const nuevasNotificaciones = { ...prev };
+                delete nuevasNotificaciones[productId];
+                return nuevasNotificaciones;
+            });
+        }, 3000);
+    };
+    
     // Función para añadir producto al carrito
     const agregarAlCarrito = (productId) => {
+        // Verificar si está online
+        if (!isOnline) {
+            mostrarNotificacion(productId, 'No se puede añadir en modo sin conexión', 'danger');
+            return;
+        }
+        
         // Buscar el producto por ID
         const producto = productos.find(p => p.id === productId);
         
-        if (!producto) return;
+        if (!producto) {
+            mostrarNotificacion(productId, 'Producto no encontrado', 'danger');
+            return;
+        }
         
         // Crear una copia local del carrito actual
         const carritoActual = new Map(mapaCarrito);
@@ -140,8 +170,9 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
                 carritoItem.cantidad++;
                 carritoActual.set(productoIdString, carritoItem);
                 guardarEnCarrito(productoIdString, carritoItem);
+                mostrarNotificacion(productId, `Añadido (${carritoItem.cantidad})`);
             } else {
-                console.log(`Máximo de copias alcanzado (${MAX_COPIAS})`);
+                mostrarNotificacion(productId, `Máximo alcanzado (${MAX_COPIAS})`, 'danger');
                 return;
             }
         } else {
@@ -154,6 +185,7 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
             };
             carritoActual.set(productoIdString, nuevoItem);
             guardarEnCarrito(productoIdString, nuevoItem);
+            mostrarNotificacion(productId, `Añadido al carrito`);
         }
         
         // Actualizar el estado del carrito
@@ -278,18 +310,58 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
                 resetearFiltros={resetearFiltros}
             />
             
+            {/* Las notificaciones se mostrarán sobre cada producto en particular */}
+            
             <div className="row row-cols-1 row-cols-md-3 g-4 mb-4" id="productsGrid">
                 {productosActuales.map((producto) => (
                     <div className="col" key={producto.id}>
                         <div className="card h-100 position-relative">
-                            <button 
-                                className="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
-                                style={{ width: '40px', height: '40px', zIndex: 1 }}
-                                onClick={() => agregarAlCarrito(producto.id)}
-                                disabled={!isOnline}
-                            >
-                                <i className="bi bi-cart-plus-fill"></i>
-                            </button>
+                            <div className="position-relative">
+                                {/* Notificación sobre el botón de añadir al carrito */}
+                                {notificaciones[producto.id] && (
+                                    <div 
+                                        className={`toast show align-items-center text-white bg-${notificaciones[producto.id].tipo} border-0 position-absolute end-0 bottom-100 mb-1`}
+                                        role="alert"
+                                        aria-live="assertive"
+                                        aria-atomic="true"
+                                        style={{
+                                            zIndex: 1060,
+                                            fontSize: '0.8rem',
+                                            minWidth: '140px',
+                                            right: '0px'
+                                        }}
+                                    >
+                                        <div className="d-flex">
+                                            <div className="toast-body py-1 px-2">
+                                                <i className={`bi bi-${notificaciones[producto.id].tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-1`}></i>
+                                                {notificaciones[producto.id].mensaje}
+                                            </div>
+                                            <button 
+                                                type="button" 
+                                                className="btn-close btn-close-white m-auto me-1" 
+                                                style={{ fontSize: '0.6rem' }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setNotificaciones(prev => {
+                                                        const nuevas = {...prev};
+                                                        delete nuevas[producto.id];
+                                                        return nuevas;
+                                                    });
+                                                }}
+                                            ></button>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                <button 
+                                    className="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
+                                    style={{ width: '40px', height: '40px', zIndex: 1 }}
+                                    onClick={() => agregarAlCarrito(producto.id)}
+                                    disabled={!isOnline}
+                                >
+                                    <i className="bi bi-cart-plus-fill"></i>
+                                </button>
+                            </div>
                             
                             <div className="ratio ratio-1x1">
                                 <img 

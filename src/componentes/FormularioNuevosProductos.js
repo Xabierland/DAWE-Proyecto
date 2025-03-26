@@ -23,6 +23,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     const [filePreview, setFilePreview] = useState('');
     const [dragging, setDragging] = useState(false);
     const [fileError, setFileError] = useState(null);
+    const [fileSucess, setFileSucess] = useState(null);
     
     const fileTypes = ["JPG", "JPEG", "PNG"];
     
@@ -155,7 +156,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         
         if (resultado) {
             // Mostrar mensaje de éxito
-            alert('Producto añadido correctamente');
+            setFileSucess(true);
             
             // Limpiar formulario
             setFormData({
@@ -491,6 +492,14 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 {fileError}
                             </div>
                         )}
+                        {fileSucess && (
+                            <div className="alert alert-success mt-2">
+                                <i className="bi bi-check-circle-fill me-2"></i>
+                                Archivo subido correctamente
+                            </div>
+                        )
+
+                        }
                     </div>
                     
                     <button 
