@@ -95,6 +95,12 @@ footer {
   padding: 1rem;
 }
 
+/* Para la alerta de "Estás offline" */
+.alert-danger {
+  --bs-alert-border-color: #FFFFFF !important;
+  --bs-alert-bg: #B20000 !important;
+}
+
 /* ==================== Estilos los botones ==================== */
 .btn {
   --bs-btn-bg: #F6CA1B !important;/*background-color*/
