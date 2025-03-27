@@ -493,7 +493,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                         
                         <div 
                             id="dragDropArea" 
-                            className={`card p-3 text-center border-dashed ${dragging ? 'hover' : ''} ${!isOnline ? 'file-uploader-disabled' : ''}`}
+                            className={`card p-3 text-center border-dashed ${!isOnline ? 'file-uploader-disabled' : ''}`}
                         >
                             <FileUploader 
                                 handleChange={handleFileChange}
