@@ -94,7 +94,8 @@ export const cargarCarrito = () =>
             // Si no se encuentra el elemento se supone que se ha borrado del catálogo
             if(!producto)
             {
-                console.log("No ta");
+                borrarDelCarrito(productId);
+                //console.log("No ta");
             }
             else
             {
