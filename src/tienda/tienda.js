@@ -170,6 +170,12 @@ export function agregarNuevoProducto(tipo, datos) {
             return false;
     }
     
+
+    if(listaProductos.find(p => p.id === Number(nuevoProducto.id)))
+    {
+        return false;
+    }
+
     listaProductos.push(nuevoProducto);
     return true;
 }
