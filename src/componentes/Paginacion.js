@@ -30,7 +30,6 @@ const Paginacion = ({
             <ul className="pagination justify-content-center">
                 {currentPage > 1 && (
                     <li className="page-item">
-                        {/* Cambiado de <a> a <button> */}
                         <button 
                             className="page-link" 
                             onClick={() => cambiarPagina(currentPage - 1)}
@@ -57,7 +56,6 @@ const Paginacion = ({
                 
                 {currentPage < totalPages && (
                     <li className="page-item">
-                        {/* Cambiado de <a> a <button> */}
                         <button 
                             className="page-link" 
                             onClick={() => cambiarPagina(currentPage + 1)}
