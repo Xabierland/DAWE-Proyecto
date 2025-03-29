@@ -8,6 +8,7 @@ import EscaparateProductos from './componentes/EscaparateProductos';
 import FormularioNuevosProductos from './componentes/FormularioNuevosProductos';
 import Pie from './componentes/Pie';
 import Carrito from './componentes/Carrito';
+import OverflowContainer from './componentes/OverflowContainer';
 
 function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -60,19 +61,8 @@ function App() {
   // Estado para controlar el overflow del body
   const [bodyOverflowHidden, setBodyOverflowHidden] = useState(false);
   
-  // Usar efecto para aplicar la clase CSS al body cuando cambia bodyOverflowHidden
-  useEffect(() => {
-    if (bodyOverflowHidden) {
-      document.body.classList.add('overflow-hidden');
-    } else {
-      document.body.classList.remove('overflow-hidden');
-    }
-    
-    // Limpiar efecto al desmontar
-    return () => {
-      document.body.classList.remove('overflow-hidden');
-    };
-  }, [bodyOverflowHidden]);
+  // En lugar de manipular directamente el DOM, usamos un componente para controlar el overflow
+  // Esta solución utiliza un componente contenedor que envuelve toda la aplicación
   
   // Escuchar eventos de modal y carrito para controlar el scroll del body
   useEffect(() => {
@@ -94,7 +84,7 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <OverflowContainer isHidden={bodyOverflowHidden}>
       <div className="contenedor">
         <Cabecera titulo="El Mono Infinito" />
         
@@ -135,7 +125,7 @@ function App() {
         </div>
       </div>
       <Pie contenido="© 2025 El Mono Infinito. Todos los derechos reservados." />
-    </div>
+    </OverflowContainer>
   );
 }
 

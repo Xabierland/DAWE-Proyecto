@@ -11,12 +11,16 @@ body {
   /*Hace que se quede fija la imagen al hacer scroll*/
   background-attachment: fixed;
   flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-/* Clase para bloquear el scroll - usada por React */
-.overflow-hidden {
-  overflow: hidden !important;
+#root {
+  height: 100%;
 }
+
+/* Eliminamos la clase overflow-hidden y usamos el componente OverflowContainer */
 
 ul {
   --bs-pagination-color: #FFFFFF !important;

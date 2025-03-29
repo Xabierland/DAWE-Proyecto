@@ -34,23 +34,8 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
         setInputValues(initialInputValues);
     }, [carritoUpdatedProp, setCarrito, updateCarritoCount]);
     
-    // Efecto para manejar clics fuera del carrito
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            // Si el clic fue fuera del carrito, cerrarlo
-            if (carritoRef.current && !carritoRef.current.contains(event.target)) {
-                setShowCarritoProp(false);
-            }
-        };
-        
-        // Agregar listener cuando el componente se monta
-        document.addEventListener('mousedown', handleClickOutside);
-        
-        // Remover listener cuando el componente se desmonta
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [setShowCarritoProp]);
+    // Utilizamos el overlay para detectar clics fuera del carrito
+    // En lugar de agregar listeners directamente al DOM
     
     // En lugar de manipular directamente el DOM para bloquear el scroll,
     // emitimos un evento que App.js puede escuchar para aplicar el estilo
