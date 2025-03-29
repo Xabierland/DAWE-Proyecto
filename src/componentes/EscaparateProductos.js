@@ -30,9 +30,8 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
     
     // Estado para mensajes toast/notificación sobre cada producto
     const [notificaciones, setNotificaciones] = useState({});
-    // Estructura: { [productId]: { mensaje: string, tipo: string } }
     
-    // Memoizar función de contador de carrito para evitar recreaciones
+    // Memorizar función de contador de carrito para evitar recreaciones
     const actualizarContadorCarrito = useCallback(() => {
         let total = 0;
         
@@ -49,7 +48,6 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
                 total += item.cantidad;
             });
             updateCarritoCount(total);
-            // No llamamos a setCarrito aquí para evitar bucles
         }
     }, [mapaCarrito, updateCarritoCount]);
     
@@ -309,15 +307,13 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
                 actualizarFiltro={actualizarFiltro}
                 resetearFiltros={resetearFiltros}
             />
-            
-            {/* Las notificaciones se mostrarán sobre cada producto en particular */}
-            
+                        
             <div className="row row-cols-1 row-cols-md-3 g-4 mb-4" id="productsGrid">
                 {productosActuales.map((producto) => (
                     <div className="col" key={producto.id}>
                         <div className="card h-100 position-relative">
+                            {/* Notificación sobre el botón de añadir al carrito */}
                             <div className="position-relative">
-                                {/* Notificación sobre el botón de añadir al carrito */}
                                 {notificaciones[producto.id] ? (
                                     <div 
                                         className={`alert alert-${notificaciones[producto.id].tipo} position-absolute end-0 top-0 m-2`}
@@ -348,17 +344,20 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
                                     </button>
                                 )}
                             </div>
-                            
-                            <div className="ratio ratio-1x1">
+                            {/* Imagen del producto */}
+                            <div className="position-relative" style={{ width: '100%', paddingBottom: '100%' }}>
                                 <img 
                                     src={producto.imagen} 
-                                    className="card-img-top producto-imagen object-fit-cover" 
+                                    className="position-absolute top-0 start-0 w-100 h-100 producto-imagen"
+                                    style={{ 
+                                        objectFit: 'cover',
+                                        cursor: 'pointer'
+                                    }}
                                     alt={producto.nombre}
-                                    style={{ cursor: 'pointer' }}
                                     onClick={() => setProductoDetalle(producto)}
                                 />
                             </div>
-                            
+                            {/* Nombre, precio y descripcion del producto */}
                             <div className="card-body">
                                 <h5 className="card-title text-truncate">{producto.nombre}</h5>
                                 <p className="card-text"><strong>Precio: </strong>{producto.precio}{DIVISA}</p>

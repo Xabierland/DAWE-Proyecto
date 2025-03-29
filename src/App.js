@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './App.css';
 
 // Importar componentes
 import Cabecera from './componentes/Cabecera';
@@ -47,12 +46,14 @@ function App() {
   
   // Estado para señalizar actualizaciones del carrito (usando función para evitar dependencias)
   const [carritoUpdated, setCarritoUpdated] = useState(0);
+  // Guardamos referencia a la función de actualización del carrito para evitar rendibujados innecesarios
   const updateCarrito = useCallback(() => {
     setCarritoUpdated(prev => prev + 1);
   }, []);
   
-  // Estado para señalizar nuevos productos añadidos (usando función para evitar dependencias)
+  // Estado para señalizar nuevos productos añadidos
   const [productosUpdated, setProductosUpdated] = useState(0);
+  // Guardamos referencia a la función de actualización de productos para evitar rendibujados innecesarios
   const onProductoAdded = useCallback(() => {
     setProductosUpdated(prev => prev + 1);
   }, []);
