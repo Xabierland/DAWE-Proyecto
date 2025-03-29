@@ -89,20 +89,43 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                 return newInputs;
             });
         } else if (newQuantity > MAX_COPIAS) {
-            // No actualizamos el carrito, solo el input, porque esto se manejará en handleInputBlur
+            // Mostrar mensaje de error y ajustar al máximo
+            setMaxCantidadError(prev => ({ ...prev, [productoIdString]: true }));
+            
+            // Actualizar el valor del input al máximo permitido
             setInputValues(prev => ({
                 ...prev,
                 [productoIdString]: MAX_COPIAS.toString()
             }));
             
-            // El mensaje de error se maneja en handleInputBlur
-            return;
+            // Actualizar también el carrito real con MAX_COPIAS
+            const item = nuevoCarrito.get(productoIdString);
+            if (item) {
+                const nuevoItem = {...item, cantidad: MAX_COPIAS};
+                nuevoCarrito.set(productoIdString, nuevoItem);
+                guardarEnCarrito(productoIdString, nuevoItem);
+            }
+            
+            // Ocultar el mensaje de error después de 1.5 segundos
+            setTimeout(() => {
+                setMaxCantidadError(prevErrors => {
+                    const newErrors = { ...prevErrors };
+                    delete newErrors[productoIdString];
+                    return newErrors;
+                });
+            }, 1500);
         } else {
             // Actualizar cantidad usando la función de tienda.js
             const item = nuevoCarrito.get(productoIdString);
             item.cantidad = newQuantity;
             nuevoCarrito.set(productoIdString, item);
             guardarEnCarrito(productoIdString, item);
+            
+            // Actualizar también el valor del input
+            setInputValues(prev => ({
+                ...prev,
+                [productoIdString]: newQuantity.toString()
+            }));
         }
         
         setCarrito(nuevoCarrito);
@@ -129,42 +152,13 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                 // Si excede el máximo, mostrar mensaje y ajustar
                 setMaxCantidadError(prev => ({ ...prev, [productId]: true }));
                 
+                // Ajustar el valor después de un breve delay para permitir ver primero el error
                 setTimeout(() => {
-                    setInputValues(prev => ({
-                        ...prev,
-                        [productId]: MAX_COPIAS.toString()
-                    }));
-                    
-                    // Actualizar también el carrito real
-                    const item = carrito.get(productId);
-                    if (item) {
-                        const nuevoItem = {...item, cantidad: MAX_COPIAS};
-                        const nuevoCarrito = new Map(carrito);
-                        nuevoCarrito.set(productId, nuevoItem);
-                        setCarrito(nuevoCarrito);
-                        guardarEnCarrito(productId, nuevoItem);
-                        updateCarritoCount(nuevoCarrito);
-                    }
+                    actualizarCantidad(productId, MAX_COPIAS);
                 }, 100);
-                
-                setTimeout(() => {
-                    setMaxCantidadError(prevErrors => {
-                        const newErrors = { ...prevErrors };
-                        delete newErrors[productId];
-                        return newErrors;
-                    });
-                }, 1500);
             } else {
                 // Si es un valor válido en el rango permitido, actualizar carrito
-                const item = carrito.get(productId);
-                if (item && item.cantidad !== parsedValue) {
-                    const nuevoItem = {...item, cantidad: parsedValue};
-                    const nuevoCarrito = new Map(carrito);
-                    nuevoCarrito.set(productId, nuevoItem);
-                    setCarrito(nuevoCarrito);
-                    guardarEnCarrito(productId, nuevoItem);
-                    updateCarritoCount(nuevoCarrito);
-                }
+                actualizarCantidad(productId, parsedValue);
             }
         }
     };
@@ -177,8 +171,16 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
         if (value === '' || isNaN(parsedValue)) {
             // Si está vacío o no es un número, eliminar el producto
             actualizarCantidad(productId, 0);
+        } else if (parsedValue > MAX_COPIAS) {
+            // Si excede el máximo, ajustar al máximo
+            actualizarCantidad(productId, MAX_COPIAS);
+        } else if (parsedValue <= 0) {
+            // Si es 0 o negativo, eliminar el producto
+            actualizarCantidad(productId, 0);
+        } else {
+            // Si es un valor válido, actualizar el carrito
+            actualizarCantidad(productId, parsedValue);
         }
-        // El resto de casos ya se manejan en handleInputChange
     };
     
     // Calcular el total del carrito
@@ -245,7 +247,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                                                 className="form-control form-control-sm product-quantity" 
                                                 value={inputValues[productId] || ''}
                                                 min="0"
-                                                max={MAX_COPIAS + 1}
+                                                max={MAX_COPIAS}
                                                 style={{ width: '70px' }}
                                                 onChange={(e) => handleInputChange(productId, e.target.value)}
                                                 onBlur={() => handleInputBlur(productId)}

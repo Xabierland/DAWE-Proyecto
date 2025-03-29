@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileUploader } from "react-drag-drop-files";
 import { DIVISA, agregarNuevoProducto as agregarProductoTienda } from '../tienda/tienda';
 
@@ -20,9 +20,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     });
     
     const [file, setFile] = useState(null);
-    // Eliminamos el estado filePreview que ya no necesitamos
+    const [fileName, setFileName] = useState(''); // Estado para el nombre del archivo
+    const [inputKey, setInputKey] = useState(Date.now()); // Estado para forzar la actualización del input file
     const [dragging, setDragging] = useState(false);
-    const fileInputRef = useRef(null);
     
     // Estado unificado para mensajes
     const [mensaje, setMensaje] = useState({
@@ -55,13 +55,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             reader.onload = (e) => {
                 // La URL base64 persistirá incluso después de recargar la página si la guardamos
                 setFormData(prev => ({ ...prev, imagen: e.target.result }));
-                
-                // Actualizamos el valor del input para mostrar el nombre del archivo
-                if (fileInputRef.current) {
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    fileInputRef.current.files = dataTransfer.files;
-                }
+                setFileName(file.name); // Actualizar el nombre del archivo
             };
             reader.readAsDataURL(file);
         }
@@ -95,11 +89,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             mostrarMensaje(errorMessage, 'danger');
         }
         setFile(null);
-        
-        // Limpiar también el valor del input file
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
+        setFileName('');
+        // En lugar de manipular el DOM directamente, usamos un key único para resetear el input
+        setInputKey(Date.now());
     };
 
     const handleFileChange = (file) => {
@@ -112,6 +104,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         setMensaje(prev => prev.mostrar ? {...prev, mostrar: false} : prev);
         
         setFile(file);
+        setFileName(file.name);
         mostrarMensaje('Imagen seleccionada correctamente', 'success');
     };
 
@@ -133,7 +126,6 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         
         if (e.target.files && e.target.files.length > 1) {
             resetFileState('Solo se puede subir un archivo a la vez');
-            e.target.value = '';
             return;
         }
 
@@ -142,7 +134,6 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             const fileType = selectedFile.type.split('/')[1].toUpperCase();
             if (!fileTypes.includes(fileType)) {
                 handleTypeError(); // Reutilizamos la lógica de error de tipo
-                e.target.value = '';
                 return;
             }
             handleFileChange(selectedFile);
@@ -220,11 +211,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                 color: ''
             });
             setFile(null);
-            
-            // Limpiar el input file usando React
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
+            setFileName('');
+            // Resetear el input file con un nuevo key
+            setInputKey(Date.now());
             
             // Notificar que se ha añadido un nuevo producto
             if (onProductoAdded) {
@@ -508,7 +497,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 accept=".jpg,.jpeg,.png"
                                 onChange={handleInputFileChange}
                                 disabled={!isOnline}
-                                ref={fileInputRef}
+                                key={inputKey} // Usar key para resetear el input en lugar de manipular el DOM
                             />
                             {file && (
                                 <button 
@@ -550,6 +539,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                              !isOnline ? "No tienes conexión" : 
                                              file ? "Archivo seleccionado" : "O arrastre y suelte aquí"}
                                         </p>
+                                        {fileName && <p className="small text-muted mb-0">{fileName}</p>}
                                     </div>
                                 }
                             />

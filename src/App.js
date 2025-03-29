@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
 // Importar componentes
@@ -57,17 +57,12 @@ function App() {
     setProductosUpdated(prev => prev + 1);
   }, []);
 
-  // Estado para controlar el overflow del body (en lugar de manipular el DOM directamente)
+  // Estado para controlar el overflow del body
   const [bodyOverflowHidden, setBodyOverflowHidden] = useState(false);
   
-  // useLayoutEffect para aplicar el estilo antes del repintado
-  useLayoutEffect(() => {
-    // Obtener el estilo original del overflow
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    
-    // Aplicar el estilo basado en el estado
+  // Usar efecto para aplicar la clase CSS al body cuando cambia bodyOverflowHidden
+  useEffect(() => {
     if (bodyOverflowHidden) {
-      // Crear una clase CSS en lugar de aplicar style directamente
       document.body.classList.add('overflow-hidden');
     } else {
       document.body.classList.remove('overflow-hidden');
