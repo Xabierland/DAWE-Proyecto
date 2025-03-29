@@ -17,8 +17,25 @@ self.__WB_MANIFEST = self.__WB_MANIFEST || [];
 if (workbox) {
   console.log(`Workbox está cargado`);
   
-  // Personalizar el directorio de precache y el nombre del manifiesto
-  workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
+  // Precachear el manifest.json junto con otros recursos importantes
+  workbox.precaching.precacheAndRoute([
+    { url: '/manifest.json', revision: '1' },
+    ...self.__WB_MANIFEST
+  ]);
+  
+  // Regla específica para manifest.json
+  workbox.routing.registerRoute(
+    /manifest\.json$/,
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'app-manifest',
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 1,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 días
+        }),
+      ],
+    })
+  );
   
   // Cache para imágenes
   workbox.routing.registerRoute(
@@ -49,6 +66,20 @@ if (workbox) {
       request.destination === 'script',
     new workbox.strategies.StaleWhileRevalidate({
       cacheName: 'static-resources',
+    })
+  );
+  
+  // Cache para iconos de la aplicación
+  workbox.routing.registerRoute(
+    /\/img\/icons\//,
+    new workbox.strategies.CacheFirst({
+      cacheName: 'app-icons',
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 10,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 días
+        }),
+      ],
     })
   );
   
