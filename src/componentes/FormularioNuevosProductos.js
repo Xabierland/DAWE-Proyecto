@@ -50,21 +50,20 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     // Efecto para actualizar cuando cambia el archivo
     useEffect(() => {
         if (file) {
-            // Actualizamos la imagen en formData
-            const objectUrl = URL.createObjectURL(file);
-            setFormData(prev => ({ ...prev, imagen: objectUrl }));
-            
-            // Actualizamos el valor del input para mostrar el nombre del archivo
-            if (fileInputRef.current) {
-                // Creamos un nuevo FileList que contenga nuestro archivo
-                // Esto es una solución alternativa ya que FileList no es directamente modificable
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                fileInputRef.current.files = dataTransfer.files;
-            }
-            
-            // Limpiar URL al desmontar
-            return () => URL.revokeObjectURL(objectUrl);
+            // En lugar de usar URL.createObjectURL, usamos FileReader para convertir a base64
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // La URL base64 persistirá incluso después de recargar la página si la guardamos
+                setFormData(prev => ({ ...prev, imagen: e.target.result }));
+                
+                // Actualizamos el valor del input para mostrar el nombre del archivo
+                if (fileInputRef.current) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInputRef.current.files = dataTransfer.files;
+                }
+            };
+            reader.readAsDataURL(file);
         }
     }, [file]);
     
