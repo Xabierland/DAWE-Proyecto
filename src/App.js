@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
+import './App.css';
 
 // Importar componentes
 import Cabecera from './componentes/Cabecera';
@@ -46,16 +47,55 @@ function App() {
   
   // Estado para señalizar actualizaciones del carrito (usando función para evitar dependencias)
   const [carritoUpdated, setCarritoUpdated] = useState(0);
-  // Guardamos referencia a la función de actualización del carrito para evitar rendibujados innecesarios
   const updateCarrito = useCallback(() => {
     setCarritoUpdated(prev => prev + 1);
   }, []);
   
-  // Estado para señalizar nuevos productos añadidos
+  // Estado para señalizar nuevos productos añadidos (usando función para evitar dependencias)
   const [productosUpdated, setProductosUpdated] = useState(0);
-  // Guardamos referencia a la función de actualización de productos para evitar rendibujados innecesarios
   const onProductoAdded = useCallback(() => {
     setProductosUpdated(prev => prev + 1);
+  }, []);
+
+  // Estado para controlar el overflow del body (en lugar de manipular el DOM directamente)
+  const [bodyOverflowHidden, setBodyOverflowHidden] = useState(false);
+  
+  // useLayoutEffect para aplicar el estilo antes del repintado
+  useLayoutEffect(() => {
+    // Obtener el estilo original del overflow
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    
+    // Aplicar el estilo basado en el estado
+    if (bodyOverflowHidden) {
+      // Crear una clase CSS en lugar de aplicar style directamente
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    
+    // Limpiar efecto al desmontar
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [bodyOverflowHidden]);
+  
+  // Escuchar eventos de modal y carrito para controlar el scroll del body
+  useEffect(() => {
+    const handleModalState = (event) => {
+      setBodyOverflowHidden(event.detail.isOpen);
+    };
+    
+    const handleCarritoState = (event) => {
+      setBodyOverflowHidden(event.detail.isOpen);
+    };
+    
+    window.addEventListener('modalState', handleModalState);
+    window.addEventListener('carritoState', handleCarritoState);
+    
+    return () => {
+      window.removeEventListener('modalState', handleModalState);
+      window.removeEventListener('carritoState', handleCarritoState);
+    };
   }, []);
 
   return (

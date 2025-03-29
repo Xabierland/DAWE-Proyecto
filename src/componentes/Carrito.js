@@ -52,14 +52,21 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
         };
     }, [setShowCarritoProp]);
     
-    // Efecto para bloquear el scroll del body cuando el carrito está abierto
+    // En lugar de manipular directamente el DOM para bloquear el scroll,
+    // emitimos un evento que App.js puede escuchar para aplicar el estilo
     useEffect(() => {
-        // Bloquear el scroll del body
-        document.body.style.overflow = 'hidden';
+        if (typeof window !== 'undefined') {
+            // Notificar a App.js que el carrito está abierto
+            const event = new CustomEvent('carritoState', { detail: { isOpen: true } });
+            window.dispatchEvent(event);
+        }
         
-        // Restaurar el scroll cuando el componente se desmonta
         return () => {
-            document.body.style.overflow = 'auto';
+            if (typeof window !== 'undefined') {
+                // Notificar a App.js que el carrito está cerrado
+                const event = new CustomEvent('carritoState', { detail: { isOpen: false } });
+                window.dispatchEvent(event);
+            }
         };
     }, []);
     

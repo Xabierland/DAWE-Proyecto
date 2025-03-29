@@ -204,9 +204,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             // Mostrar mensaje de éxito
             mostrarMensaje('Producto agregado correctamente', 'success');
             
-            // Limpiar formulario
+            // Limpiar formulario - Usar React en lugar de manipular el DOM
             setFormData({
-                tipo: '',
+                tipo: '', // Resetear el tipo directamente en React
                 nombre: '',
                 precio: '',
                 descripcion: '',
@@ -221,10 +221,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             });
             setFile(null);
             
-            // Reset del dropdown de tipo
-            document.getElementById('productType').selectedIndex = 0;
-            
-            // Limpiar el input file
+            // Limpiar el input file usando React
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }

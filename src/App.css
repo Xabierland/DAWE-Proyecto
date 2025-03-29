@@ -13,6 +13,11 @@ body {
   flex-direction: column;
 }
 
+/* Clase para bloquear el scroll - usada por React */
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
 ul {
   --bs-pagination-color: #FFFFFF !important;
   --bs-pagination-hover-color: #f8dd6e !important;

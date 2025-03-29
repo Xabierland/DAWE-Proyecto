@@ -2,11 +2,22 @@ import React, { useEffect } from 'react';
 import { DIVISA } from '../tienda/tienda';
 
 const DetallesProducto = ({ producto, onClose }) => {
-    // Impedir scroll en el body cuando se muestra el modal
+    // En lugar de manipular el DOM directamente, podemos enviar el estado hacia arriba
+    // donde el componente padre puede aplicar la clase al cuerpo o contenedor principal
     useEffect(() => {
-        document.body.classList.add("overflow-hidden");
+        // Notificar al componente padre que el modal está abierto
+        if (typeof window !== 'undefined') {
+            // Enviar un evento personalizado que puede ser captado por el componente padre
+            const event = new CustomEvent('modalState', { detail: { isOpen: true } });
+            window.dispatchEvent(event);
+        }
+        
         return () => {
-            document.body.classList.remove("overflow-hidden");
+            // Notificar al componente padre que el modal está cerrado
+            if (typeof window !== 'undefined') {
+                const event = new CustomEvent('modalState', { detail: { isOpen: false } });
+                window.dispatchEvent(event);
+            }
         };
     }, []);
     
