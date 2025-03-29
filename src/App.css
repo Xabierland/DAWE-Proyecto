@@ -20,8 +20,6 @@ body {
   height: 100%;
 }
 
-/* Eliminamos la clase overflow-hidden y usamos el componente OverflowContainer */
-
 ul {
   --bs-pagination-color: #FFFFFF !important;
   --bs-pagination-hover-color: #f8dd6e !important;

@@ -61,9 +61,6 @@ function App() {
   // Estado para controlar el overflow del body
   const [bodyOverflowHidden, setBodyOverflowHidden] = useState(false);
   
-  // En lugar de manipular directamente el DOM, usamos un componente para controlar el overflow
-  // Esta solución utiliza un componente contenedor que envuelve toda la aplicación
-  
   // Escuchar eventos de modal y carrito para controlar el scroll del body
   useEffect(() => {
     const handleModalState = (event) => {
@@ -109,7 +106,6 @@ function App() {
             <EscaparateProductos 
               updateCarritoCount={setCarritoCount}
               updateCarrito={updateCarrito}
-              isOnline={isOnline}
               productosUpdated={productosUpdated}
               mapaCarrito={carrito}
               setCarrito={setCarrito}

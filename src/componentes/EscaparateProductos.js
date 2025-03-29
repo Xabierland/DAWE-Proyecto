@@ -5,7 +5,7 @@ import BuscadorProductos from './BuscadorProductos';
 import Paginacion from './Paginacion';
 import DetallesProducto from './DetallesProducto';
 
-const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, productosUpdated, mapaCarrito, setCarrito }) => {
+const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdated, mapaCarrito, setCarrito }) => {
     // Estado para el listado de productos y filtrados
     const [productos, setProductos] = useState(listaProductos);
     const [productosFiltrados, setProductosFiltrados] = useState([...productos]);
@@ -142,12 +142,6 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
     
     // Función para añadir producto al carrito
     const agregarAlCarrito = (productId) => {
-        // Verificar si está online
-        if (!isOnline) {
-            mostrarNotificacion(productId, 'No se puede añadir en modo sin conexión', 'danger');
-            return;
-        }
-        
         // Buscar el producto por ID
         const producto = productos.find(p => p.id === productId);
         
@@ -338,7 +332,6 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, isOnline, prod
                                         className="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
                                         style={{ width: '40px', height: '40px', zIndex: 1 }}
                                         onClick={() => agregarAlCarrito(producto.id)}
-                                        disabled={!isOnline}
                                     >
                                         <i className="bi bi-cart-plus-fill"></i>
                                     </button>
