@@ -232,7 +232,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                                                 className="form-control form-control-sm product-quantity" 
                                                 value={inputValues[productId] || ''}
                                                 min="0"
-                                                max={MAX_COPIAS}
+                                                max={MAX_COPIAS+1}
                                                 style={{ width: '70px' }}
                                                 onChange={(e) => handleInputChange(productId, e.target.value)}
                                                 onBlur={() => handleInputBlur(productId)}
