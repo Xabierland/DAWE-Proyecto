@@ -73,7 +73,6 @@ export const borrarDelCarrito = (idProducto) => {
 
 export const cargarCarrito = () => 
 {      
-    //localStorage.clear();
     const carritoTemporal = new Map();
 
     try {

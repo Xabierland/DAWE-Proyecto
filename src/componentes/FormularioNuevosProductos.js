@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FileUploader } from "react-drag-drop-files";
 import { DIVISA, agregarNuevoProducto as agregarProductoTienda } from '../tienda/tienda';
 
@@ -20,8 +20,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     });
     
     const [file, setFile] = useState(null);
-    const [filePreview, setFilePreview] = useState('');
+    // Eliminamos el estado filePreview que ya no necesitamos
     const [dragging, setDragging] = useState(false);
+    const fileInputRef = useRef(null);
     
     // Estado unificado para mensajes
     const [mensaje, setMensaje] = useState({
@@ -46,12 +47,21 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         }, 1500);
     };
     
-    // Efecto para actualizar vista previa del archivo
+    // Efecto para actualizar cuando cambia el archivo
     useEffect(() => {
         if (file) {
+            // Actualizamos la imagen en formData
             const objectUrl = URL.createObjectURL(file);
-            setFilePreview(objectUrl);
             setFormData(prev => ({ ...prev, imagen: objectUrl }));
+            
+            // Actualizamos el valor del input para mostrar el nombre del archivo
+            if (fileInputRef.current) {
+                // Creamos un nuevo FileList que contenga nuestro archivo
+                // Esto es una solución alternativa ya que FileList no es directamente modificable
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInputRef.current.files = dataTransfer.files;
+            }
             
             // Limpiar URL al desmontar
             return () => URL.revokeObjectURL(objectUrl);
@@ -86,7 +96,11 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             mostrarMensaje(errorMessage, 'danger');
         }
         setFile(null);
-        setFilePreview('');
+        
+        // Limpiar también el valor del input file
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     };
 
     const handleFileChange = (file) => {
@@ -134,6 +148,12 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             }
             handleFileChange(selectedFile);
         }
+    };
+    
+    // Nueva función para eliminar el archivo seleccionado
+    const handleRemoveFile = () => {
+        resetFileState();
+        mostrarMensaje('Imagen eliminada', 'info');
     };
 
     const handleSubmit = (e) => {
@@ -201,10 +221,14 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                 color: ''
             });
             setFile(null);
-            setFilePreview('');
             
             // Reset del dropdown de tipo
             document.getElementById('productType').selectedIndex = 0;
+            
+            // Limpiar el input file
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
             
             // Notificar que se ha añadido un nuevo producto
             if (onProductoAdded) {
@@ -488,7 +512,18 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 accept=".jpg,.jpeg,.png"
                                 onChange={handleInputFileChange}
                                 disabled={!isOnline}
+                                ref={fileInputRef}
                             />
+                            {file && (
+                                <button 
+                                    type="button" 
+                                    className="btn btn-outline-secondary" 
+                                    onClick={handleRemoveFile}
+                                    title="Eliminar imagen"
+                                >
+                                    <i className="bi bi-x"></i>
+                                </button>
+                            )}
                         </div>
                         
                         <div 
@@ -513,30 +548,16 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 }}
                                 children={
                                     <div style={{backgroundColor: !isOnline ? "var(--bs-secondary-bg)" : "transparent"}}> 
-                                        <i className={`bi mb-2 ${!isOnline ? 'bi-exclamation-circle-fill text-danger' : 'bi-cloud-upload'}`}></i>
-                                        {isOnline ? (
-                                            dragging ? (
-                                                <p className="mb-0" id="dropText">Suelta la imagen</p>
-                                            ) : (
-                                                <p className="mb-0" id="dropText">O arrastre y suelte aquí</p>
-                                            )
-                                        ) : (
-                                            <p className="mb-0 text-danger" id="dropText">No tienes conexión</p>
-                                        )}  
+                                        <i className={`bi mb-2 ${dragging ? 'bi-file-arrow-down' : (file ? 'bi-check-circle-fill text-success' : 'bi-cloud-upload')}`}></i>
+                                        <p className="mb-0" id="dropText">
+                                            {dragging ? "Suelta la imagen" : 
+                                             !isOnline ? "No tienes conexión" : 
+                                             file ? "Archivo seleccionado" : "O arrastre y suelte aquí"}
+                                        </p>
                                     </div>
                                 }
                             />
                         </div>
-                        {filePreview && (
-                            <div className="mt-2 text-center">
-                                <img 
-                                    src={filePreview} 
-                                    alt="Vista previa" 
-                                    style={{ maxHeight: '100px' }} 
-                                    className="img-fluid"
-                                />
-                            </div>
-                        )}
                         
                         {/* Sistema unificado de mensajes */}
                         {renderMensaje()}
