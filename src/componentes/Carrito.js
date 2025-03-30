@@ -139,7 +139,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                 
                 // Ajustar el valor después de un breve delay para permitir ver primero el error
                 setTimeout(() => {
-                    actualizarCantidad(productId, MAX_COPIAS);
+                    actualizarCantidad(productId, MAX_COPIAS+1);
                 }, 100);
             } else {
                 // Si es un valor válido en el rango permitido, actualizar carrito
