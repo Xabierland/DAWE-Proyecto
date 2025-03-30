@@ -6,6 +6,8 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
 [dawe.xabierland.com](https://dawe.xabierland.com)
 
+[dawe2.xabierland.com](https://dawe2-xabierland.com)
+
 ## Miembros del grupo
 
 - Xabier Gabiña
@@ -21,37 +23,55 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 npm install
 ```
 
-### Iniciar el servidor
+### Entorno de Desarrollo
+
+#### Iniciar el servidor
 
 ```bash
 npm start
+```
+
+### Entorno de Produccion
+
+#### Build
+
+```bash
+npm run build
+```
+
+#### Iniciar el servidor
+
+```bash
+serve -s build
 ```
 
 ## Division de Tareas
 
 ### React
 
-- [ ] Cabecera - Xabier
-- [ ] MenuNavegacion - Ander
-- [ ] BuscadorProductos - Luken
-- [ ] EscaparateProductos - Xabier
-  - [ ] Paginacion
-  - [ ] DetallesProducto
-- [ ] FormularioNuevosProductos +Drag&Drop - Ander
-- [ ] Pie - Xabier
-- [ ] Carrito - Eneko
+- [X] Cabecera - Xabier
+- [X] MenuNavegacion - Ander
+- [X] BuscadorProductos - Luken
+- [X] EscaparateProductos - Xabier
+  - [X] Paginacion
+  - [X] DetallesProducto
+- [X] FormularioNuevosProductos - Ander
+  - [X] Drag&Drop
+- [X] Pie - Xabier
+- [X] Carrito - Eneko
 
 ### Carrito almacenado en localStorage
 
-- [ ] GuardarEnCarrito - Eneko
-- [ ] Borra un producto por su ID del localStorage - Eneko
-- [ ] CargarCarrito - Eneko
+- [X] GuardarEnCarrito - Eneko
+- [X] Borra un producto por su ID del localStorage - Eneko
+- [X] CargarCarrito - Eneko
 
 ### Offline
 
-- [ ] Formulario gris - Luken
-- [ ] Aviso rojo - Luken
+- [X] Formulario gris - Luken
+- [X] Aviso rojo - Luken
+- [X] Service Worker - Xabier
 
 ### Otros
 
-- [ ] Constantes : DIVISA y MAX_COPIAS - Xabier
+- [X] Constantes : DIVISA y MAX_COPIAS - Xabier
