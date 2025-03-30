@@ -514,7 +514,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                         <div 
                             id="dragDropArea" 
                             className={`card p-3 text-center border-dashed ${!isOnline ? 'file-uploader-disabled' : ''}`}
-                        >
+                            style={{backgroundColor: !isOnline ? "var(--bs-secondary-bg)" : "transparent"}}>
                             <FileUploader 
                                 handleChange={handleFileChange}
                                 name="file"
@@ -533,7 +533,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 }}
                                 children={
                                     <div style={{backgroundColor: !isOnline ? "var(--bs-secondary-bg)" : "transparent"}}> 
-                                        <i className={`bi mb-2 ${dragging ? 'bi-file-arrow-down' : (file ? 'bi-check-circle-fill text-success' : 'bi-cloud-upload')}`}></i>
+                                        <i className={`bi mb-2 ${!isOnline ? 'bi-exclamation-circle-fill' : (dragging ? 'bi-file-arrow-down' : (file ? 'bi-check-circle-fill text-success' : 'bi-cloud-upload'))}`}></i>
                                         <p className="mb-0" id="dropText">
                                             {dragging ? "Suelta la imagen" : 
                                              !isOnline ? "No tienes conexión" : 
