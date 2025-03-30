@@ -189,7 +189,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             nombre: formData.nombre,
             precio: parseFloat(formData.precio),
             descripcion: formData.descripcion || '',
-            imagen: formData.imagen || '/img/productos/default.png'
+            imagen: formData.imagen || '/imagenes/productos/default.png'
         };
         
         // Añadir campos específicos según el tipo
