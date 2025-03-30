@@ -11,7 +11,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
     // Referencia al elemento del carrito para detectar clics fuera
     const carritoRef = useRef(null);
     
-    // Memoizar la función con useCallback para evitar recreaciones
+    // Memorizar la función con useCallback para evitar recreaciones
     const updateCarritoCount = useCallback((carritoActual) => {
         const count = Array.from(carritoActual.values()).reduce(
             (total, item) => total + item.cantidad, 0
@@ -34,11 +34,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
         setInputValues(initialInputValues);
     }, [carritoUpdatedProp, setCarrito, updateCarritoCount]);
     
-    // Utilizamos el overlay para detectar clics fuera del carrito
-    // En lugar de agregar listeners directamente al DOM
-    
-    // En lugar de manipular directamente el DOM para bloquear el scroll,
-    // emitimos un evento que App.js puede escuchar para aplicar el estilo
+    // Cuando se muestra el carrito se notifica a App.js que no se pueda hacer scroll
     useEffect(() => {
         if (typeof window !== 'undefined') {
             // Notificar a App.js que el carrito está abierto
