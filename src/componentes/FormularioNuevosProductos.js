@@ -90,8 +90,26 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         }
         setFile(null);
         setFileName('');
-        // En lugar de manipular el DOM directamente, usamos un key único para resetear el input
+        
+        // Generar una nueva key para forzar la re-renderización del input file
         setInputKey(Date.now());
+        
+        // También limpiar la imagen del formulario
+        setFormData(prevData => ({
+            ...prevData,
+            imagen: null
+        }));
+        
+        // Intentar limpiar directamente el input file
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            try {
+                fileInput.value = '';
+            } catch (error) {
+                console.error("Error al resetear input file:", error);
+                // El reseteo mediante key será nuestro respaldo
+            }
+        }
     };
 
     const handleFileChange = (file) => {
@@ -105,6 +123,22 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         
         setFile(file);
         setFileName(file.name);
+        
+        // Crear un nuevo objeto DataTransfer para simular un evento de input file
+        try {
+            // Esta parte es para sincronizar el archivo con el input file
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            
+            // Obtener el elemento input y asignarle los archivos
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) {
+                fileInput.files = dataTransfer.files;
+            }
+        } catch (error) {
+            console.error("Error al sincronizar el archivo con el input file:", error);
+        }
+        
         mostrarMensaje('Imagen seleccionada correctamente', 'success');
     };
 
@@ -136,13 +170,36 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                 handleTypeError(); // Reutilizamos la lógica de error de tipo
                 return;
             }
-            handleFileChange(selectedFile);
+            
+            // Actualizar los estados sin llamar a handleFileChange para evitar un loop
+            setFile(selectedFile);
+            setFileName(selectedFile.name);
+            mostrarMensaje('Imagen seleccionada correctamente', 'success');
+        } else {
+            // Si se eliminó el archivo desde el input file
+            resetFileState();
         }
     };
     
-    // Nueva función para eliminar el archivo seleccionado
+    // Función para eliminar el archivo seleccionado
     const handleRemoveFile = () => {
+        // Resetear el input file a través de su key
         resetFileState();
+        
+        // Limpiar también el input file directamente
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            // Crear un nuevo DataTransfer vacío
+            try {
+                const emptyDataTransfer = new DataTransfer();
+                fileInput.files = emptyDataTransfer.files;
+            } catch (error) {
+                console.error("Error al limpiar el input file:", error);
+                // Como alternativa, reseteamos el elemento completo
+                fileInput.value = '';
+            }
+        }
+        
         mostrarMensaje('Imagen eliminada', 'info');
     };
 
