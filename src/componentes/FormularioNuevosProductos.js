@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FileUploader } from "react-drag-drop-files";
 import { DIVISA, agregarNuevoProducto as agregarProductoTienda } from '../tienda/tienda';
 
@@ -21,7 +21,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState(''); // Estado para el nombre del archivo
-    const [inputKey, setInputKey] = useState(Date.now()); // Estado para forzar la actualización del input file
+    const fileInputRef = useRef(null); // Referencia al input file
     const [dragging, setDragging] = useState(false);
     
     // Estado unificado para mensajes
@@ -91,24 +91,15 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         setFile(null);
         setFileName('');
         
-        // Generar una nueva key para forzar la re-renderización del input file
-        setInputKey(Date.now());
-        
-        // También limpiar la imagen del formulario
+        // Limpiar la imagen del formulario
         setFormData(prevData => ({
             ...prevData,
             imagen: null
         }));
         
-        // Intentar limpiar directamente el input file
-        const fileInput = document.getElementById('fileInput');
-        if (fileInput) {
-            try {
-                fileInput.value = '';
-            } catch (error) {
-                console.error("Error al resetear input file:", error);
-                // El reseteo mediante key será nuestro respaldo
-            }
+        // Resetear el input file mediante la ref
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
@@ -124,19 +115,17 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         setFile(file);
         setFileName(file.name);
         
-        // Crear un nuevo objeto DataTransfer para simular un evento de input file
-        try {
-            // Esta parte es para sincronizar el archivo con el input file
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            
-            // Obtener el elemento input y asignarle los archivos
-            const fileInput = document.getElementById('fileInput');
-            if (fileInput) {
-                fileInput.files = dataTransfer.files;
-            }
-        } catch (error) {
-            console.error("Error al sincronizar el archivo con el input file:", error);
+        // Crear un archivo de tipo File a partir del archivo recibido
+        // (esto es necesario porque FileUploader podría devolver un objeto diferente)
+        const newFile = new File([file], file.name, { type: file.type });
+        
+        // Crear un objeto FileList con nuestro nuevo archivo
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(newFile);
+        
+        // Actualizar el valor del input file usando la ref
+        if (fileInputRef.current) {
+            fileInputRef.current.files = dataTransfer.files;
         }
         
         mostrarMensaje('Imagen seleccionada correctamente', 'success');
@@ -183,23 +172,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     
     // Función para eliminar el archivo seleccionado
     const handleRemoveFile = () => {
-        // Resetear el input file a través de su key
         resetFileState();
-        
-        // Limpiar también el input file directamente
-        const fileInput = document.getElementById('fileInput');
-        if (fileInput) {
-            // Crear un nuevo DataTransfer vacío
-            try {
-                const emptyDataTransfer = new DataTransfer();
-                fileInput.files = emptyDataTransfer.files;
-            } catch (error) {
-                console.error("Error al limpiar el input file:", error);
-                // Como alternativa, reseteamos el elemento completo
-                fileInput.value = '';
-            }
-        }
-        
         mostrarMensaje('Imagen eliminada', 'info');
     };
 
@@ -252,9 +225,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             // Mostrar mensaje de éxito
             mostrarMensaje('Producto agregado correctamente', 'success');
             
-            // Limpiar formulario - Usar React en lugar de manipular el DOM
+            // Limpiar formulario
             setFormData({
-                tipo: '', // Resetear el tipo directamente en React
+                tipo: '',
                 nombre: '',
                 precio: '',
                 descripcion: '',
@@ -269,8 +242,11 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
             });
             setFile(null);
             setFileName('');
-            // Resetear el input file con un nuevo key
-            setInputKey(Date.now());
+            
+            // Resetear el input file mediante la ref
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
             
             // Notificar que se ha añadido un nuevo producto
             if (onProductoAdded) {
@@ -554,7 +530,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 accept=".jpg,.jpeg,.png"
                                 onChange={handleInputFileChange}
                                 disabled={!isOnline}
-                                key={inputKey} // Usar key para resetear el input en lugar de manipular el DOM
+                                ref={fileInputRef}
                             />
                             {file && (
                                 <button 
