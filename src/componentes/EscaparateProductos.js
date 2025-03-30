@@ -51,7 +51,7 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
         }
     }, [mapaCarrito, updateCarritoCount]);
     
-    // Memoizar función para aplicar todos los filtros
+    // Memorizar función para aplicar todos los filtros
     const aplicarTodosFiltros = useCallback((productosBase = productos) => {
         // 1. Comenzar con todos los productos o los filtrados por búsqueda
         let resultados = [...productosBase];
