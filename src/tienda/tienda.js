@@ -43,7 +43,7 @@ export const listaProductos = [
 
     // Fundas
     new Funda("Funda Kobo Clara X5", 20, "Enfunda", "Wolframio", '/imagenes/productos/FundaKoboClara.jpg'),
-    new Funda("Funda Kindle Paperwhite", 20, "Enfunda", "Plastico duro", '/imagenes/productos/KindlePaperwhite.jpg'),
+    new Funda("Funda Kindle Paperwhite", 20, "Enfunda", "Plastico duro", '/imagenes/productos/FundaPaperwhite.jpg'),
     new Funda("Funda Universal", 15, "Compatible con varios modelos", "Plastico", '/imagenes/productos/FundaUniversal.jpg')
 ];
 
