@@ -60,7 +60,7 @@ serve -s build
 - [X] Pie - Xabier
 - [X] Carrito - Eneko
 
-### Carrito almacenado en localStorage
+### Carrito almacenado en localStorage 
 
 - [X] GuardarEnCarrito - Eneko
 - [X] Borra un producto por su ID del localStorage - Eneko
