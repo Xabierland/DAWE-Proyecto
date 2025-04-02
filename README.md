@@ -59,7 +59,7 @@ serve -s build
   - [X] Drag&Drop
 - [X] Pie - Xabier
 - [X] Carrito - Eneko
- 
+  
 ### Carrito almacenado en localStorage 
 
 - [X] GuardarEnCarrito - Eneko
