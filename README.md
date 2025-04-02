@@ -65,7 +65,7 @@ serve -s build
 - [X] GuardarEnCarrito - Eneko
 - [X] Borra un producto por su ID del localStorage - Eneko
 - [X] CargarCarrito - Eneko
-
+ 
 ### Offline
 
 - [X] Formulario gris - Luken
