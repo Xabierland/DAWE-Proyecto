@@ -12,7 +12,6 @@ db.createCollection( "Usuarios" ,
                     Nombre:{bsonType:"string"},
                     Email:{bsonType:"string"},
                     Rol:{bsonType:"string"},
-                    Clave:{bsonType:"string"},
                     AnimalFavorito:{bsonType:"string"},
                     LibroFavorito:{bsonType:"string"},
                     GeneroFavorito:{bsonType:"string"}
