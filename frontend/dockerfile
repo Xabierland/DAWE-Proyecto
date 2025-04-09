@@ -1,5 +1,15 @@
 FROM node:23-slim
+
 WORKDIR /app
-COPY package.json .
+
+# Copiar solo el package.json y package-lock.json para aprovechar la caché de Docker
+COPY package*.json ./
+
+# Instalar dependencias
 RUN npm install
+
+# Exponer el puerto para desarrollo
+EXPOSE 3000
+
+# Comando para iniciar el servidor de desarrollo
 CMD ["npm", "start"]

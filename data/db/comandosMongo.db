@@ -53,7 +53,7 @@ db.createCollection( "Productos" ,
 )
 
 
-db.Usuarios.insert( 
+Usuarios.insert( 
         {   
             Nombre: "<nombre>", 
             Email: "<email>", 
@@ -77,7 +77,7 @@ db.Usuarios.insert(
 			"Paginas":{"bsonType":"int"},
 
 // Libro fisico
-db.Productos.insert( 
+Productos.insert( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
@@ -91,7 +91,7 @@ db.Productos.insert(
 
         
 // Libro digital
-db.Productos.insert( 
+Productos.insert( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
@@ -105,7 +105,7 @@ db.Productos.insert(
         } )
 
 // Ebook
-db.Productos.insert( 
+Productos.insert( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
@@ -117,7 +117,7 @@ db.Productos.insert(
 
 
 // Funda
-db.Productos.insert( 
+Productos.insert( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
@@ -129,7 +129,7 @@ db.Productos.insert(
 
 
 // MarcaPaginas
-db.Productos.insert( 
+Productos.insert( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
