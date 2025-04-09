@@ -1,3 +1,11 @@
 # Dockerfile para el backend usando Node con Express
-FROM node:18
+FROM node:23-slim
+
+COPY package*.json ./
+
+# Copiar solo el package.json y package-lock.json para aprovechar la caché de Docker
+COPY package*.json ./
+
+# Instalar dependencias
+RUN npm install
 

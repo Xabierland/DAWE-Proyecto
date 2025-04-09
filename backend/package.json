@@ -1,0 +1,14 @@
+{
+  "name": "dawe-backend",
+  "version": "1.0.0",
+  "description": "Aqui dentro iran todos los archivos relacionados a la API Express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "Express": "^3.0.1"
+  }
+}
