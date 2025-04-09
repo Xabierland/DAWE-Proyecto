@@ -6,7 +6,7 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
 [dawe.xabierland.com](https://dawe.xabierland.com)
 
-[dawe3.xabierland.com](https://dawe2-xabierland.com)
+[dawe3.xabierland.com](https://dawe3.xabierland.com)
 
 ## Miembros del grupo
 
@@ -21,6 +21,12 @@ Para iniciar el proyecto ejecuta
 
 ```bash
 docker compose up --build -d
+```
+
+Si nada funciona prueba a purgar docker
+
+```bash
+docker system prune -a --volumes -f
 ```
 
 ## Tareas
