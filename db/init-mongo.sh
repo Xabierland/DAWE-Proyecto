@@ -1,10 +1,19 @@
-// Usar la base de datos "tienda"
+#!/bin/bash
+set -e
+
+# Esperar a que MongoDB esté listo
+echo "Esperando a que MongoDB esté listo..."
+
+# Conectar a MongoDB con las credenciales de administrador
+echo "Inicializando base de datos..."
+mongosh --host localhost --port 27017 -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin <<EOF
+// Usar base de datos tienda
 db = db.getSiblingDB('tienda');
 
-// Crear colección de Usuarios con validación
+// Crear colección de Usuarios
 db.createCollection("Usuarios", {
     validator: {
-        $jsonSchema: {
+        \$jsonSchema: {
             bsonType: "object",
             additionalProperties: false,
             required: ["Nombre", "Email", "Rol"],
@@ -21,10 +30,10 @@ db.createCollection("Usuarios", {
     }
 });
 
-// Crear colección de Productos con validación
+// Crear colección de Productos
 db.createCollection("Productos", {
     validator: {
-        $jsonSchema: {
+        \$jsonSchema: {
             bsonType: "object",
             additionalProperties: false,
             required: ["Tipo", "Nombre", "Precio", "Descripcion"],
@@ -56,3 +65,34 @@ db.createCollection("Productos", {
         }
     }
 });
+
+// Insertar usuarios de ejemplo
+db.Usuarios.insertMany([
+    {
+        Nombre: "Admin",
+        Email: "admin@example.com",
+        Rol: "administrador",
+        AnimalFavorito: "Gato",
+        LibroFavorito: "1984",
+        GeneroFavorito: "Ciencia Ficción"
+    },
+    {
+        Nombre: "Usuario Normal",
+        Email: "usuario@example.com",
+        Rol: "usuario",
+        AnimalFavorito: "Perro",
+        LibroFavorito: "El Quijote",
+        GeneroFavorito: "Aventura"
+    }
+]);
+
+// Verificar que las colecciones se hayan creado
+print("Colecciones en la base de datos tienda:");
+db.getCollectionNames().forEach(function(collectionName) {
+    print(" - " + collectionName);
+});
+
+print("Inicialización completada exitosamente");
+EOF
+
+echo "Script de inicialización finalizado"

@@ -17,38 +17,16 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
 ## Iniciar el proyecto
 
-### Instalar dependencias
+Para iniciar el proyecto ejecuta
 
 ```bash
-npm install
-```
-
-### Entorno de Desarrollo
-
-#### Iniciar el servidor
-
-```bash
-npm start
-```
-
-### Entorno de Produccion
-
-#### Build
-
-```bash
-npm run build
-```
-
-#### Iniciar el servidor
-
-```bash
-serve -s build
+docker compose up --build -d
 ```
 
 ## Tareas
 
 - [] Estructura - Xabier
-  - [] Desplegable
+  - [X] Dockerización
 - [] Secciones nuevas
 - [] Autenticacion - Xabier
 - [] Panel de usuario
