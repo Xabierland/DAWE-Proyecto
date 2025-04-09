@@ -1,0 +1,30 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - type: bind
+        source: ./frontend
+        target: /app
+  #backend:
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "8000:8000"
+  #  depends_on:
+  #    - db
+  db:
+    image: mongodb/mongodb-community-server:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db

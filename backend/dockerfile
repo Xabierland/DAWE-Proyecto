@@ -1,0 +1,3 @@
+# Dockerfile para el backend usando Node con Express
+FROM node:18
+

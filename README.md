@@ -6,7 +6,7 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
 [dawe.xabierland.com](https://dawe.xabierland.com)
 
-[dawe2.xabierland.com](https://dawe2-xabierland.com)
+[dawe3.xabierland.com](https://dawe2-xabierland.com)
 
 ## Miembros del grupo
 
@@ -45,33 +45,19 @@ npm run build
 serve -s build
 ```
 
-## Division de Tareas
+## Tareas
 
-### React
-
-- [X] Cabecera - Xabier
-- [X] MenuNavegacion - Ander
-- [X] BuscadorProductos - Luken
-- [X] EscaparateProductos - Xabier
-  - [X] Paginacion
-  - [X] DetallesProducto
-- [X] FormularioNuevosProductos - Ander
-  - [X] Drag&Drop
-- [X] Pie - Xabier
-- [X] Carrito - Eneko
-  
-### Carrito almacenado en localStorage 
-
-- [X] GuardarEnCarrito - Eneko
-- [X] Borra un producto por su ID del localStorage - Eneko
-- [X] CargarCarrito - Eneko
- 
-### Offline
-
-- [X] Formulario gris - Luken
-- [X] Aviso rojo - Luken
-- [X] Service Worker - Xabier
-
-### Otros
-
-- [X] Constantes : DIVISA y MAX_COPIAS - Xabier
+- [] Estructura - Xabier
+  - [] Desplegable
+- [] Secciones nuevas
+- [] Autenticacion - Xabier
+- [] Panel de usuario
+  - [] Contador de visitas
+- [] Seccion Mi Cuenta
+  - [] Formulario de edición de datos de usuario
+- [] Seccion "Añadir un producto"
+  - [] Formulario de subida de productos
+- [] Seccion "Editar/Borrar productos"
+  - [] Formulario de edición y borrado de productos
+- [] Base de datos MongoDB - Eneko
+  - [] Sesión en Express
