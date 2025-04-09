@@ -5,9 +5,9 @@ db.createCollection( "Usuarios" ,
 		"bsonType":"object",
 		"additionalProperties":false,
 		"required":["Nombre", "Email", "Rol"],
-    		"properties": 
+    	"properties": 
 		{
-       			"Nombre":{"bsonType":"string"},
+       		"Nombre":{"bsonType":"string"},
 			"Email":{"bsonType":"string"},
 			"Rol":{"bsonType":"string"},
 			"Clave":{"bsonType":"string"},
@@ -28,9 +28,9 @@ db.createCollection( "Productos" ,
 		"bsonType":"object",
 		"additionalProperties":false,
 		"required":["Tipo", "Nombre", "Precio", "Descripcion"],
-    		"properties": 
+    	"properties": 
 		{
-       			"Tipo":{"bsonType":"string"},
+       		"Tipo":{"bsonType":"string"},
 			"Nombre":{"bsonType":"string"},
 			"Precio":{"bsonType":"string"},
 			"Descripcion":{"bsonType":"string"},
@@ -51,3 +51,90 @@ db.createCollection( "Productos" ,
 	}
 }
 )
+
+
+db.Usuarios.insert( 
+        {   
+            Nombre: "<nombre>", 
+            Email: "<email>", 
+            Rol: "<rol>",
+            Clave: "<clave>",
+            AnimalFavorito: "<animal>",
+            LibroFavorito: "<libro>",
+            GeneroFavorito: "<genero>", 
+        } )
+
+
+// Usuario
+"Tipo":{"bsonType":"string"},
+			"Nombre":{"bsonType":"string"},
+			"Precio":{"bsonType":"string"},
+			"Descripcion":{"bsonType":"string"},
+			"RutaImagen":{"bsonType":"string"},
+
+			"Autor":{"bsonType":"string"},
+			"Isbn":{"bsonType":"string"},
+			"Paginas":{"bsonType":"int"},
+
+// Libro fisico
+db.Productos.insert( 
+        {   
+            Nombre: "<nombre>", 
+            Precio: "<precio>", 
+            Descripcion: "<descripcion>",
+            RutaImagen: "<rutaimagen>",
+
+            Autor: "<autor>",
+            Isbn: "<isbn>",
+            Paginas: "<paginas>", 
+        } )
+
+        
+// Libro digital
+db.Productos.insert( 
+        {   
+            Nombre: "<nombre>", 
+            Precio: "<precio>", 
+            Descripcion: "<descripcion>",
+            RutaImagen: "<rutaimagen>",
+
+            Autor: "<autor>",
+            Isbn: "<isbn>",
+            Paginas: "<paginas>", 
+            Tamano: "<tamano>"
+        } )
+
+// Ebook
+db.Productos.insert( 
+        {   
+            Nombre: "<nombre>", 
+            Precio: "<precio>", 
+            Descripcion: "<descripcion>",
+            RutaImagen: "<rutaimagen>",
+
+            Resolucion: "<resolucion>"
+        } )
+
+
+// Funda
+db.Productos.insert( 
+        {   
+            Nombre: "<nombre>", 
+            Precio: "<precio>", 
+            Descripcion: "<descripcion>",
+            RutaImagen: "<rutaimagen>",
+
+            Material: "<material>"
+        } )
+
+
+// MarcaPaginas
+db.Productos.insert( 
+        {   
+            Nombre: "<nombre>", 
+            Precio: "<precio>", 
+            Descripcion: "<descripcion>",
+            RutaImagen: "<rutaimagen>",
+
+            Color: "<color>"
+        } )
