@@ -19,7 +19,7 @@ const verificarAdmin = async (req, res, next) => {
   const db = req.app.locals.db;
   const usuario = await db.collection('Usuarios').findOne({ Email: req.session.email });
   
-  if (!usuario || usuario.Rol !== 'admin') {
+  if (!usuario || usuario.Rol !== 'administrador') {
     return res.status(403).json({ error: 'No tienes permisos para acceder a este recurso' });
   }
   
@@ -29,6 +29,10 @@ const verificarAdmin = async (req, res, next) => {
 // Iniciar sesión (verificación con Firebase se hace en el frontend)
 router.post('/login', async (req, res) => {
   const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'El email es requerido' });
+  }
   
   try {
     const db = req.app.locals.db;
@@ -42,20 +46,34 @@ router.post('/login', async (req, res) => {
     req.session.email = usuario.Email;
     req.session.nombre = usuario.Nombre;
     req.session.rol = usuario.Rol;
-    req.session.visitas = 1; // Inicializar contador de visitas
+    req.session.visitas = 1; // Inicializar contador de visitas a 1 (primera visita)
+    req.session.ultimaVisitaRegistrada = Date.now(); // Timestamp de última visita
     
-    res.json({
-      mensaje: 'Inicio de sesión exitoso',
-      usuario: {
-        id: usuario._id,
-        nombre: usuario.Nombre,
-        email: usuario.Email,
-        rol: usuario.Rol,
-        animalFavorito: usuario.AnimalFavorito || '',
-        libroFavorito: usuario.LibroFavorito || '',
-        generoFavorito: usuario.GeneroFavorito || '',
-      },
-      visitas: req.session.visitas
+    // Guardar la sesión explícitamente para asegurar que se persiste
+    req.session.save((err) => {
+      if (err) {
+        console.error('Error al guardar la sesión:', err);
+        return res.status(500).json({ error: 'Error al iniciar sesión' });
+      }
+      
+      // Imprimir información de depuración
+      console.log('Sesión iniciada para:', usuario.Email);
+      console.log('ID de sesión:', req.sessionID);
+      
+      // Enviar respuesta al cliente
+      res.json({
+        mensaje: 'Inicio de sesión exitoso',
+        usuario: {
+          id: usuario._id,
+          nombre: usuario.Nombre,
+          email: usuario.Email,
+          rol: usuario.Rol,
+          animalFavorito: usuario.AnimalFavorito || '',
+          libroFavorito: usuario.LibroFavorito || '',
+          generoFavorito: usuario.GeneroFavorito || '',
+        },
+        visitas: req.session.visitas
+      });
     });
   } catch (error) {
     console.error('Error al iniciar sesión:', error);
@@ -65,10 +83,21 @@ router.post('/login', async (req, res) => {
 
 // Cerrar sesión
 router.post('/logout', (req, res) => {
+  // Guardar el email para loguear quién cerró sesión
+  const email = req.session.email;
+  
   req.session.destroy((error) => {
     if (error) {
+      console.error('Error al cerrar sesión:', error);
       return res.status(500).json({ error: 'Error al cerrar sesión' });
     }
+    
+    // Registrar el cierre de sesión
+    console.log('Sesión cerrada para:', email);
+    
+    // Configurar la cookie de sesión para que expire
+    res.clearCookie('connect.sid');
+    
     res.json({ mensaje: 'Sesión cerrada correctamente' });
   });
 });
@@ -83,6 +112,9 @@ router.get('/perfil', verificarAutenticacion, async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
     
+    // Imprimir información de depuración
+    console.log(`Perfil solicitado para: ${usuario.Email} - Visitas: ${req.session.visitas || 1}`);
+    
     res.json({
       usuario: {
         id: usuario._id,
@@ -93,12 +125,37 @@ router.get('/perfil', verificarAutenticacion, async (req, res) => {
         libroFavorito: usuario.LibroFavorito || '',
         generoFavorito: usuario.GeneroFavorito || '',
       },
-      visitas: req.session.visitas
+      visitas: req.session.visitas || 1
     });
   } catch (error) {
     console.error('Error al obtener perfil:', error);
     res.status(500).json({ error: 'Error al obtener información del perfil' });
   }
+});
+
+// Incrementar contador de visitas (manualmente controlado desde el frontend)
+router.post('/incrementar-visitas', verificarAutenticacion, (req, res) => {
+  // Si la sesión no tiene contador, iniciarlo en 1
+  if (!req.session.visitas) {
+    req.session.visitas = 1;
+  } else {
+    // Incrementar contador
+    req.session.visitas += 1;
+  }
+  
+  // Guardar timestamp de la última vez que se incrementó
+  req.session.ultimaVisitaRegistrada = Date.now();
+  
+  // Guardar sesión explícitamente
+  req.session.save((err) => {
+    if (err) {
+      console.error('Error al guardar sesión:', err);
+      return res.status(500).json({ error: 'Error al incrementar visitas' });
+    }
+    
+    console.log(`Visita incrementada para ${req.session.email} - Nuevo valor: ${req.session.visitas}`);
+    res.json({ visitas: req.session.visitas });
+  });
 });
 
 // Actualizar información del usuario
@@ -132,16 +189,23 @@ router.put('/actualizar', verificarAutenticacion, async (req, res) => {
     // Actualizar también el nombre en la sesión
     req.session.nombre = nombre;
     
-    res.json({ 
-      mensaje: 'Perfil actualizado correctamente',
-      usuario: {
-        nombre,
-        email: req.session.email,
-        rol: req.session.rol,
-        animalFavorito: animalFavorito || '',
-        libroFavorito: libroFavorito || '',
-        generoFavorito: generoFavorito || '',
-      } 
+    // Guardar la sesión explícitamente
+    req.session.save((err) => {
+      if (err) {
+        console.error('Error al guardar la sesión después de actualizar perfil:', err);
+      }
+      
+      res.json({ 
+        mensaje: 'Perfil actualizado correctamente',
+        usuario: {
+          nombre,
+          email: req.session.email,
+          rol: req.session.rol,
+          animalFavorito: animalFavorito || '',
+          libroFavorito: libroFavorito || '',
+          generoFavorito: generoFavorito || '',
+        } 
+      });
     });
   } catch (error) {
     console.error('Error al actualizar perfil:', error);

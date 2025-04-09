@@ -38,10 +38,14 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Configurar CORS para permitir peticiones desde el frontend
 // Es crucial para que funcionen las cookies de sesión entre dominios
 app.use(cors({
-  // Orígenes permitidos (localhost:3000 es el frontend en desarrollo)
-  origin: ['http://localhost:3000', 'http://localhost:5000'],
+  // Orígenes permitidos (frontend en desarrollo y en Docker)
+  origin: ['http://localhost:3000', 'http://localhost:5000', 'http://frontend:3000'],
   // Permitir enviar cookies en peticiones cross-origin
-  credentials: true
+  credentials: true,
+  // Métodos HTTP permitidos
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  // Cabeceras permitidas
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // === CONFIGURACIÓN DE SESIONES ===
@@ -56,37 +60,53 @@ app.use(session({
   store: MongoStore.create({
     mongoUrl: MONGO_URI,
     // Tiempo de vida de la sesión: 24 horas
-    ttl: 60 * 60 * 24
+    ttl: 60 * 60 * 24,
+    // Guardar inmediatamente las sesiones
+    autoRemove: 'native'
   }),
   // Configuración de la cookie de sesión
   cookie: {
-    // Modo seguro solo en producción (requiere HTTPS)
-    secure: process.env.NODE_ENV === 'production',
+    // En desarrollo, secure debe ser false
+    secure: false, // En producción: process.env.NODE_ENV === 'production'
     // No permitir acceso desde JavaScript del cliente
     httpOnly: true,
+    // Importante para cookies entre sitios
+    sameSite: 'lax',
     // Duración máxima: 24 horas
-    maxAge: 1000 * 60 * 60 * 24
+    maxAge: 1000 * 60 * 60 * 24,
+    // Dominio (comentado por ahora)
+    // domain: 'localhost'
   }
 }));
 
-// === MIDDLEWARE PERSONALIZADO ===
-// Incrementar contador de visitas en cada petición
+// Registro de rutas accedidas (para depuración)
 app.use((req, res, next) => {
-  // Solo si hay una sesión iniciada (usuario autenticado)
-  if (req.session.email) {
-    // Si no existe el contador, inicializarlo a 1
-    if (!req.session.visitas) {
-      req.session.visitas = 1;
-    } else {
-      // Incrementar en 1 si ya existe
-      req.session.visitas += 1;
-    }
-  }
-  // Continuar con la siguiente función middleware
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
   next();
 });
 
 // === RUTAS ===
+// Ruta específica para incrementar contador de visitas
+// Esto evita múltiples incrementos por recarga
+app.post('/api/usuarios/incrementar-visitas', (req, res) => {
+  if (req.session.email) {
+    if (!req.session.visitas) {
+      req.session.visitas = 1;
+    } else {
+      req.session.visitas += 1;
+    }
+    req.session.save(err => {
+      if (err) {
+        console.error('Error al guardar sesión:', err);
+        return res.status(500).json({ error: 'Error al incrementar visitas' });
+      }
+      res.json({ visitas: req.session.visitas });
+    });
+  } else {
+    res.status(401).json({ error: 'No hay sesión activa' });
+  }
+});
+
 // Montar las rutas de usuarios en /api/usuarios
 app.use('/api/usuarios', usuariosRouter);
 
@@ -95,7 +115,28 @@ app.use('/api/productos', productosRouter);
 
 // Ruta de prueba para verificar que el servidor funciona
 app.get('/', (req, res) => {
-  res.json({ mensaje: 'API de la tienda funcionando correctamente' });
+  res.json({ 
+    mensaje: 'API de la tienda funcionando correctamente',
+    // Devolver información de la sesión actual para debug
+    session: req.session.email ? {
+      email: req.session.email,
+      visitas: req.session.visitas,
+      // No devolver información sensible
+    } : 'No hay sesión activa'
+  });
+});
+
+// Ruta para verificar el estado de la sesión
+app.get('/api/check-session', (req, res) => {
+  if (req.session.email) {
+    res.json({ 
+      autenticado: true, 
+      email: req.session.email,
+      visitas: req.session.visitas 
+    });
+  } else {
+    res.json({ autenticado: false });
+  }
 });
 
 // === INICIAR SERVIDOR ===

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 // Configuración de Firebase (sustituye con tus credenciales)
 const firebaseConfig = {
@@ -13,10 +13,21 @@ const firebaseConfig = {
   measurementId: "G-SG68Y04JPN"
 };
 
+// API URL base
+const API_BASE_URL = 'http://localhost:8000/api';
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+// Configurar persistencia local para mantener la sesión entre recargas
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log('Persistencia de Firebase configurada a LOCAL');
+  })
+  .catch((error) => {
+    console.error('Error configurando persistencia de Firebase:', error);
+  });
 
 const PanelAutenticacion = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -34,8 +45,10 @@ const PanelAutenticacion = ({ onLogin }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
+      console.log('Usuario autenticado en Firebase:', user.email);
+      
       // Llamar a la API para iniciar sesión en el backend
-      const response = await fetch('http://localhost:8000/api/usuarios/login', {
+      const response = await fetch(`${API_BASE_URL}/usuarios/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,6 +65,7 @@ const PanelAutenticacion = ({ onLogin }) => {
       }
 
       const userData = await response.json();
+      console.log('Sesión iniciada en el backend:', userData);
       
       // Notificar al componente padre que el inicio de sesión fue exitoso
       if (onLogin) {
@@ -59,7 +73,22 @@ const PanelAutenticacion = ({ onLogin }) => {
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      setError(error.message || 'Error al iniciar sesión');
+      // Manejar diferentes tipos de errores de Firebase para mostrar mensajes más amigables
+      let mensajeError = error.message || 'Error al iniciar sesión';
+      
+      if (error.code === 'auth/invalid-credential') {
+        mensajeError = 'Credenciales incorrectas. Por favor verifica tu email y contraseña.';
+      } else if (error.code === 'auth/user-not-found') {
+        mensajeError = 'No existe una cuenta con este email.';
+      } else if (error.code === 'auth/wrong-password') {
+        mensajeError = 'Contraseña incorrecta.';
+      } else if (error.code === 'auth/too-many-requests') {
+        mensajeError = 'Demasiados intentos fallidos. Por favor, inténtalo más tarde.';
+      } else if (error.code === 'auth/network-request-failed') {
+        mensajeError = 'Error de red. Verifica tu conexión a internet.';
+      }
+      
+      setError(mensajeError);
     } finally {
       setLoading(false);
     }
@@ -99,6 +128,7 @@ const PanelAutenticacion = ({ onLogin }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
           
@@ -107,7 +137,12 @@ const PanelAutenticacion = ({ onLogin }) => {
             className="btn btn-primary w-100"
             disabled={loading}
           >
-            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Iniciando sesión...
+              </>
+            ) : 'Iniciar Sesión'}
           </button>
         </form>
       </div>

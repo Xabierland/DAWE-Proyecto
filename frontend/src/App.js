@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './App.css';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 // Importar componentes
 import Cabecera from './componentes/Cabecera';
@@ -13,6 +14,9 @@ import PanelAutenticacion from './componentes/PanelAutenticacion';
 import PanelUsuario from './componentes/PanelUsuario';
 import MiCuenta from './componentes/MiCuenta';
 import EditarBorrarProductos from './componentes/EditarBorrarProductos';
+
+// URL base para las peticiones a la API
+const API_BASE_URL = 'http://localhost:8000/api';
 
 function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -67,9 +71,14 @@ function App() {
   
   // Estado para gestionar la autenticación de usuarios
   const [usuario, setUsuario] = useState(null);
+  // Estado para controlar si la app está cargando inicialmente
+  const [loading, setLoading] = useState(true);
   
   // Estado para controlar la sección actual
   const [seccionActual, setSeccionActual] = useState('escaparate');
+  
+  // Flag para evitar múltiples intentos de autenticación
+  const authInProgress = useRef(false);
   
   // Escuchar eventos de modal y carrito para controlar el scroll del body
   useEffect(() => {
@@ -90,8 +99,94 @@ function App() {
     };
   }, []);
 
+  // Verificar la sesión al cargar la aplicación
+  useEffect(() => {
+    const verificarSesionBackend = async () => {
+      if (authInProgress.current) return;
+      authInProgress.current = true;
+      
+      try {
+        setLoading(true);
+        console.log('Verificando sesión existente en el backend...');
+        
+        const response = await fetch(`${API_BASE_URL}/usuarios/perfil`, {
+          method: 'GET',
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          console.log('Sesión recuperada del backend:', userData);
+          setUsuario(userData);
+          setLoading(false);
+          authInProgress.current = false;
+          return true;
+        }
+        
+        setLoading(false);
+        authInProgress.current = false;
+        return false;
+      } catch (error) {
+        console.error('Error al verificar sesión con el backend:', error);
+        setLoading(false);
+        authInProgress.current = false;
+        return false;
+      }
+    };
+    
+    verificarSesionBackend();
+  }, []);
+
+  // Escuchar cambios en el estado de autenticación de Firebase
+  useEffect(() => {
+    const auth = getAuth();
+    
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log('Estado de Firebase Auth cambió:', user ? `Usuario: ${user.email}` : 'No hay usuario');
+      
+      // Si ya estamos autenticados en el backend, no hacer nada
+      if (usuario) return;
+      
+      // Si hay usuario en Firebase pero no en el backend, iniciar sesión en el backend
+      if (user && !usuario && !authInProgress.current) {
+        authInProgress.current = true;
+        setLoading(true);
+        
+        try {
+          console.log('Iniciando sesión en el backend con:', user.email);
+          const loginResponse = await fetch(`${API_BASE_URL}/usuarios/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email: user.email }),
+          });
+          
+          if (loginResponse.ok) {
+            const userData = await loginResponse.json();
+            console.log('Sesión iniciada en el backend:', userData);
+            setUsuario(userData);
+          } else {
+            console.error('Error al iniciar sesión en el backend:', await loginResponse.text());
+            // Si hay error al iniciar sesión en el backend, cerrar sesión en Firebase
+            await auth.signOut();
+          }
+        } catch (error) {
+          console.error('Error de red al iniciar sesión en el backend:', error);
+        } finally {
+          setLoading(false);
+          authInProgress.current = false;
+        }
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [usuario]);
+
   // Manejar el inicio de sesión exitoso
   const handleLogin = (userData) => {
+    console.log('Login exitoso:', userData);
     setUsuario(userData);
   };
 
@@ -157,7 +252,18 @@ function App() {
 
   // Renderizar el contenido del aside según el estado de autenticación
   const renderizarAside = () => {
-    if (usuario) {
+    if (loading) {
+      return (
+        <div className="card">
+          <div className="card-body text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </div>
+            <p className="mt-2">Verificando sesión...</p>
+          </div>
+        </div>
+      );
+    } else if (usuario) {
       return (
         <PanelUsuario 
           usuario={usuario} 
