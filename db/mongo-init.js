@@ -1,0 +1,59 @@
+db.createCollection( "Usuarios" ,
+    {
+        validator:
+        {
+            $jsonSchema:
+            {
+                bsonType:"object",
+                additionalProperties:false,
+                required:["Nombre", "Email", "Rol"],
+                properties: 
+                {
+                    Nombre:{bsonType:"string"},
+                    Email:{bsonType:"string"},
+                    Rol:{bsonType:"string"},
+                    Clave:{bsonType:"string"},
+                    AnimalFavorito:{bsonType:"string"},
+                    LibroFavorito:{bsonType:"string"},
+                    GeneroFavorito:{bsonType:"string"}
+                }
+            }
+        }
+    }
+    );
+    
+    
+    
+    db.createCollection( "Productos" ,
+    {
+        validator:
+        {
+            $jsonSchema:
+            {
+                bsonType:"object",
+                additionalProperties:false,
+                required:["Tipo", "Nombre", "Precio", "Descripcion"],
+                properties: 
+                {
+                    "Tipo":{"bsonType":"string"},
+                    "Nombre":{"bsonType":"string"},
+                    "Precio":{"bsonType":"string"},
+                    "Descripcion":{"bsonType":"string"},
+                    "RutaImagen":{"bsonType":"string"},
+    
+                    "Autor":{"bsonType":"string"},
+                    "Isbn":{"bsonType":"string"},
+                    "Paginas":{"bsonType":"int"},
+    
+                    "Tamano":{"bsonType":"int"},
+    
+                    "Resolucion":{"bsonType":"int"},
+    
+                    "Material":{"bsonType":"string"},
+    
+                    "Color":{"bsonType":"string"}
+                }
+            }
+        }
+    }
+    );

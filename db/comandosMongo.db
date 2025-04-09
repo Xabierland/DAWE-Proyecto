@@ -59,7 +59,7 @@ db.createCollection( "Productos" ,
 )
 
 
-Usuarios.insert( 
+db.Usuarios.insertOne( 
         {   
             Nombre: "<nombre>", 
             Email: "<email>", 
@@ -71,19 +71,7 @@ Usuarios.insert(
         } )
 
 
-// Usuario
-"Tipo":{"bsonType":"string"},
-			"Nombre":{"bsonType":"string"},
-			"Precio":{"bsonType":"string"},
-			"Descripcion":{"bsonType":"string"},
-			"RutaImagen":{"bsonType":"string"},
-
-			"Autor":{"bsonType":"string"},
-			"Isbn":{"bsonType":"string"},
-			"Paginas":{"bsonType":"int"},
-
-// Libro fisico
-Productos.insert( 
+db.Productos.insertOne( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
@@ -92,12 +80,11 @@ Productos.insert(
 
             Autor: "<autor>",
             Isbn: "<isbn>",
-            Paginas: "<paginas>", 
+            Paginas: <paginas>, 
         } )
 
         
-// Libro digital
-Productos.insert( 
+db.Productos.insertOne( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
@@ -106,24 +93,22 @@ Productos.insert(
 
             Autor: "<autor>",
             Isbn: "<isbn>",
-            Paginas: "<paginas>", 
-            Tamano: "<tamano>"
+            Paginas: <paginas>, 
+            Tamano: <tamano>
         } )
 
-// Ebook
-Productos.insert( 
+db.Productos.insertOne( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
             Descripcion: "<descripcion>",
             RutaImagen: "<rutaimagen>",
 
-            Resolucion: "<resolucion>"
+            Resolucion: <resolucion>
         } )
 
 
-// Funda
-Productos.insert( 
+db.Productos.insertOne( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
@@ -134,8 +119,8 @@ Productos.insert(
         } )
 
 
-// MarcaPaginas
-Productos.insert( 
+
+db.Productos.insertOne( 
         {   
             Nombre: "<nombre>", 
             Precio: "<precio>", 
