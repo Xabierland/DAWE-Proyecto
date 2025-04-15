@@ -130,7 +130,6 @@ router.get('/:id', async (req, res) => {
 });
 
 // Crear un nuevo producto (solo para administradores)
-// Crear un nuevo producto (solo para administradores)
 router.post('/', verificarAdmin, async (req, res) => {
   const { tipo, nombre, precio, descripcion, imagen, autor, isbn, paginas, tamano, resolucion, material, color } = req.body;
   
@@ -143,11 +142,22 @@ router.post('/', verificarAdmin, async (req, res) => {
     const db = req.app.locals.db;
     
     // Crear objeto base para el nuevo producto
-    // Aseguramos que los tipos de datos coincidan con el esquema de MongoDB
+    // Aseguramos que los tipos de datos coincidan exactamente con el esquema de MongoDB
+    
+    // Validar y convertir el precio a double
+    const precioDouble = parseFloat(precio);
+    if (isNaN(precioDouble)) {
+      return res.status(400).json({ error: 'El precio debe ser un valor numérico válido' });
+    }
+    
+    // MongoDB requiere que Precio sea explícitamente double, por lo que nos aseguramos
+    // que tenga decimales, incluso si ingresaron un número entero
+    // Al hacer la operación + 0.0 MongoDB lo tratará como double en lugar de int
+    
     const nuevoProducto = {
       Tipo: String(tipo),
       Nombre: String(nombre),
-      Precio: Number(precio),  // Usamos Number en lugar de parseFloat para asegurar compatibilidad
+      Precio: precioDouble + 0.0, // Forzar tipo double añadiendo 0.0
       Descripcion: descripcion ? String(descripcion) : '',
       RutaImagen: imagen ? String(imagen) : '/imagenes/productos/default.png'
     };
@@ -160,7 +170,12 @@ router.post('/', verificarAdmin, async (req, res) => {
         }
         nuevoProducto.Autor = String(autor);
         nuevoProducto.Isbn = String(isbn);
-        nuevoProducto.Paginas = Number(paginas);
+        // Asegurarse de que Paginas sea un entero (int)
+        const paginasInt = parseInt(paginas);
+        if (isNaN(paginasInt)) {
+          return res.status(400).json({ error: 'El número de páginas debe ser un valor numérico válido' });
+        }
+        nuevoProducto.Paginas = paginasInt;
         break;
       case 'libro_Digital':
         if (!autor || !isbn || !paginas || !tamano) {
@@ -168,14 +183,25 @@ router.post('/', verificarAdmin, async (req, res) => {
         }
         nuevoProducto.Autor = String(autor);
         nuevoProducto.Isbn = String(isbn);
-        nuevoProducto.Paginas = Number(paginas);
-        nuevoProducto.Tamano = Number(tamano);
+        // Asegurarse de que Paginas y Tamano sean enteros (int)
+        const paginasDigitalInt = parseInt(paginas);
+        const tamanoInt = parseInt(tamano);
+        if (isNaN(paginasDigitalInt) || isNaN(tamanoInt)) {
+          return res.status(400).json({ error: 'El número de páginas y tamaño deben ser valores numéricos válidos' });
+        }
+        nuevoProducto.Paginas = paginasDigitalInt;
+        nuevoProducto.Tamano = tamanoInt;
         break;
       case 'ereader':
         if (!resolucion) {
           return res.status(400).json({ error: 'Para un ereader, la resolución es obligatoria' });
         }
-        nuevoProducto.Resolucion = Number(resolucion);
+        // Asegurarse de que Resolucion sea un entero (int)
+        const resolucionInt = parseInt(resolucion);
+        if (isNaN(resolucionInt)) {
+          return res.status(400).json({ error: 'La resolución debe ser un valor numérico válido' });
+        }
+        nuevoProducto.Resolucion = resolucionInt;
         break;
       case 'funda':
         if (!material) {

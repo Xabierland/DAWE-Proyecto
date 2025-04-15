@@ -164,6 +164,7 @@ db.Productos.insertMany([
 print("Productos insertados correctamente");
 
 // Ahora aplicamos los validadores DESPUÉS de insertar los datos
+// Modificado para aceptar tanto double como int para el campo Precio
 db.runCommand({
     collMod: "Usuarios",
     validator: {
@@ -194,7 +195,8 @@ db.runCommand({
                 _id: { bsonType: "objectId" },
                 Tipo: { bsonType: "string" },
                 Nombre: { bsonType: "string" },
-                Precio: { bsonType: "double" },
+                // Modificado para aceptar tanto double como int para Precio
+                Precio: { bsonType: ["double", "int"] },
                 Descripcion: { bsonType: "string" },
                 RutaImagen: { bsonType: "string" },
                 
