@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { listaProductos, guardarEnCarrito, cargarCarrito } from '../tienda/tienda';
+import { listaProductos, guardarEnCarrito, cargarCarrito, cargarProductos } from '../tienda/tienda';
 import { DIVISA, MAX_COPIAS } from '../tienda/tienda';
 import BuscadorProductos from './BuscadorProductos';
 import Paginacion from './Paginacion';
@@ -7,8 +7,10 @@ import DetallesProducto from './DetallesProducto';
 
 const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdated, mapaCarrito, setCarrito }) => {
     // Estado para el listado de productos y filtrados
-    const [productos, setProductos] = useState(listaProductos);
-    const [productosFiltrados, setProductosFiltrados] = useState([...productos]);
+    const [productos, setProductos] = useState([]);
+    const [productosFiltrados, setProductosFiltrados] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState(null);
     
     // Estado para la paginación
     const [currentPage, setCurrentPage] = useState(1);
@@ -30,6 +32,26 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
     
     // Estado para mensajes toast/notificación sobre cada producto
     const [notificaciones, setNotificaciones] = useState({});
+    
+    // Cargar productos desde la API
+    useEffect(() => {
+        const fetchProductos = async () => {
+            try {
+                setCargando(true);
+                setError(null);
+                const productosObtenidos = await cargarProductos();
+                setProductos(productosObtenidos);
+                setProductosFiltrados(productosObtenidos);
+            } catch (err) {
+                console.error('Error al cargar productos:', err);
+                setError('Error al cargar los productos. Por favor, intenta nuevamente.');
+            } finally {
+                setCargando(false);
+            }
+        };
+        
+        fetchProductos();
+    }, [productosUpdated]);
     
     // Memorizar función de contador de carrito para evitar recreaciones
     const actualizarContadorCarrito = useCallback(() => {
@@ -265,12 +287,6 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
     const indexOfFirstProducto = indexOfLastProducto - productosPerPage;
     const productosActuales = productosFiltrados.slice(indexOfFirstProducto, indexOfLastProducto);
     
-    // Recargar productos cuando se añada uno nuevo
-    useEffect(() => {
-        // Actualizar la lista de productos desde tienda.js
-        setProductos([...listaProductos]);
-    }, [productosUpdated]);
-    
     // Aplicar filtros cuando cambia el listado de productos
     useEffect(() => {
         aplicarTodosFiltros();
@@ -292,6 +308,32 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
         return '';
     };
     
+    if (cargando) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                </div>
+                <span className="ms-3">Cargando productos...</span>
+            </div>
+        );
+    }
+    
+    if (error) {
+        return (
+            <div className="alert alert-danger">
+                <h4 className="alert-heading">Error al cargar productos</h4>
+                <p>{error}</p>
+                <hr />
+                <p className="mb-0">
+                    <button className="btn btn-outline-danger" onClick={() => window.location.reload()}>
+                        Intentar nuevamente
+                    </button>
+                </p>
+            </div>
+        );
+    }
+    
     return (
         <>
             <BuscadorProductos 
@@ -303,75 +345,86 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
             />
                         
             <div className="row row-cols-1 row-cols-md-3 g-4 mb-4" id="productsGrid">
-                {productosActuales.map((producto) => (
-                    <div className="col" key={producto.id}>
-                        <div className="card h-100 position-relative">
-                            {/* Notificación sobre el botón de añadir al carrito */}
-                            <div className="position-relative">
-                                {notificaciones[producto.id] ? (
-                                    <div 
-                                        className={`alert alert-${notificaciones[producto.id].tipo} position-absolute end-0 top-0 m-2`}
-                                        role="alert"
-                                        aria-live="assertive"
-                                        aria-atomic="true"
-                                        style={{
-                                            zIndex: 1060,
-                                            fontSize: '0.8rem',
-                                            padding: '0.25rem 0.5rem',
-                                            margin: '0.5rem',
-                                            borderRadius: '0.25rem'
+                {productosActuales.length > 0 ? (
+                    productosActuales.map((producto) => (
+                        <div className="col" key={producto.id}>
+                            <div className="card h-100 position-relative">
+                                {/* Notificación sobre el botón de añadir al carrito */}
+                                <div className="position-relative">
+                                    {notificaciones[producto.id] ? (
+                                        <div 
+                                            className={`alert alert-${notificaciones[producto.id].tipo} position-absolute end-0 top-0 m-2`}
+                                            role="alert"
+                                            aria-live="assertive"
+                                            aria-atomic="true"
+                                            style={{
+                                                zIndex: 1060,
+                                                fontSize: '0.8rem',
+                                                padding: '0.25rem 0.5rem',
+                                                margin: '0.5rem',
+                                                borderRadius: '0.25rem'
+                                            }}
+                                        >
+                                            <div className="d-flex align-items-center">
+                                                <i className={`bi bi-${notificaciones[producto.id].tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-1`}></i>
+                                                <span>{notificaciones[producto.id].mensaje}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button 
+                                            className="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
+                                            style={{ width: '40px', height: '40px', zIndex: 1 }}
+                                            onClick={() => agregarAlCarrito(producto.id)}
+                                        >
+                                            <i className="bi bi-cart-plus-fill"></i>
+                                        </button>
+                                    )}
+                                </div>
+                                {/* Imagen del producto */}
+                                <div className="position-relative" style={{ width: '100%', paddingBottom: '100%' }}>
+                                    <img 
+                                        src={producto.imagen} 
+                                        className="position-absolute top-0 start-0 w-100 h-100 producto-imagen"
+                                        style={{ 
+                                            objectFit: 'cover',
+                                            cursor: 'pointer'
+                                        }}
+                                        alt={producto.nombre}
+                                        onClick={() => setProductoDetalle(producto)}
+                                    />
+                                </div>
+                                {/* Nombre, precio y descripcion del producto */}
+                                <div className="card-body">
+                                    <h5 className="card-title text-truncate">{producto.nombre}</h5>
+                                    <p className="card-text"><strong>Precio: </strong>{producto.precio}{DIVISA}</p>
+                                    <p className="card-text">
+                                        <small className="text-muted">{getExtraField(producto)}</small>
+                                    </p>
+                                    <p 
+                                        className="card-text description-truncate" 
+                                        style={{ 
+                                            display: '-webkit-box', 
+                                            WebkitLineClamp: 3, 
+                                            WebkitBoxOrient: 'vertical', 
+                                            overflow: 'hidden' 
                                         }}
                                     >
-                                        <div className="d-flex align-items-center">
-                                            <i className={`bi bi-${notificaciones[producto.id].tipo === 'success' ? 'check-circle' : 'exclamation-circle'}-fill me-1`}></i>
-                                            <span>{notificaciones[producto.id].mensaje}</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <button 
-                                        className="btn btn-primary rounded-circle position-absolute end-0 top-0 m-2 btn-cart"
-                                        style={{ width: '40px', height: '40px', zIndex: 1 }}
-                                        onClick={() => agregarAlCarrito(producto.id)}
-                                    >
-                                        <i className="bi bi-cart-plus-fill"></i>
-                                    </button>
-                                )}
-                            </div>
-                            {/* Imagen del producto */}
-                            <div className="position-relative" style={{ width: '100%', paddingBottom: '100%' }}>
-                                <img 
-                                    src={producto.imagen} 
-                                    className="position-absolute top-0 start-0 w-100 h-100 producto-imagen"
-                                    style={{ 
-                                        objectFit: 'cover',
-                                        cursor: 'pointer'
-                                    }}
-                                    alt={producto.nombre}
-                                    onClick={() => setProductoDetalle(producto)}
-                                />
-                            </div>
-                            {/* Nombre, precio y descripcion del producto */}
-                            <div className="card-body">
-                                <h5 className="card-title text-truncate">{producto.nombre}</h5>
-                                <p className="card-text"><strong>Precio: </strong>{producto.precio}{DIVISA}</p>
-                                <p className="card-text">
-                                    <small className="text-muted">{getExtraField(producto)}</small>
-                                </p>
-                                <p 
-                                    className="card-text description-truncate" 
-                                    style={{ 
-                                        display: '-webkit-box', 
-                                        WebkitLineClamp: 3, 
-                                        WebkitBoxOrient: 'vertical', 
-                                        overflow: 'hidden' 
-                                    }}
-                                >
-                                    {producto.descripcion}
-                                </p>
+                                        {producto.descripcion}
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                    ))
+                ) : (
+                    <div className="col-12 text-center py-5">
+                        <i className="bi bi-search" style={{ fontSize: '48px', opacity: 0.5 }}></i>
+                        <h4 className="mt-3">No se encontraron productos</h4>
+                        <p className="text-muted">Prueba con otros criterios de búsqueda</p>
+                        <button className="btn btn-outline-primary mt-2" onClick={resetearFiltros}>
+                            Restablecer filtros
+                        </button>
                     </div>
-                ))}
+                )}
             </div>
             
             <Paginacion 

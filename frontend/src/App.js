@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { cargarProductos } from './tienda/tienda';
 
 // Importar componentes
 import Cabecera from './componentes/Cabecera';
@@ -73,12 +74,29 @@ function App() {
   const [usuario, setUsuario] = useState(null);
   // Estado para controlar si la app está cargando inicialmente
   const [loading, setLoading] = useState(true);
+  // Estado para controlar errores de carga
+  const [error, setError] = useState(null);
   
   // Estado para controlar la sección actual
   const [seccionActual, setSeccionActual] = useState('escaparate');
   
   // Flag para evitar múltiples intentos de autenticación
   const authInProgress = useRef(false);
+  
+  // Cargar productos al iniciar la aplicación
+  useEffect(() => {
+    const inicializarApp = async () => {
+      try {
+        // Cargar los productos desde la API
+        await cargarProductos();
+      } catch (err) {
+        console.error('Error al inicializar la aplicación:', err);
+        setError('Error al cargar datos iniciales. Por favor, recarga la página.');
+      }
+    };
+    
+    inicializarApp();
+  }, []);
   
   // Escuchar eventos de modal y carrito para controlar el scroll del body
   useEffect(() => {
@@ -276,6 +294,24 @@ function App() {
       );
     }
   };
+
+  if (error) {
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger">
+          <h4 className="alert-heading">Error en la aplicación</h4>
+          <p>{error}</p>
+          <hr />
+          <button 
+            className="btn btn-danger"
+            onClick={() => window.location.reload()}
+          >
+            Recargar aplicación
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <OverflowContainer isHidden={bodyOverflowHidden}>

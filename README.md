@@ -29,6 +29,19 @@ Si nada funciona prueba a purgar docker
 docker system prune -a --volumes -f
 ```
 
+## Acceder al proyecto
+
+Las URLs para acceder a los diferentes servicios son las siguientes:
+
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- Backend: [http://localhost:5000](http://localhost:5000)
+- MongoDB: [http://localhost:27017](http://localhost:27017)
+  - Usuario: `admin`
+  - Contraseña: `admin`
+- Mongo Express: [http://localhost:8081](http://localhost:8081)
+  - Usuario: `admin`
+  - Contraseña: `pass`
+
 ## Tareas
 
 - [] Estructura - Xabier

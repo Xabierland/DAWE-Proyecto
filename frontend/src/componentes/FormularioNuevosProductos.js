@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileUploader } from "react-drag-drop-files";
-import { DIVISA, agregarNuevoProducto as agregarProductoTienda } from '../tienda/tienda';
+import { DIVISA, agregarNuevoProducto, API_URL } from '../tienda/tienda';
 
 const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
     const [formData, setFormData] = useState({
@@ -30,6 +30,9 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         tipo: '', // 'success', 'danger', 'warning', 'info'
         mostrar: false
     });
+    
+    // Estado para el envío del formulario
+    const [enviando, setEnviando] = useState(false);
     
     const fileTypes = ["JPG", "JPEG", "PNG"];
     
@@ -176,84 +179,65 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         mostrarMensaje('Imagen eliminada', 'info');
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         if (!formData.tipo) {
             mostrarMensaje('Debe seleccionar un tipo de producto', 'warning');
             return;
         }
-        
-        // Valores comunes para todos los tipos
-        const datos = {
-            nombre: formData.nombre,
-            precio: parseFloat(formData.precio),
-            descripcion: formData.descripcion || '',
-            imagen: formData.imagen || '/imagenes/productos/default.png'
-        };
-        
-        // Añadir campos específicos según el tipo
-        switch (formData.tipo) {
-            case 'libro_Fisico':
-                datos.autor = formData.autor;
-                datos.isbn = formData.isbn;
-                datos.paginas = parseInt(formData.paginas);
-                break;
-            case 'libro_Digital':
-                datos.autor = formData.autor;
-                datos.isbn = formData.isbn;
-                datos.paginas = parseInt(formData.paginas);
-                datos.tamano = parseInt(formData.tamano);
-                break;
-            case 'ereader':
-                datos.resolucion = parseInt(formData.resolucion);
-                break;
-            case 'funda':
-                datos.material = formData.material;
-                break;
-            case 'marcapaginas':
-                datos.color = formData.color;
-                break;
-            default:
-                break;
+
+        if (!formData.nombre || !formData.precio) {
+            mostrarMensaje('Nombre y precio son campos obligatorios', 'warning');
+            return;
         }
         
-        // Llamar a la función para agregar producto pasando tipo y datos
-        const resultado = agregarProductoTienda(formData.tipo, datos);
+        // Indicar que se está enviando el formulario
+        setEnviando(true);
         
-        if (resultado) {
-            // Mostrar mensaje de éxito
-            mostrarMensaje('Producto agregado correctamente', 'success');
+        try {
+            // Usar la función modificada para enviar a través de la API
+            const resultado = await agregarNuevoProducto(formData.tipo, formData);
             
-            // Limpiar formulario
-            setFormData({
-                tipo: '',
-                nombre: '',
-                precio: '',
-                descripcion: '',
-                imagen: null,
-                autor: '',
-                isbn: '',
-                paginas: '',
-                tamano: '',
-                resolucion: '',
-                material: '',
-                color: ''
-            });
-            setFile(null);
-            setFileName('');
-            
-            // Resetear el input file mediante la ref
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
+            if (resultado) {
+                // Mostrar mensaje de éxito
+                mostrarMensaje('Producto agregado correctamente', 'success');
+                
+                // Limpiar formulario
+                setFormData({
+                    tipo: '',
+                    nombre: '',
+                    precio: '',
+                    descripcion: '',
+                    imagen: null,
+                    autor: '',
+                    isbn: '',
+                    paginas: '',
+                    tamano: '',
+                    resolucion: '',
+                    material: '',
+                    color: ''
+                });
+                setFile(null);
+                setFileName('');
+                
+                // Resetear el input file mediante la ref
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+                
+                // Notificar que se ha añadido un nuevo producto
+                if (onProductoAdded) {
+                    onProductoAdded();
+                }
+            } else {
+                mostrarMensaje('Error al añadir el producto. Verifica los campos e intenta nuevamente.', 'danger');
             }
-            
-            // Notificar que se ha añadido un nuevo producto
-            if (onProductoAdded) {
-                onProductoAdded();
-            }
-        } else {
-            mostrarMensaje('Error al añadir el producto', 'danger');
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            mostrarMensaje('Error al comunicarse con el servidor', 'danger');
+        } finally {
+            setEnviando(false);
         }
     };
     
@@ -273,20 +257,20 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 required
                                 value={formData.autor}
                                 onChange={handleChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                             />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="productIsbn" className="form-label">ISBN:</label>
                             <input 
-                                type="number" 
+                                type="text" 
                                 className="form-control" 
                                 id="productIsbn" 
                                 placeholder="Ej: 9788445077566" 
                                 required
                                 value={formData.isbn}
                                 onChange={handleChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                             />
                         </div>
                         <div className="mb-3">
@@ -300,7 +284,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 required
                                 value={formData.paginas}
                                 onChange={handleChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                             />
                         </div>
                     </>
@@ -318,20 +302,20 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 required
                                 value={formData.autor}
                                 onChange={handleChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                             />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="productIsbn" className="form-label">ISBN:</label>
                             <input 
-                                type="number" 
+                                type="text" 
                                 className="form-control" 
                                 id="productIsbn" 
                                 placeholder="Ej: 9788401032141" 
                                 required
                                 value={formData.isbn}
                                 onChange={handleChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                             />
                         </div>
                         <div className="mb-3">
@@ -345,7 +329,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 required
                                 value={formData.paginas}
                                 onChange={handleChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                             />
                         </div>
                         <div className="mb-3">
@@ -359,7 +343,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 required
                                 value={formData.tamano}
                                 onChange={handleChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                             />
                         </div>
                     </>
@@ -377,7 +361,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                             required
                             value={formData.resolucion}
                             onChange={handleChange}
-                            disabled={!isOnline}
+                            disabled={!isOnline || enviando}
                         />
                     </div>
                 );
@@ -393,7 +377,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                             required
                             value={formData.material}
                             onChange={handleChange}
-                            disabled={!isOnline}
+                            disabled={!isOnline || enviando}
                         />
                     </div>
                 );
@@ -409,7 +393,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                             required
                             value={formData.color}
                             onChange={handleChange}
-                            disabled={!isOnline}
+                            disabled={!isOnline || enviando}
                         />
                     </div>
                 );
@@ -458,7 +442,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                             required
                             value={formData.tipo}
                             onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                            disabled={!isOnline}
+                            disabled={!isOnline || enviando}
                         >
                             <option value="">Seleccione un tipo</option>
                             <option value="libro_Fisico">Libro Físico</option>
@@ -479,7 +463,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                             required
                             value={formData.nombre}
                             onChange={handleChange}
-                            disabled={!isOnline}
+                            disabled={!isOnline || enviando}
                         />
                     </div>
                     
@@ -501,7 +485,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 required
                                 value={formData.precio}
                                 onChange={handleChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                             />
                         </div>
                     </div>
@@ -515,7 +499,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                             placeholder="Describe el producto detalladamente..."
                             value={formData.descripcion}
                             onChange={handleChange}
-                            disabled={!isOnline}
+                            disabled={!isOnline || enviando}
                         ></textarea>
                     </div>
                     
@@ -529,7 +513,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                 id="fileInput"
                                 accept=".jpg,.jpeg,.png"
                                 onChange={handleInputFileChange}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                                 ref={fileInputRef}
                             />
                             {file && (
@@ -538,6 +522,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                     className="btn btn-outline-secondary" 
                                     onClick={handleRemoveFile}
                                     title="Eliminar imagen"
+                                    disabled={enviando}
                                 >
                                     <i className="bi bi-x"></i>
                                 </button>
@@ -546,13 +531,13 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                         
                         <div 
                             id="dragDropArea" 
-                            className={`card p-3 text-center border-dashed ${!isOnline ? 'file-uploader-disabled' : ''}`}
-                            style={{backgroundColor: !isOnline ? "var(--bs-secondary-bg)" : "transparent"}}>
+                            className={`card p-3 text-center border-dashed ${(!isOnline || enviando) ? 'file-uploader-disabled' : ''}`}
+                            style={{backgroundColor: (!isOnline || enviando) ? "var(--bs-secondary-bg)" : "transparent"}}>
                             <FileUploader 
                                 handleChange={handleFileChange}
                                 name="file"
                                 types={fileTypes}
-                                disabled={!isOnline}
+                                disabled={!isOnline || enviando}
                                 hoverTitle=' '
                                 onDraggingStateChange={(dragging) => setDragging(dragging)}
                                 onTypeError={handleTypeError}
@@ -565,11 +550,12 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                                     fontWeight: 'inherit'
                                 }}
                                 children={
-                                    <div style={{backgroundColor: !isOnline ? "var(--bs-secondary-bg)" : "transparent"}}> 
-                                        <i className={`bi mb-2 ${!isOnline ? 'bi-exclamation-circle-fill' : (dragging ? 'bi-file-arrow-down' : (file ? 'bi-check-circle-fill text-success' : 'bi-cloud-upload'))}`}></i>
+                                    <div style={{backgroundColor: (!isOnline || enviando) ? "var(--bs-secondary-bg)" : "transparent"}}> 
+                                        <i className={`bi mb-2 ${!isOnline ? 'bi-exclamation-circle-fill' : (enviando ? 'bi-hourglass-split' : (dragging ? 'bi-file-arrow-down' : (file ? 'bi-check-circle-fill text-success' : 'bi-cloud-upload')))}`}></i>
                                         <p className="mb-0" id="dropText">
                                             {dragging ? "Suelta la imagen" : 
                                              !isOnline ? "No tienes conexión" : 
+                                             enviando ? "Procesando..." :
                                              file ? "Archivo seleccionado" : "O arrastre y suelte aquí"}
                                         </p>
                                         {fileName && <p className="small text-muted mb-0">{fileName}</p>}
@@ -585,9 +571,14 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
                     <button 
                         type="submit" 
                         className="btn btn-primary w-100"
-                        disabled={!isOnline}
+                        disabled={!isOnline || enviando}
                     >
-                        Subir
+                        {enviando ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Subiendo...
+                            </>
+                        ) : 'Subir'}
                     </button>
                 </form>
             </div>

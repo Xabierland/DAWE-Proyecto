@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { DIVISA, MAX_COPIAS, guardarEnCarrito, borrarDelCarrito, cargarCarrito } from '../tienda/tienda';
+import { DIVISA, MAX_COPIAS, guardarEnCarrito, borrarDelCarrito, cargarCarrito, cargarProductos } from '../tienda/tienda';
 
 const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, carrito, setCarrito}) => {
     // Estado para manejar los mensajes de error de cantidad máxima
@@ -7,6 +7,10 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
     
     // Estado local para manejar los valores del input durante la edición
     const [inputValues, setInputValues] = useState({});
+    
+    // Estado para manejar errores de carga
+    const [error, setError] = useState(null);
+    const [cargando, setCargando] = useState(false);
     
     // Referencia al elemento del carrito para detectar clics fuera
     const carritoRef = useRef(null);
@@ -22,16 +26,32 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
     // Efecto para cargar el carrito cuando cambia carritoUpdatedProp
     useEffect(() => {
         // Este efecto SOLO debe ejecutarse cuando carritoUpdatedProp cambia
-        const carritoMap = cargarCarrito();
-        setCarrito(carritoMap);
-        updateCarritoCount(carritoMap);
+        const actualizarCarrito = async () => {
+            try {
+                setCargando(true);
+                // Asegurar que tenemos los productos cargados para referencias correctas
+                await cargarProductos();
+                
+                const carritoMap = cargarCarrito();
+                setCarrito(carritoMap);
+                updateCarritoCount(carritoMap);
+                
+                // Inicializar los valores de input con las cantidades del carrito
+                const initialInputValues = {};
+                carritoMap.forEach((item, id) => {
+                    initialInputValues[id] = item.cantidad.toString();
+                });
+                setInputValues(initialInputValues);
+                setError(null);
+            } catch (err) {
+                console.error('Error al cargar el carrito:', err);
+                setError('Error al cargar el carrito. Por favor, intenta nuevamente.');
+            } finally {
+                setCargando(false);
+            }
+        };
         
-        // Inicializar los valores de input con las cantidades del carrito
-        const initialInputValues = {};
-        carritoMap.forEach((item, id) => {
-            initialInputValues[id] = item.cantidad.toString();
-        });
-        setInputValues(initialInputValues);
+        actualizarCarrito();
     }, [carritoUpdatedProp, setCarrito, updateCarritoCount]);
     
     // Cuando se muestra el carrito se notifica a App.js que no se pueda hacer scroll
@@ -208,66 +228,89 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
                     ></button>
                 </div>
                 <div className="offcanvas-body">
-                    <div id="cartItems" className="mb-3">
-                        {Array.from(carrito.entries()).map(([productId, item]) => (
-                            <div className="cart-item mb-3 border-bottom pb-3" key={productId}>
-                                <div className="d-flex align-items-center">
-                                    <img 
-                                        src={item.imagen} 
-                                        alt={item.nombre} 
-                                        className="cart-item-image me-3" 
-                                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                    />
-                                    <div className="cart-item-details flex-grow-1">
-                                        <h6 className="mb-1">{item.nombre}</h6>
-                                        <p className="mb-1">Precio: {item.precio}{DIVISA}</p>
-                                        <div className="d-flex align-items-center mb-1">
-                                            <label className="me-2">Cantidad:</label>
-                                            <input 
-                                                type="number" 
-                                                className="form-control form-control-sm product-quantity" 
-                                                value={inputValues[productId] || ''}
-                                                min="0"
-                                                max={MAX_COPIAS+1}
-                                                style={{ width: '70px' }}
-                                                onChange={(e) => handleInputChange(productId, e.target.value)}
-                                                onBlur={() => handleInputBlur(productId)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.target.blur(); // Quitar el foco para activar onBlur
-                                                    }
-                                                }}
+                    {cargando ? (
+                        <div className="text-center py-4">
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden">Cargando...</span>
+                            </div>
+                            <p className="mt-2">Cargando carrito...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="alert alert-danger">
+                            <p className="mb-0">{error}</p>
+                            <button 
+                                className="btn btn-sm btn-outline-danger mt-2"
+                                onClick={() => window.location.reload()}
+                            >
+                                Reintentar
+                            </button>
+                        </div>
+                    ) : (
+                        <div id="cartItems" className="mb-3">
+                            {carrito.size > 0 ? (
+                                Array.from(carrito.entries()).map(([productId, item]) => (
+                                    <div className="cart-item mb-3 border-bottom pb-3" key={productId}>
+                                        <div className="d-flex align-items-center">
+                                            <img 
+                                                src={item.imagen} 
+                                                alt={item.nombre} 
+                                                className="cart-item-image me-3" 
+                                                style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                                             />
+                                            <div className="cart-item-details flex-grow-1">
+                                                <h6 className="mb-1">{item.nombre}</h6>
+                                                <p className="mb-1">Precio: {item.precio}{DIVISA}</p>
+                                                <div className="d-flex align-items-center mb-1">
+                                                    <label className="me-2">Cantidad:</label>
+                                                    <input 
+                                                        type="number" 
+                                                        className="form-control form-control-sm product-quantity" 
+                                                        value={inputValues[productId] || ''}
+                                                        min="0"
+                                                        max={MAX_COPIAS+1}
+                                                        style={{ width: '70px' }}
+                                                        onChange={(e) => handleInputChange(productId, e.target.value)}
+                                                        onBlur={() => handleInputBlur(productId)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.target.blur(); // Quitar el foco para activar onBlur
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                                <p className="mb-1">Subtotal: {(item.precio * item.cantidad).toFixed(2)}{DIVISA}</p>
+                                            </div>
+                                            <button 
+                                                className="btn btn-danger btn-sm remove-item" 
+                                                title="Eliminar producto"
+                                                onClick={() => actualizarCantidad(productId, 0)}
+                                            >
+                                                x
+                                            </button>
                                         </div>
-                                        <p className="mb-1">Subtotal: {(item.precio * item.cantidad).toFixed(2)}{DIVISA}</p>
+                                        
+                                        {/* Mensaje de error por exceder el máximo - Ahora fuera del flex container y en rojo */}
+                                        {maxCantidadError[productId] && (
+                                            <div className="alert alert-danger py-1 px-2 mt-2 mb-0">
+                                                <small><strong>Error:</strong> Máximo de copias alcanzado ({MAX_COPIAS})</small>
+                                            </div>
+                                        )}
                                     </div>
-                                    <button 
-                                        className="btn btn-danger btn-sm remove-item" 
-                                        title="Eliminar producto"
-                                        onClick={() => actualizarCantidad(productId, 0)}
-                                    >
-                                        x
-                                    </button>
+                                ))
+                            ) : (
+                                <div className="text-center py-4">
+                                    <i className="bi bi-cart-x" style={{ fontSize: '48px', opacity: 0.5 }}></i>
+                                    <p className="mb-0 text-muted mt-2">El carrito está vacío</p>
                                 </div>
-                                
-                                {/* Mensaje de error por exceder el máximo - Ahora fuera del flex container y en rojo */}
-                                {maxCantidadError[productId] && (
-                                    <div className="alert alert-danger py-1 px-2 mt-2 mb-0">
-                                        <small><strong>Error:</strong> Máximo de copias alcanzado ({MAX_COPIAS})</small>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                        
-                        {carrito.size === 0 && (
-                            <div className="text-center py-4">
-                                <p className="mb-0 text-muted">El carrito está vacío</p>
-                            </div>
-                        )}
-                    </div>
-                    <div className="cart-total border-top pt-3">
-                        <h6>Total: <span id="cartTotal">{calcularTotal()}</span>{DIVISA}</h6>
-                    </div>
+                            )}
+                        </div>
+                    )}
+                    
+                    {!cargando && !error && carrito.size > 0 && (
+                        <div className="cart-total border-top pt-3">
+                            <h6>Total: <span id="cartTotal">{calcularTotal()}</span>{DIVISA}</h6>
+                        </div>
+                    )}
                 </div>
             </div>
         </>
