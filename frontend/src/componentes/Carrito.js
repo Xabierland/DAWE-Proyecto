@@ -21,6 +21,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
             (total, item) => total + item.cantidad, 0
         );
         setCarritoCountProp(count);
+        console.log(`Contador de carrito actualizado: ${count} items`);
     }, [setCarritoCountProp]);
     
     // Efecto para cargar el carrito cuando cambia carritoUpdatedProp
@@ -28,11 +29,13 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
         // Este efecto SOLO debe ejecutarse cuando carritoUpdatedProp cambia
         const actualizarCarrito = async () => {
             try {
+                console.log('Actualizando carrito desde localStorage...');
                 setCargando(true);
                 // Asegurar que tenemos los productos cargados para referencias correctas
                 await cargarProductos();
                 
                 const carritoMap = cargarCarrito();
+                console.log('Carrito cargado desde localStorage:', carritoMap);
                 setCarrito(carritoMap);
                 updateCarritoCount(carritoMap);
                 
@@ -73,13 +76,18 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
     
     // Función para actualizar cantidad de producto
     const actualizarCantidad = (productId, newQuantity) => {
+        console.log(`Actualizando cantidad de producto ${productId} a ${newQuantity}`);
         const productoIdString = String(productId);
         const nuevoCarrito = new Map(carrito);
         
-        if (!nuevoCarrito.has(productoIdString)) return;
+        if (!nuevoCarrito.has(productoIdString)) {
+            console.log(`El producto ${productoIdString} no está en el carrito`);
+            return;
+        }
         
         if (newQuantity <= 0) {
             // Eliminar producto usando la función de tienda.js
+            console.log(`Eliminando producto ${productoIdString} del carrito`);
             nuevoCarrito.delete(productoIdString);
             borrarDelCarrito(productoIdString);
             
@@ -91,6 +99,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
             });
         } else if (newQuantity > MAX_COPIAS) {
             // Mostrar mensaje de error y ajustar al máximo
+            console.log(`Cantidad ${newQuantity} excede el máximo permitido (${MAX_COPIAS})`);
             setMaxCantidadError(prev => ({ ...prev, [productoIdString]: true }));
             
             // Actualizar el valor del input al máximo permitido
@@ -117,6 +126,7 @@ const Carrito = ({ setShowCarritoProp, setCarritoCountProp, carritoUpdatedProp, 
             }, 1500);
         } else {
             // Actualizar cantidad usando la función de tienda.js
+            console.log(`Actualizando cantidad de ${productoIdString} a ${newQuantity}`);
             const item = nuevoCarrito.get(productoIdString);
             item.cantidad = newQuantity;
             nuevoCarrito.set(productoIdString, item);

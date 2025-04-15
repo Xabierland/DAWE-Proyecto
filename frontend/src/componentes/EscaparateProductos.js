@@ -165,12 +165,15 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
     // Función para añadir producto al carrito
     const agregarAlCarrito = (productId) => {
         // Buscar el producto por ID
-        const producto = productos.find(p => p.id === productId);
+        const producto = productos.find(p => String(p.id) === String(productId));
         
         if (!producto) {
+            console.error(`Producto con ID ${productId} no encontrado`);
             mostrarNotificacion(productId, 'Producto no encontrado', 'danger');
             return;
         }
+        
+        console.log(`Añadiendo al carrito: ${producto.nombre} (ID: ${productId})`);
         
         // Crear una copia local del carrito actual
         const carritoActual = new Map(mapaCarrito);
@@ -185,8 +188,10 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
                 carritoActual.set(productoIdString, carritoItem);
                 guardarEnCarrito(productoIdString, carritoItem);
                 mostrarNotificacion(productId, `Añadido (${carritoItem.cantidad})`);
+                console.log(`Actualizado ${producto.nombre} a ${carritoItem.cantidad} unidades`);
             } else {
                 mostrarNotificacion(productId, `Máximo alcanzado (${MAX_COPIAS})`, 'danger');
+                console.log(`No se puede añadir más de ${MAX_COPIAS} unidades`);
                 return;
             }
         } else {
@@ -200,6 +205,7 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
             carritoActual.set(productoIdString, nuevoItem);
             guardarEnCarrito(productoIdString, nuevoItem);
             mostrarNotificacion(productId, `Añadido al carrito`);
+            console.log(`Nuevo producto añadido: ${producto.nombre}`);
         }
         
         // Actualizar el estado del carrito
@@ -211,6 +217,7 @@ const EscaparateProductos = ({ updateCarritoCount, updateCarrito, productosUpdat
             total += item.cantidad;
         });
         updateCarritoCount(total);
+        console.log(`Total de items en carrito: ${total}`);
         
         // Notificar que el carrito ha sido actualizado
         updateCarrito();

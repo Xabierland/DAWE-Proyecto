@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { cargarProductos } from './tienda/tienda';
+import { cargarProductos, cargarCarrito } from './tienda/tienda';
 
 // Importar componentes
 import Cabecera from './componentes/Cabecera';
@@ -83,15 +83,35 @@ function App() {
   // Flag para evitar múltiples intentos de autenticación
   const authInProgress = useRef(false);
   
-  // Cargar productos al iniciar la aplicación
+  // Cargar productos y carrito al iniciar la aplicación
   useEffect(() => {
     const inicializarApp = async () => {
       try {
+        setLoading(true);
         // Cargar los productos desde la API
-        await cargarProductos();
+        console.log('Inicializando aplicación...');
+        console.log('Cargando productos desde la API...');
+        const productosObtenidos = await cargarProductos();
+        console.log(`Se han cargado ${productosObtenidos.length} productos correctamente`);
+        
+        // Una vez cargados los productos, cargar el carrito
+        console.log('Cargando carrito desde localStorage...');
+        const carritoObtenido = cargarCarrito();
+        setCarrito(carritoObtenido);
+        
+        // Actualizar contador del carrito
+        let total = 0;
+        carritoObtenido.forEach((item) => {
+          total += item.cantidad;
+        });
+        setCarritoCount(total);
+        
+        console.log(`Carrito cargado con ${total} elementos`);
+        setLoading(false);
       } catch (err) {
         console.error('Error al inicializar la aplicación:', err);
         setError('Error al cargar datos iniciales. Por favor, recarga la página.');
+        setLoading(false);
       }
     };
     

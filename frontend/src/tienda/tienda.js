@@ -9,6 +9,7 @@ export let listaProductos = [];
 // Función para cargar productos desde la API
 export const cargarProductos = async () => {
     try {
+        console.log('Iniciando carga de productos desde API...');
         const response = await fetch(`${API_URL}/productos`, {
             method: 'GET',
             credentials: 'include',
@@ -19,6 +20,7 @@ export const cargarProductos = async () => {
         }
         
         const productosAPI = await response.json();
+        console.log(`Se han recibido ${productosAPI.length} productos de la API`);
         
         // Actualizar la lista de productos
         listaProductos = productosAPI.map(producto => {
@@ -59,6 +61,7 @@ export const cargarProductos = async () => {
             return productoMapeado;
         });
         
+        console.log('Productos cargados y mapeados correctamente');
         return listaProductos;
     } catch (error) {
         console.error('Error al cargar productos desde la API:', error);
@@ -105,6 +108,7 @@ export const agregarNuevoProducto = async (tipo, datos) => {
         }
         
         // Enviar la petición POST para crear el producto
+        console.log('Enviando petición para crear producto:', productoData);
         const response = await fetch(`${API_URL}/productos`, {
             method: 'POST',
             headers: {
@@ -119,6 +123,9 @@ export const agregarNuevoProducto = async (tipo, datos) => {
             throw new Error(errorData.error || 'Error al crear producto');
         }
         
+        const resultado = await response.json();
+        console.log('Producto creado exitosamente:', resultado);
+        
         // Recargar la lista de productos para incluir el nuevo
         await cargarProductos();
         return true;
@@ -131,7 +138,10 @@ export const agregarNuevoProducto = async (tipo, datos) => {
 // Funciones para gestionar el carrito en localStorage
 export const guardarEnCarrito = (idProducto, item) => {
     try {
-        localStorage.setItem(`producto_${idProducto}`, JSON.stringify(item));
+        // Asegurar que idProducto sea una cadena
+        const idString = String(idProducto);
+        localStorage.setItem(`producto_${idString}`, JSON.stringify(item));
+        console.log(`Producto guardado en carrito: ${idString}`, item);
     } catch (error) {
         console.error('Error al guardar en localStorage:', error);
     }
@@ -141,7 +151,10 @@ export const guardarEnCarrito = (idProducto, item) => {
 // Función para borrar un producto del carrito
 export const borrarDelCarrito = (idProducto) => {
     try {
-        localStorage.removeItem(`producto_${idProducto}`);
+        // Asegurar que idProducto sea una cadena
+        const idString = String(idProducto);
+        localStorage.removeItem(`producto_${idString}`);
+        console.log(`Producto eliminado del carrito: ${idString}`);
     } catch (error) {
         console.error('Error al borrar del localStorage:', error);
     }
@@ -158,26 +171,46 @@ export const cargarCarrito = () => {
 
         // Filtrar solo las claves que comienzan con 'producto_'
         const productoKeys = keys.filter(key => key.startsWith('producto_'));
+        
+        console.log('Claves de productos en localStorage:', productoKeys);
 
         // Recorrer las claves y añadir al carrito
         productoKeys.forEach(key => {
-            const item = JSON.parse(localStorage.getItem(key));
-            const productId = key.replace('producto_', '');
-            
-            // Buscar el producto en la lista cargada desde la API
-            const producto = listaProductos.find(p => p.id === productId);
-            
-            // Si no se encuentra el elemento se supone que se ha borrado del catálogo
-            if (!producto) {
-                borrarDelCarrito(productId);
-            } else {
-                carritoTemporal.set(String(productId), item);
+            try {
+                const itemString = localStorage.getItem(key);
+                if (!itemString) return;
+                
+                const item = JSON.parse(itemString);
+                const productId = key.replace('producto_', '');
+                
+                // Si listaProductos está vacía, simplemente añadir al carrito
+                if (!listaProductos || listaProductos.length === 0) {
+                    console.log('Lista de productos vacía, añadiendo producto directamente:', productId);
+                    carritoTemporal.set(String(productId), item);
+                    return;
+                }
+                
+                // Buscar el producto en la lista cargada desde la API
+                const producto = listaProductos.find(p => String(p.id) === String(productId));
+                
+                // Si no se encuentra el elemento se supone que se ha borrado del catálogo
+                if (!producto) {
+                    console.log(`Producto no encontrado en catálogo, eliminando: ${productId}`);
+                    borrarDelCarrito(productId);
+                } else {
+                    console.log(`Producto encontrado y añadido al carrito: ${productId}`, item);
+                    carritoTemporal.set(String(productId), item);
+                }
+            } catch (itemError) {
+                console.error(`Error procesando item ${key}:`, itemError);
+                // Continuar con el siguiente item
             }
         });
     } catch (error) {
         console.error('Error al cargar el carrito:', error);
     }
 
+    console.log('Carrito cargado:', carritoTemporal);
     return carritoTemporal;
 };
 

@@ -19,7 +19,7 @@ const verificarAdmin = async (req, res, next) => {
   const db = req.app.locals.db;
   const usuario = await db.collection('Usuarios').findOne({ Email: req.session.email });
   
-  if (!usuario || usuario.Rol !== 'admin') {
+  if (!usuario || usuario.Rol !== 'administrador') {
     return res.status(403).json({ error: 'No tienes permisos para acceder a este recurso' });
   }
   
@@ -130,6 +130,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Crear un nuevo producto (solo para administradores)
+// Crear un nuevo producto (solo para administradores)
 router.post('/', verificarAdmin, async (req, res) => {
   const { tipo, nombre, precio, descripcion, imagen, autor, isbn, paginas, tamano, resolucion, material, color } = req.body;
   
@@ -142,12 +143,13 @@ router.post('/', verificarAdmin, async (req, res) => {
     const db = req.app.locals.db;
     
     // Crear objeto base para el nuevo producto
+    // Aseguramos que los tipos de datos coincidan con el esquema de MongoDB
     const nuevoProducto = {
-      Tipo: tipo,
-      Nombre: nombre,
-      Precio: parseFloat(precio),
-      Descripcion: descripcion || '',
-      RutaImagen: imagen || '/imagenes/productos/default.png'
+      Tipo: String(tipo),
+      Nombre: String(nombre),
+      Precio: Number(precio),  // Usamos Number en lugar de parseFloat para asegurar compatibilidad
+      Descripcion: descripcion ? String(descripcion) : '',
+      RutaImagen: imagen ? String(imagen) : '/imagenes/productos/default.png'
     };
     
     // Añadir campos específicos según el tipo de producto
@@ -156,40 +158,42 @@ router.post('/', verificarAdmin, async (req, res) => {
         if (!autor || !isbn || !paginas) {
           return res.status(400).json({ error: 'Para un libro físico, autor, ISBN y número de páginas son obligatorios' });
         }
-        nuevoProducto.Autor = autor;
-        nuevoProducto.Isbn = isbn;
-        nuevoProducto.Paginas = parseInt(paginas);
+        nuevoProducto.Autor = String(autor);
+        nuevoProducto.Isbn = String(isbn);
+        nuevoProducto.Paginas = Number(paginas);
         break;
       case 'libro_Digital':
         if (!autor || !isbn || !paginas || !tamano) {
           return res.status(400).json({ error: 'Para un libro digital, autor, ISBN, número de páginas y tamaño son obligatorios' });
         }
-        nuevoProducto.Autor = autor;
-        nuevoProducto.Isbn = isbn;
-        nuevoProducto.Paginas = parseInt(paginas);
-        nuevoProducto.Tamano = parseInt(tamano);
+        nuevoProducto.Autor = String(autor);
+        nuevoProducto.Isbn = String(isbn);
+        nuevoProducto.Paginas = Number(paginas);
+        nuevoProducto.Tamano = Number(tamano);
         break;
       case 'ereader':
         if (!resolucion) {
           return res.status(400).json({ error: 'Para un ereader, la resolución es obligatoria' });
         }
-        nuevoProducto.Resolucion = parseInt(resolucion);
+        nuevoProducto.Resolucion = Number(resolucion);
         break;
       case 'funda':
         if (!material) {
           return res.status(400).json({ error: 'Para una funda, el material es obligatorio' });
         }
-        nuevoProducto.Material = material;
+        nuevoProducto.Material = String(material);
         break;
       case 'marcapaginas':
         if (!color) {
           return res.status(400).json({ error: 'Para un marcapáginas, el color es obligatorio' });
         }
-        nuevoProducto.Color = color;
+        nuevoProducto.Color = String(color);
         break;
       default:
         return res.status(400).json({ error: 'Tipo de producto no válido' });
     }
+    
+    console.log('Intentando insertar producto:', nuevoProducto);
     
     const resultado = await db.collection('Productos').insertOne(nuevoProducto);
     
@@ -199,7 +203,14 @@ router.post('/', verificarAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('Error al crear producto:', error);
-    res.status(500).json({ error: 'Error al crear producto' });
+    
+    // Proporcionar información más detallada sobre el error
+    let mensajeError = 'Error al crear producto';
+    if (error.errInfo && error.errInfo.details) {
+      mensajeError += ': ' + JSON.stringify(error.errInfo.details);
+    }
+    
+    res.status(500).json({ error: mensajeError });
   }
 });
 
