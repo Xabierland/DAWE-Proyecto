@@ -34,6 +34,12 @@ docker system prune -a --volumes -f
 Las URLs para acceder a los diferentes servicios son las siguientes:
 
 - Frontend: [http://localhost:3000](http://localhost:3000)
+  - Admin
+    - Correo: `admin@example.com`
+    - Contraseña: `123456`
+  - Usuario
+    - Correo: `usuario@example.com`
+    - Contraseña: `123456`
 - Backend: [http://localhost:5000](http://localhost:5000)
 - MongoDB: [http://localhost:27017](http://localhost:27017)
   - Usuario: `admin`
@@ -44,17 +50,17 @@ Las URLs para acceder a los diferentes servicios son las siguientes:
 
 ## Tareas
 
-- [] Estructura - Xabier
+- [X] Estructura - Xabier
   - [X] Dockerización
-- [] Secciones nuevas
-- [] Autenticacion - Xabier
-- [] Panel de usuario
-  - [] Contador de visitas
-- [] Seccion Mi Cuenta
-  - [] Formulario de edición de datos de usuario
-- [] Seccion "Añadir un producto"
-  - [] Formulario de subida de productos
-- [] Seccion "Editar/Borrar productos"
-  - [] Formulario de edición y borrado de productos
-- [] Base de datos MongoDB - Eneko
-  - [] Sesión en Express
+- [X] Secciones nuevas
+- [X] Autenticacion - Xabier
+- [X] Panel de usuario
+  - [X] Contador de visitas
+- [X] Seccion Mi Cuenta
+  - [X] Formulario de edición de datos de usuario
+- [X] Seccion "Añadir un producto"
+  - [X] Formulario de subida de productos
+- [X] Seccion "Editar/Borrar productos"
+  - [X] Formulario de edición y borrado de productos
+- [X] Base de datos MongoDB - Eneko
+  - [X] Sesión en Express
