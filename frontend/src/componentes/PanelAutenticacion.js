@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence} from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 // Configuración de Firebase (sustituye con tus credenciales)
 const firebaseConfig = {
@@ -29,7 +29,7 @@ setPersistence(auth, browserLocalPersistence)
     console.error('Error configurando persistencia de Firebase:', error);
   });
 
-const PanelAutenticacion = ({ onLogin, isOnline}) => {
+const PanelAutenticacion = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -107,7 +107,6 @@ const PanelAutenticacion = ({ onLogin, isOnline}) => {
             </div>
           )}
           
-
           <div className="mb-3">
             <label htmlFor="email" className="form-label">Email:</label>
             <input
@@ -136,7 +135,7 @@ const PanelAutenticacion = ({ onLogin, isOnline}) => {
           <button
             type="submit"
             className="btn btn-primary w-100"
-            disabled={loading || !isOnline}
+            disabled={loading}
           >
             {loading ? (
               <>

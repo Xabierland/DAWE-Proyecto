@@ -1,3 +1,3 @@
 # Backend
 
-Aqui dentro irán todos los archivos relacionados a la API Express
+Aqui dentro iran todos los archivos relacionados a la API Express

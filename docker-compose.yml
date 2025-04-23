@@ -28,8 +28,8 @@ services:
       - MONGO_INITDB_DATABASE=tienda
     ports:
       - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
+#    volumes:
+#      - mongo_data:/data/db
     # Añadir esto para ver logs más detallados
     command: mongod --logpath=/dev/stdout --logappend
 
@@ -44,6 +44,6 @@ services:
     depends_on:
       - db
 
-volumes:
-  mongo_data:
-    driver: local
+#volumes:
+#  mongo_data:
+#    driver: local

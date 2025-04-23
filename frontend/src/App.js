@@ -310,10 +310,7 @@ function App() {
       );
     } else {
       return (
-        <PanelAutenticacion 
-          onLogin={handleLogin}
-          isOnline={isOnline}
-        />
+        <PanelAutenticacion onLogin={handleLogin} />
       );
     }
   };
