@@ -12,6 +12,8 @@ const MiCuenta = ({ usuario, onActualizar }) => {
   const [error, setError] = useState('');
   const [exito, setExito] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [emptyName, setEmptyName] = useState(false);
   
   // Cargar datos del usuario cuando el componente se monta
   useEffect(() => {
@@ -26,12 +28,25 @@ const MiCuenta = ({ usuario, onActualizar }) => {
     }
   }, [usuario]);
   
-  const handleChange = (e) => {
+  const handleChange = (e) => 
+  {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+
+    if(name == 'nombre')
+    {
+      if(value == '')
+      {
+        setEmptyName(true);
+        setTimeout(() => 
+        {
+          setEmptyName(false);
+        }, 2000);
+      }
+    }
   };
   
   const handleSubmit = async (e) => {
@@ -118,6 +133,14 @@ const MiCuenta = ({ usuario, onActualizar }) => {
               required
             />
           </div>
+
+          {emptyName && (
+                        <div className="ms-auto">
+                            <div className="alert alert-danger py-1 px-2 m-0 text-white">
+                                El nombre no puede estar vacio
+                            </div>
+                        </div>
+                    )}
           
           <div className="mb-3">
             <label htmlFor="email" className="form-label">Email:</label>
