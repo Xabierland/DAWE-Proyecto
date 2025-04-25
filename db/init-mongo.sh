@@ -81,6 +81,26 @@ db.Productos.insertMany([
         Isbn: "9788432248368",
         Paginas: 160
     },
+    {
+        Tipo: "libro_Fisico",
+        Nombre: "Viento y verdad",
+        Precio: 23,
+        Descripcion: "La esperada y explosiva conclusión del primer arco de la saga El Archivo de las Tormentas, obra cumbre de Brandon Sanderson, con más de diez millones de lectores en todo el mundo.",
+        RutaImagen: "/imagenes/productos/VientoYVerdad.jpg",
+        Autor: "Brandon Sanderson",
+        Isbn: "3654166141",
+        Paginas: 1400
+    },
+    {
+        Tipo: "libro_Fisico",
+        Nombre: "El nombre del viento",
+        Precio: 20,
+        Descripcion: "Atípica, profunda y sincera, El nombre del viento es una novela de aventuras, de historias dentro de otras historias, de misterio, de amistad, de amor, de magia y de superación. \nLa novela que ha consagrado a Patrick Rothfuss como fenómeno editorial de los últimos años. \nEn una posada en tierra de nadie, un hombre se dispone a relatar, por primera vez, la auténtica historia de su vida. Una historia que únicamente él conoce y que ha quedado diluida tras los rumores, las conjeturas y los cuentos de taberna que le han convertido en un personaje legendario a quien todos daban ya por muerto: Kvothe... músico, mendigo, ladrón, estudiante, mago, héroe y asesino. \nAhora va a revelar la verdad sobre sí mismo. Y para ello debe empezar por el principio: su infancia en una troupe de artistas itinerantes, los años malviviendo como un ladronzuelo en las calles de una gran ciudad y su llegada a una universidad donde esperaba encontrar todas las respuestas que había estado buscando. \n«Viajé, amé, perdí, confié y me traicionaron». \n«He robado princesas a reyes agónicos. Incendié la ciudad de Trebon. He pasado la noche con Felurian y he despertado vivo y cuerdo. Me expulsaron de la Universidad a una edad a la que a la mayoría todavía no los dejan entrar. He recorrido de noche caminos de los que otros no se atreven a hablar ni siquiera de día. He hablado con dioses, he amado a mujeres y he escrito canciones que hacen llorar a los bardos. \nMe llamo Kvothe. Quizá hayas oído hablar de mí».",
+        RutaImagen: "/imagenes/productos/ElNombreDelViento.jpg",
+        Autor: "Patrick Rothfuss",
+        Isbn: "5558675848",
+        Paginas: 800
+    },    
     
     // ===== LIBROS DIGITALES (EBOOKS) =====
     {
@@ -106,6 +126,30 @@ db.Productos.insertMany([
         Tamano: 500
     },
 
+     {
+        Tipo: "libro_Digital",
+        Nombre: "Dungeon Crawler Carl: Carl's doomsday scenario",
+        Precio: 15.0,
+        Descripcion: "The training levels have concluded. Now the games may truly begin. \n The ratings and views are off the chart. The fans just can't get enough. The dungeon gets more dangerous each day. But in a grinder designed to chew up and spit out crawlers by the millions, Carl and Princess Donut need to work harder than ever just to survive. They call it the Over City. A sprawling, once-thriving metropolis devastated by a mysterious calamity. But these streets are far from abandoned. An undead circus trawls the ruins. Murdered prostitutes rain from the sky. An ancient spell is finally ready to reveal its dark purpose. \nCarl still has no pants. \nThey call it Dungeon Crawler World. For Carl and Donut, it's anything but a game.",
+        RutaImagen: "/imagenes/productos/DungeonCrawlerCarlCarlsDoomsdayScenario.jpg",
+        Autor: "Matt Dinniman",
+        Isbn: "7",
+        Paginas: 500,
+        Tamano: 300
+    },
+
+     {
+        Tipo: "libro_Digital",
+        Nombre: "Palabras radiantes",
+        Precio: 15.0,
+        Descripcion: "Hace seis años, un asesino mató al rey Alethi, y ahora está asesinando a los gobernantes de todo Roshar; entre sus principales objetivos es Dalinar. Kaladin está al mando de los guardaespaldas reales, un puesto controvertido por su baja condición, y debe proteger al rey y a Dalinar, mientras que en secreto domina nuevos poderes extraordinarios vinculados a Syl. Shallan tiene la carga de impedir el regreso de Voidbringers y el fin de la desolada civilización que queda. Los Parshendi están convencidos por su líder a arriesgarlo todo en una apuesta desesperada con las fuerzas sobrenaturales que una vez desaparecieron.",
+        RutaImagen: "/imagenes/productos/PalabrasRadiantes.jpg",
+        Autor: "Brandon Sanderson",
+        Isbn: "8",
+        Paginas: 1300,
+        Tamano: 550
+    },
+
     // ===== EREADERS =====
     {
         Tipo: "ereader",
@@ -122,6 +166,14 @@ db.Productos.insertMany([
         Descripcion: "Ahora resistente al agua",
         RutaImagen: "/imagenes/productos/KindlePaperwhite.jpg",
         Resolucion: 350
+    },
+    {
+    Tipo: "ereader",
+    Nombre: "Kobo Libra",
+    Precio: 180.0,
+    Descripcion: "Pantalla de alta resolución",
+    RutaImagen: "/imagenes/productos/KoboLibra.jpg",
+    Resolucion: 400
     },
 
     // ===== MARCAPÁGINAS =====
@@ -141,6 +193,14 @@ db.Productos.insertMany([
         RutaImagen: "/imagenes/productos/MarcapaginasAzul.jpg",
         Color: "Azul"
     },
+    {
+        Tipo: "marcapaginas",
+        Nombre: "Marcapáginas metálico",
+        Precio: 5.0,
+        Descripcion: "Elegante marcador metálico",
+        RutaImagen: "/imagenes/productos/MarcapaginasMetalico.jpg",
+        Color: "Plata"
+    },
 
     // ===== FUNDAS =====
     {
@@ -158,6 +218,14 @@ db.Productos.insertMany([
         Descripcion: "Enfunda",
         RutaImagen: "/imagenes/productos/FundaPaperwhite.jpg",
         Material: "Plastico duro"
+    },
+    {
+    Tipo: "funda",
+    Nombre: "Funda Universal",
+    Precio: 15.0,
+    Descripcion: "Compatible con varios modelos",
+    RutaImagen: "/imagenes/productos/FundaUniversal.jpg",
+    Material: "Plastico"
     }
 ]);
 
