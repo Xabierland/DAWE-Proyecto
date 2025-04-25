@@ -12,8 +12,6 @@ const MiCuenta = ({ usuario, onActualizar }) => {
   const [error, setError] = useState('');
   const [exito, setExito] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const [emptyName, setEmptyName] = useState(false);
   
   // Cargar datos del usuario cuando el componente se monta
   useEffect(() => {
@@ -36,6 +34,7 @@ const MiCuenta = ({ usuario, onActualizar }) => {
       [name]: value
     }));
 
+    /*
     if(name == 'nombre')
     {
       if(value == '')
@@ -46,7 +45,7 @@ const MiCuenta = ({ usuario, onActualizar }) => {
           setEmptyName(false);
         }, 2000);
       }
-    }
+    }*/
   };
   
   const handleSubmit = async (e) => {
@@ -109,17 +108,6 @@ const MiCuenta = ({ usuario, onActualizar }) => {
       </div>
       <div className="card-body">
         <form onSubmit={handleSubmit}>
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
-            </div>
-          )}
-          
-          {exito && (
-            <div className="alert alert-success" role="alert">
-              {exito}
-            </div>
-          )}
           
           <div className="mb-3">
             <label htmlFor="nombre" className="form-label">Nombre:</label>
@@ -130,17 +118,8 @@ const MiCuenta = ({ usuario, onActualizar }) => {
               name="nombre"
               value={formData.nombre}
               onChange={handleChange}
-              required
             />
           </div>
-
-          {emptyName && (
-                        <div className="ms-auto">
-                            <div className="alert alert-danger py-1 px-2 m-0 text-white">
-                                El nombre no puede estar vacio
-                            </div>
-                        </div>
-                    )}
           
           <div className="mb-3">
             <label htmlFor="email" className="form-label">Email:</label>
@@ -198,6 +177,22 @@ const MiCuenta = ({ usuario, onActualizar }) => {
           >
             {loading ? 'Guardando...' : 'Guardar Cambios'}
           </button>
+
+          <p> </p>
+          
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
+          
+  
+          
+          {exito && (
+            <div className="alert alert-success" role="alert">
+              {exito}
+            </div>
+          )}
         </form>
       </div>
     </div>
