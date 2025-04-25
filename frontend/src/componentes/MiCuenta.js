@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const MiCuenta = ({ usuario, onActualizar }) => {
+const MiCuenta = ({ usuario, onActualizar, isOnline}) => {
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
@@ -173,13 +173,13 @@ const MiCuenta = ({ usuario, onActualizar }) => {
           <button
             type="submit"
             className="btn btn-primary w-100"
-            disabled={loading}
+            disabled={loading || !isOnline}
           >
             {loading ? 'Guardando...' : 'Guardar Cambios'}
           </button>
 
           <p> </p>
-          
+
           {error && (
             <div className="alert alert-danger" role="alert">
               {error}

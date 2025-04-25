@@ -249,6 +249,7 @@ function App() {
         return (
           <MiCuenta 
             usuario={usuario} 
+            isOnline={isOnline}
             onActualizar={(datosActualizados) => {
               // Actualizar los datos del usuario en el estado
               setUsuario(prev => ({
@@ -272,6 +273,7 @@ function App() {
         return (
           <EditarBorrarProductos 
             onProductoUpdated={onProductoAdded}
+            isOnline={isOnline}
           />
         );
       case 'escaparate':

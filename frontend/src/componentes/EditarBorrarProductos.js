@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FileUploader } from "react-drag-drop-files";
 import { DIVISA } from '../tienda/tienda';
 
-const EditarBorrarProductos = ({ onProductoUpdated }) => {
+const EditarBorrarProductos = ({ onProductoUpdated, isOnline}) => {
   const [productos, setProductos] = useState([]);
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
   const [productoEditando, setProductoEditando] = useState(null);
@@ -393,7 +393,7 @@ const EditarBorrarProductos = ({ onProductoUpdated }) => {
         <button
           className="btn btn-danger"
           onClick={handleBorrarSeleccionados}
-          disabled={productosSeleccionados.length === 0 || loading}
+          disabled={productosSeleccionados.length === 0 || loading || !isOnline}
         >
           Borrar Seleccionados ({productosSeleccionados.length})
         </button>
@@ -447,6 +447,7 @@ const EditarBorrarProductos = ({ onProductoUpdated }) => {
                       <button
                         className="btn btn-sm btn-outline-primary"
                         onClick={() => handleEditar(producto)}
+                        disabled={!isOnline}
                       >
                         {productoEditando === producto.id ? 'Cerrar' : 'Editar'}
                       </button>
