@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
     req.session.email = usuario.Email;
     req.session.nombre = usuario.Nombre;
     req.session.rol = usuario.Rol;
-    req.session.visitas = 1; // Inicializar contador de visitas a 1 (primera visita)
+    req.session.visitas = 0; // Inicializar contador de visitas a 1 (primera visita)
     req.session.ultimaVisitaRegistrada = Date.now(); // Timestamp de última visita
     
     // Guardar la sesión explícitamente para asegurar que se persiste
