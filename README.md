@@ -6,8 +6,6 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
 [dawe.xabierland.com](https://dawe.xabierland.com)
 
-[dawe3.xabierland.com](https://dawe3.xabierland.com)
-
 ## Miembros del grupo
 
 - Xabier Gabiña
@@ -17,11 +15,23 @@ Proyecto de la asignatura Desarrollo de Aplicaciones Web Enriquecidas
 
 ## Iniciar el proyecto
 
+### Modo desarrollo
+
 Para iniciar el proyecto ejecuta
 
 ```bash
-docker compose up --build -d
+docker compose --profile dev up --build -d
 ```
+
+### Modo producción
+
+Para iniciar el proyecto ejecuta
+
+```bash
+docker compose --profile prod up --build -d
+```
+
+## Limpiar el sistema en caso de errores
 
 Si nada funciona prueba a purgar docker
 
