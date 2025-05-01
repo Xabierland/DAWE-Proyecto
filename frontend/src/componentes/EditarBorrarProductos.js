@@ -34,7 +34,7 @@ const EditarBorrarProductos = ({ onProductoUpdated, isOnline, apiBaseUrl }) => {
       const data = await response.json();
       setProductos(data);
     } catch (error) {
-      console.error('Error:', error);
+      //console.error('Error:', error);
       mostrarMensaje('Error al cargar productos', 'danger');
     } finally {
       setLoading(false);
@@ -93,7 +93,7 @@ const EditarBorrarProductos = ({ onProductoUpdated, isOnline, apiBaseUrl }) => {
         onProductoUpdated();
       }
     } catch (error) {
-      console.error('Error:', error);
+      //console.error('Error:', error);
       mostrarMensaje(error.message || 'Error al borrar productos', 'danger');
     } finally {
       setLoading(false);
@@ -232,7 +232,7 @@ const EditarBorrarProductos = ({ onProductoUpdated, isOnline, apiBaseUrl }) => {
         onProductoUpdated();
       }
     } catch (error) {
-      console.error('Error:', error);
+      //console.error('Error:', error);
       mostrarMensaje(error.message || 'Error al actualizar producto', 'danger');
     } finally {
       setLoading(false);

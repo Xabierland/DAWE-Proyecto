@@ -52,13 +52,13 @@ router.post('/login', async (req, res) => {
     // Guardar la sesión explícitamente para asegurar que se persiste
     req.session.save((err) => {
       if (err) {
-        console.error('Error al guardar la sesión:', err);
+        //console.error('Error al guardar la sesión:', err);
         return res.status(500).json({ error: 'Error al iniciar sesión' });
       }
       
       // Imprimir información de depuración
-      console.log('Sesión iniciada para:', usuario.Email);
-      console.log('ID de sesión:', req.sessionID);
+      //console.log('Sesión iniciada para:', usuario.Email);
+      //console.log('ID de sesión:', req.sessionID);
       
       // Enviar respuesta al cliente
       res.json({
@@ -76,7 +76,7 @@ router.post('/login', async (req, res) => {
       });
     });
   } catch (error) {
-    console.error('Error al iniciar sesión:', error);
+    //console.error('Error al iniciar sesión:', error);
     res.status(500).json({ error: 'Error al iniciar sesión' });
   }
 });
@@ -88,12 +88,12 @@ router.post('/logout', (req, res) => {
   
   req.session.destroy((error) => {
     if (error) {
-      console.error('Error al cerrar sesión:', error);
+      //console.error('Error al cerrar sesión:', error);
       return res.status(500).json({ error: 'Error al cerrar sesión' });
     }
     
     // Registrar el cierre de sesión
-    console.log('Sesión cerrada para:', email);
+    //console.log('Sesión cerrada para:', email);
     
     // Configurar la cookie de sesión para que expire
     res.clearCookie('connect.sid');
@@ -113,7 +113,7 @@ router.get('/perfil', verificarAutenticacion, async (req, res) => {
     }
     
     // Imprimir información de depuración
-    console.log(`Perfil solicitado para: ${usuario.Email} - Visitas: ${req.session.visitas || 1}`);
+    //console.log(`Perfil solicitado para: ${usuario.Email} - Visitas: ${req.session.visitas || 1}`);
     
     res.json({
       usuario: {
@@ -128,7 +128,7 @@ router.get('/perfil', verificarAutenticacion, async (req, res) => {
       visitas: req.session.visitas || 1
     });
   } catch (error) {
-    console.error('Error al obtener perfil:', error);
+    //console.error('Error al obtener perfil:', error);
     res.status(500).json({ error: 'Error al obtener información del perfil' });
   }
 });
@@ -149,11 +149,11 @@ router.post('/incrementar-visitas', verificarAutenticacion, (req, res) => {
   // Guardar sesión explícitamente
   req.session.save((err) => {
     if (err) {
-      console.error('Error al guardar sesión:', err);
+      //console.error('Error al guardar sesión:', err);
       return res.status(500).json({ error: 'Error al incrementar visitas' });
     }
     
-    console.log(`Visita incrementada para ${req.session.email} - Nuevo valor: ${req.session.visitas}`);
+    //console.log(`Visita incrementada para ${req.session.email} - Nuevo valor: ${req.session.visitas}`);
     res.json({ visitas: req.session.visitas });
   });
 });
@@ -192,7 +192,7 @@ router.put('/actualizar', verificarAutenticacion, async (req, res) => {
     // Guardar la sesión explícitamente
     req.session.save((err) => {
       if (err) {
-        console.error('Error al guardar la sesión después de actualizar perfil:', err);
+        //console.error('Error al guardar la sesión después de actualizar perfil:', err);
       }
       
       res.json({ 
@@ -208,7 +208,7 @@ router.put('/actualizar', verificarAutenticacion, async (req, res) => {
       });
     });
   } catch (error) {
-    console.error('Error al actualizar perfil:', error);
+    //console.error('Error al actualizar perfil:', error);
     res.status(500).json({ error: 'Error al actualizar información del perfil' });
   }
 });
@@ -247,7 +247,7 @@ router.post('/crear', verificarAdmin, async (req, res) => {
       id: resultado.insertedId
     });
   } catch (error) {
-    console.error('Error al crear usuario:', error);
+    //console.error('Error al crear usuario:', error);
     res.status(500).json({ error: 'Error al crear usuario' });
   }
 });
@@ -271,7 +271,7 @@ router.get('/', verificarAdmin, async (req, res) => {
     
     res.json(usuariosMapeados);
   } catch (error) {
-    console.error('Error al obtener usuarios:', error);
+    //console.error('Error al obtener usuarios:', error);
     res.status(500).json({ error: 'Error al obtener lista de usuarios' });
   }
 });

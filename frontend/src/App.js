@@ -90,13 +90,13 @@ function App() {
       try {
         setLoading(true);
         // Cargar los productos desde la API
-        console.log('Inicializando aplicación...');
-        console.log('Cargando productos desde la API...');
+        //console.log('Inicializando aplicación...');
+        //console.log('Cargando productos desde la API...');
         const productosObtenidos = await cargarProductos(API_BASE_URL);
-        console.log(`Se han cargado ${productosObtenidos.length} productos correctamente`);
+        //console.log(`Se han cargado ${productosObtenidos.length} productos correctamente`);
         
         // Una vez cargados los productos, cargar el carrito
-        console.log('Cargando carrito desde localStorage...');
+        //console.log('Cargando carrito desde localStorage...');
         const carritoObtenido = cargarCarrito();
         setCarrito(carritoObtenido);
         
@@ -107,10 +107,10 @@ function App() {
         });
         setCarritoCount(total);
         
-        console.log(`Carrito cargado con ${total} elementos`);
+        //console.log(`Carrito cargado con ${total} elementos`);
         setLoading(false);
       } catch (err) {
-        console.error('Error al inicializar la aplicación:', err);
+        //console.error('Error al inicializar la aplicación:', err);
         setError('Error al cargar datos iniciales. Por favor, recarga la página.');
         setLoading(false);
       }
@@ -146,7 +146,7 @@ function App() {
       
       try {
         setLoading(true);
-        console.log('Verificando sesión existente en el backend...');
+        //console.log('Verificando sesión existente en el backend...');
         
         const response = await fetch(`${API_BASE_URL}/usuarios/perfil`, {
           method: 'GET',
@@ -155,7 +155,7 @@ function App() {
         
         if (response.ok) {
           const userData = await response.json();
-          console.log('Sesión recuperada del backend:', userData);
+          //console.log('Sesión recuperada del backend:', userData);
           setUsuario(userData);
           setLoading(false);
           authInProgress.current = false;
@@ -166,7 +166,7 @@ function App() {
         authInProgress.current = false;
         return false;
       } catch (error) {
-        console.error('Error al verificar sesión con el backend:', error);
+        //console.error('Error al verificar sesión con el backend:', error);
         setLoading(false);
         authInProgress.current = false;
         return false;
@@ -181,7 +181,7 @@ function App() {
     const auth = getAuth();
     
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log('Estado de Firebase Auth cambió:', user ? `Usuario: ${user.email}` : 'No hay usuario');
+      //console.log('Estado de Firebase Auth cambió:', user ? `Usuario: ${user.email}` : 'No hay usuario');
       
       // Si ya estamos autenticados en el backend, no hacer nada
       if (usuario) return;
@@ -192,7 +192,7 @@ function App() {
         setLoading(true);
         
         try {
-          console.log('Iniciando sesión en el backend con:', user.email);
+          //console.log('Iniciando sesión en el backend con:', user.email);
           const loginResponse = await fetch(`${API_BASE_URL}/usuarios/login`, {
             method: 'POST',
             headers: {
@@ -204,15 +204,15 @@ function App() {
           
           if (loginResponse.ok) {
             const userData = await loginResponse.json();
-            console.log('Sesión iniciada en el backend:', userData);
+            //console.log('Sesión iniciada en el backend:', userData);
             setUsuario(userData);
           } else {
-            console.error('Error al iniciar sesión en el backend:', await loginResponse.text());
+            //console.error('Error al iniciar sesión en el backend:', await loginResponse.text());
             // Si hay error al iniciar sesión en el backend, cerrar sesión en Firebase
             await auth.signOut();
           }
         } catch (error) {
-          console.error('Error de red al iniciar sesión en el backend:', error);
+          //console.error('Error de red al iniciar sesión en el backend:', error);
         } finally {
           setLoading(false);
           authInProgress.current = false;
@@ -225,7 +225,7 @@ function App() {
 
   // Manejar el inicio de sesión exitoso
   const handleLogin = (userData) => {
-    console.log('Login exitoso:', userData);
+    //console.log('Login exitoso:', userData);
     setUsuario(userData);
   };
 

@@ -73,7 +73,7 @@ router.get('/', async (req, res) => {
     
     res.json(productosMapeados);
   } catch (error) {
-    console.error('Error al obtener productos:', error);
+    //console.error('Error al obtener productos:', error);
     res.status(500).json({ error: 'Error al obtener lista de productos' });
   }
 });
@@ -124,7 +124,7 @@ router.get('/:id', async (req, res) => {
     
     res.json(productoMapeado);
   } catch (error) {
-    console.error('Error al obtener producto:', error);
+    //console.error('Error al obtener producto:', error);
     res.status(500).json({ error: 'Error al obtener información del producto' });
   }
 });
@@ -219,7 +219,7 @@ router.post('/', verificarAdmin, async (req, res) => {
         return res.status(400).json({ error: 'Tipo de producto no válido' });
     }
     
-    console.log('Intentando insertar producto:', nuevoProducto);
+    //console.log('Intentando insertar producto:', nuevoProducto);
     
     const resultado = await db.collection('Productos').insertOne(nuevoProducto);
     
@@ -228,7 +228,7 @@ router.post('/', verificarAdmin, async (req, res) => {
       id: resultado.insertedId
     });
   } catch (error) {
-    console.error('Error al crear producto:', error);
+    //console.error('Error al crear producto:', error);
     
     // Proporcionar información más detallada sobre el error
     let mensajeError = 'Error al crear producto';
@@ -308,7 +308,7 @@ router.put('/:id', verificarAdmin, async (req, res) => {
       mensaje: 'Producto actualizado correctamente' 
     });
   } catch (error) {
-    console.error('Error al actualizar producto:', error);
+    //console.error('Error al actualizar producto:', error);
     res.status(500).json({ error: 'Error al actualizar producto' });
   }
 });
@@ -326,7 +326,7 @@ router.delete('/:id', verificarAdmin, async (req, res) => {
     
     res.json({ mensaje: 'Producto eliminado correctamente' });
   } catch (error) {
-    console.error('Error al eliminar producto:', error);
+    //console.error('Error al eliminar producto:', error);
     res.status(500).json({ error: 'Error al eliminar producto' });
   }
 });
@@ -356,7 +356,7 @@ router.delete('/', verificarAdmin, async (req, res) => {
       eliminados: resultado.deletedCount
     });
   } catch (error) {
-    console.error('Error al eliminar productos:', error);
+    //console.error('Error al eliminar productos:', error);
     res.status(500).json({ error: 'Error al eliminar productos' });
   }
 });

@@ -80,7 +80,7 @@ const MiCuenta = ({ usuario, onActualizar, isOnline, apiBaseUrl }) => {
         onActualizar(data.usuario);
       }
     } catch (error) {
-      console.error('Error al actualizar perfil:', error);
+      //console.error('Error al actualizar perfil:', error);
       setError(error.message || 'Error al actualizar el perfil');
       setTimeout(() => setError(''), 3000);
     } finally {

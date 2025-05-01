@@ -20,10 +20,10 @@ const auth = getAuth(app);
 // Configurar persistencia local para mantener la sesión entre recargas
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
-    console.log('Persistencia de Firebase configurada a LOCAL');
+    //console.log('Persistencia de Firebase configurada a LOCAL');
   })
   .catch((error) => {
-    console.error('Error configurando persistencia de Firebase:', error);
+    //console.error('Error configurando persistencia de Firebase:', error);
   });
 
 const PanelAutenticacion = ({ onLogin, isOnline, apiBaseUrl }) => {
@@ -42,7 +42,7 @@ const PanelAutenticacion = ({ onLogin, isOnline, apiBaseUrl }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
-      console.log('Usuario autenticado en Firebase:', user.email);
+      //console.log('Usuario autenticado en Firebase:', user.email);
       
       // Llamar a la API para iniciar sesión en el backend
       const response = await fetch(`${apiBaseUrl}/usuarios/login`, {
@@ -62,14 +62,14 @@ const PanelAutenticacion = ({ onLogin, isOnline, apiBaseUrl }) => {
       }
 
       const userData = await response.json();
-      console.log('Sesión iniciada en el backend:', userData);
+      //console.log('Sesión iniciada en el backend:', userData);
       
       // Notificar al componente padre que el inicio de sesión fue exitoso
       if (onLogin) {
         onLogin(userData);
       }
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
+      //console.error('Error al iniciar sesión:', error);
       // Manejar diferentes tipos de errores de Firebase para mostrar mensajes más amigables
       let mensajeError = error.message || 'Error al iniciar sesión';
       

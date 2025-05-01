@@ -235,7 +235,7 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded, apiBaseUrl }) =>
                 mostrarMensaje('Error al añadir el producto. Verifica los campos e intenta nuevamente.', 'danger');
             }
         } catch (error) {
-            console.error('Error en la solicitud:', error);
+            //console.error('Error en la solicitud:', error);
             mostrarMensaje('Error al comunicarse con el servidor', 'danger');
         } finally {
             setEnviando(false);

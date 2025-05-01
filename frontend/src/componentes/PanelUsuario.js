@@ -13,7 +13,7 @@ const PanelUsuario = ({ usuario, onLogout, apiBaseUrl }) => {
       if (visitaIncrementada) return;
       
       try {
-        console.log('Incrementando contador de visitas...');
+        //console.log('Incrementando contador de visitas...');
         const response = await fetch(`${apiBaseUrl}/usuarios/incrementar-visitas`, {
           method: 'POST',
           credentials: 'include',
@@ -21,14 +21,14 @@ const PanelUsuario = ({ usuario, onLogout, apiBaseUrl }) => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Contador de visitas actualizado:', data.visitas);
+          //console.log('Contador de visitas actualizado:', data.visitas);
           setVisitas(data.visitas);
           setVisitaIncrementada(true);
         } else {
-          console.error('Error incrementando visitas:', await response.text());
+          //console.error('Error incrementando visitas:', await response.text());
         }
       } catch (error) {
-        console.error('Error al incrementar visitas:', error);
+        //console.error('Error al incrementar visitas:', error);
       }
     };
 
@@ -40,7 +40,7 @@ const PanelUsuario = ({ usuario, onLogout, apiBaseUrl }) => {
   useEffect(() => {
     const obtenerPerfil = async () => {
       try {
-        console.log('Obteniendo perfil actualizado desde el backend...');
+        //console.log('Obteniendo perfil actualizado desde el backend...');
         const response = await fetch(`${apiBaseUrl}/usuarios/perfil`, {
           method: 'GET',
           credentials: 'include',
@@ -48,13 +48,13 @@ const PanelUsuario = ({ usuario, onLogout, apiBaseUrl }) => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Perfil actualizado recibido:', data);
+          //console.log('Perfil actualizado recibido:', data);
           setVisitas(data.visitas);
         } else {
-          console.error('Error obteniendo perfil:', await response.text());
+          //console.error('Error obteniendo perfil:', await response.text());
         }
       } catch (error) {
-        console.error('Error al obtener perfil:', error);
+        //console.error('Error al obtener perfil:', error);
       }
     };
     
@@ -67,7 +67,7 @@ const PanelUsuario = ({ usuario, onLogout, apiBaseUrl }) => {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      console.log('Cerrando sesión...');
+      //console.log('Cerrando sesión...');
       
       // Cerrar sesión en el backend primero
       const response = await fetch(`${apiBaseUrl}/usuarios/logout`, {
@@ -76,21 +76,21 @@ const PanelUsuario = ({ usuario, onLogout, apiBaseUrl }) => {
       });
       
       if (!response.ok) {
-        console.error('Error al cerrar sesión en el backend:', await response.text());
+        //console.error('Error al cerrar sesión en el backend:', await response.text());
       } else {
-        console.log('Sesión cerrada correctamente en el backend');
+        //console.log('Sesión cerrada correctamente en el backend');
       }
       
       // Cerrar sesión en Firebase
       await signOut(auth);
-      console.log('Sesión cerrada en Firebase');
+      //console.log('Sesión cerrada en Firebase');
       
       // Notificar al componente padre que el cierre de sesión fue exitoso
       if (onLogout) {
         onLogout();
       }
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      //console.error('Error al cerrar sesión:', error);
       alert('Error al cerrar sesión. Por favor, inténtalo de nuevo.');
     } finally {
       setLoading(false);
