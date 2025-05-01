@@ -74,3 +74,9 @@ Las URLs para acceder a los diferentes servicios son las siguientes:
   - [X] Formulario de edición y borrado de productos
 - [X] Base de datos MongoDB - Eneko
   - [X] Sesión en Express
+
+## TODO
+
+- [ ] El footer no se pega abajo
+- [ ] ¿Deberia de valer con crear una cuenta en firebase o es necesario tambien en mongo?
+- [ ] Error 401 si no hay una sesion activa
