@@ -17,7 +17,8 @@ import MiCuenta from './componentes/MiCuenta';
 import EditarBorrarProductos from './componentes/EditarBorrarProductos';
 
 // URL base para las peticiones a la API - CENTRALIZADA AQUÍ
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'https://dawe.xabierland.com/api';
+//const API_BASE_URL = 'http://localhost:8000/api';
 
 function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);

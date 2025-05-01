@@ -3,7 +3,8 @@ export const DIVISA = '€';
 export const MAX_COPIAS = 20;
 
 // URL por defecto, pero permitirá recibir la URL base desde fuera
-let API_URL = 'http://localhost:8000/api';
+let API_URL = 'https://dawe.xabierland.con/api';
+//let API_URL = 'http://localhost:8000/api';
 
 // Función para establecer la URL de la API de forma global
 export const setApiUrl = (url) => {
