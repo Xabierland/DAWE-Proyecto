@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Es crucial para que funcionen las cookies de sesión entre dominios
 app.use(cors({
   // Orígenes permitidos (frontend en desarrollo y en Docker)
-  origin: ['http://localhost:3000', 'http://localhost:5000', 'http://frontend:3000'],
+  origin: ['http://localhost:3000', 'http://localhost:5000', 'http://frontend:3000', 'https://dawe.xabierland.com'],
   // Permitir enviar cookies en peticiones cross-origin
   credentials: true,
   // Métodos HTTP permitidos

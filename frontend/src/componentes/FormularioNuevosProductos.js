@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FileUploader } from "react-drag-drop-files";
 import { DIVISA, agregarNuevoProducto, API_URL } from '../tienda/tienda';
 
-const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
+const FormularioNuevosProductos = ({ isOnline, onProductoAdded, apiBaseUrl }) => {
     const [formData, setFormData] = useState({
         tipo: '',
         nombre: '',
@@ -197,7 +197,8 @@ const FormularioNuevosProductos = ({ isOnline, onProductoAdded }) => {
         
         try {
             // Usar la función modificada para enviar a través de la API
-            const resultado = await agregarNuevoProducto(formData.tipo, formData);
+            // Pasar apiBaseUrl aquí
+            const resultado = await agregarNuevoProducto(formData.tipo, formData, apiBaseUrl);
             
             if (resultado) {
                 // Mostrar mensaje de éxito

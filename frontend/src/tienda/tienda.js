@@ -1,16 +1,24 @@
 // Constantes requeridas
 export const DIVISA = '€';
 export const MAX_COPIAS = 20;
-export const API_URL = 'http://localhost:8000/api';
+
+// URL por defecto, pero permitirá recibir la URL base desde fuera
+let API_URL = 'http://localhost:8000/api';
+
+// Función para establecer la URL de la API de forma global
+export const setApiUrl = (url) => {
+  API_URL = url;
+};
 
 // Lista de productos que se cargará desde la API (inicialmente vacía)
 export let listaProductos = [];
 
 // Función para cargar productos desde la API
-export const cargarProductos = async () => {
+export const cargarProductos = async (apiUrl = null) => {
+    const url = apiUrl || API_URL;
     try {
         console.log('Iniciando carga de productos desde API...');
-        const response = await fetch(`${API_URL}/productos`, {
+        const response = await fetch(`${url}/productos`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -70,7 +78,8 @@ export const cargarProductos = async () => {
 };
 
 // Función para añadir un producto a través de la API
-export const agregarNuevoProducto = async (tipo, datos) => {
+export const agregarNuevoProducto = async (tipo, datos, apiUrl = null) => {
+    const url = apiUrl || API_URL;
     try {
         // Preparar los datos para enviar a la API
         const productoData = {
@@ -109,7 +118,7 @@ export const agregarNuevoProducto = async (tipo, datos) => {
         
         // Enviar la petición POST para crear el producto
         console.log('Enviando petición para crear producto:', productoData);
-        const response = await fetch(`${API_URL}/productos`, {
+        const response = await fetch(`${url}/productos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -127,7 +136,7 @@ export const agregarNuevoProducto = async (tipo, datos) => {
         console.log('Producto creado exitosamente:', resultado);
         
         // Recargar la lista de productos para incluir el nuevo
-        await cargarProductos();
+        await cargarProductos(url);
         return true;
     } catch (error) {
         console.error('Error al añadir nuevo producto:', error);
@@ -214,7 +223,5 @@ export const cargarCarrito = () => {
     return carritoTemporal;
 };
 
-// Cargar los productos al importar este módulo
-cargarProductos().catch(err => {
-    console.error('Error al cargar productos iniciales:', err);
-});
+// Inicialización: Cargar productos al importar este módulo
+// Esto ahora se manejará desde App.js para poder pasar la URL base

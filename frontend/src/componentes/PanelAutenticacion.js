@@ -13,9 +13,6 @@ const firebaseConfig = {
   measurementId: "G-SG68Y04JPN"
 };
 
-// API URL base
-const API_BASE_URL = 'http://localhost:8000/api';
-
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -29,7 +26,7 @@ setPersistence(auth, browserLocalPersistence)
     console.error('Error configurando persistencia de Firebase:', error);
   });
 
-const PanelAutenticacion = ({ onLogin, isOnline}) => {
+const PanelAutenticacion = ({ onLogin, isOnline, apiBaseUrl }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -48,7 +45,7 @@ const PanelAutenticacion = ({ onLogin, isOnline}) => {
       console.log('Usuario autenticado en Firebase:', user.email);
       
       // Llamar a la API para iniciar sesión en el backend
-      const response = await fetch(`${API_BASE_URL}/usuarios/login`, {
+      const response = await fetch(`${apiBaseUrl}/usuarios/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth, signOut } from 'firebase/auth';
 
-const API_BASE_URL = 'http://localhost:8000/api';
-
-const PanelUsuario = ({ usuario, onLogout }) => {
+const PanelUsuario = ({ usuario, onLogout, apiBaseUrl }) => {
   const [visitas, setVisitas] = useState(usuario?.visitas || 1);
   const [loading, setLoading] = useState(false);
   const [visitaIncrementada, setVisitaIncrementada] = useState(false);
@@ -16,7 +14,7 @@ const PanelUsuario = ({ usuario, onLogout }) => {
       
       try {
         console.log('Incrementando contador de visitas...');
-        const response = await fetch(`${API_BASE_URL}/usuarios/incrementar-visitas`, {
+        const response = await fetch(`${apiBaseUrl}/usuarios/incrementar-visitas`, {
           method: 'POST',
           credentials: 'include',
         });
@@ -36,14 +34,14 @@ const PanelUsuario = ({ usuario, onLogout }) => {
 
     // Incrementar visita una vez al montar el componente
     incrementarVisita();
-  }, [visitaIncrementada]);
+  }, [visitaIncrementada, apiBaseUrl]);
   
   // Efecto para obtener perfil actualizado periódicamente
   useEffect(() => {
     const obtenerPerfil = async () => {
       try {
         console.log('Obteniendo perfil actualizado desde el backend...');
-        const response = await fetch(`${API_BASE_URL}/usuarios/perfil`, {
+        const response = await fetch(`${apiBaseUrl}/usuarios/perfil`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -64,7 +62,7 @@ const PanelUsuario = ({ usuario, onLogout }) => {
     const intervalo = setInterval(obtenerPerfil, 60000);
     
     return () => clearInterval(intervalo);
-  }, []);
+  }, [apiBaseUrl]);
 
   const handleLogout = async () => {
     try {
@@ -72,7 +70,7 @@ const PanelUsuario = ({ usuario, onLogout }) => {
       console.log('Cerrando sesión...');
       
       // Cerrar sesión en el backend primero
-      const response = await fetch(`${API_BASE_URL}/usuarios/logout`, {
+      const response = await fetch(`${apiBaseUrl}/usuarios/logout`, {
         method: 'POST',
         credentials: 'include',
       });

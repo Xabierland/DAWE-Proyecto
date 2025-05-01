@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FileUploader } from "react-drag-drop-files";
 import { DIVISA } from '../tienda/tienda';
 
-const EditarBorrarProductos = ({ onProductoUpdated, isOnline}) => {
+const EditarBorrarProductos = ({ onProductoUpdated, isOnline, apiBaseUrl }) => {
   const [productos, setProductos] = useState([]);
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
   const [productoEditando, setProductoEditando] = useState(null);
@@ -22,7 +22,7 @@ const EditarBorrarProductos = ({ onProductoUpdated, isOnline}) => {
   const cargarProductos = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/productos', {
+      const response = await fetch(`${apiBaseUrl}/productos`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -69,7 +69,7 @@ const EditarBorrarProductos = ({ onProductoUpdated, isOnline}) => {
     
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/productos', {
+      const response = await fetch(`${apiBaseUrl}/productos`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -209,7 +209,7 @@ const EditarBorrarProductos = ({ onProductoUpdated, isOnline}) => {
           break;
       }
       
-      const response = await fetch(`http://localhost:8000/api/productos/${productoId}`, {
+      const response = await fetch(`${apiBaseUrl}/productos/${productoId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

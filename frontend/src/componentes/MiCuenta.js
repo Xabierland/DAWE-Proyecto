@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const MiCuenta = ({ usuario, onActualizar, isOnline}) => {
+const MiCuenta = ({ usuario, onActualizar, isOnline, apiBaseUrl }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
@@ -33,19 +33,6 @@ const MiCuenta = ({ usuario, onActualizar, isOnline}) => {
       ...prev,
       [name]: value
     }));
-
-    /*
-    if(name == 'nombre')
-    {
-      if(value == '')
-      {
-        setEmptyName(true);
-        setTimeout(() => 
-        {
-          setEmptyName(false);
-        }, 2000);
-      }
-    }*/
   };
   
   const handleSubmit = async (e) => {
@@ -63,7 +50,7 @@ const MiCuenta = ({ usuario, onActualizar, isOnline}) => {
     setExito('');
     
     try {
-      const response = await fetch('http://localhost:8000/api/usuarios/actualizar', {
+      const response = await fetch(`${apiBaseUrl}/usuarios/actualizar`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -185,8 +172,6 @@ const MiCuenta = ({ usuario, onActualizar, isOnline}) => {
               {error}
             </div>
           )}
-          
-  
           
           {exito && (
             <div className="alert alert-success" role="alert">

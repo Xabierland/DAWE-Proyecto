@@ -16,7 +16,7 @@ import PanelUsuario from './componentes/PanelUsuario';
 import MiCuenta from './componentes/MiCuenta';
 import EditarBorrarProductos from './componentes/EditarBorrarProductos';
 
-// URL base para las peticiones a la API
+// URL base para las peticiones a la API - CENTRALIZADA AQUÍ
 const API_BASE_URL = 'http://localhost:8000/api';
 
 function useOnlineStatus() {
@@ -91,7 +91,7 @@ function App() {
         // Cargar los productos desde la API
         console.log('Inicializando aplicación...');
         console.log('Cargando productos desde la API...');
-        const productosObtenidos = await cargarProductos();
+        const productosObtenidos = await cargarProductos(API_BASE_URL);
         console.log(`Se han cargado ${productosObtenidos.length} productos correctamente`);
         
         // Una vez cargados los productos, cargar el carrito
@@ -250,6 +250,7 @@ function App() {
           <MiCuenta 
             usuario={usuario} 
             isOnline={isOnline}
+            apiBaseUrl={API_BASE_URL}
             onActualizar={(datosActualizados) => {
               // Actualizar los datos del usuario en el estado
               setUsuario(prev => ({
@@ -266,6 +267,7 @@ function App() {
         return (
           <FormularioNuevosProductos 
             isOnline={isOnline}
+            apiBaseUrl={API_BASE_URL}
             onProductoAdded={onProductoAdded}
           />
         );
@@ -274,6 +276,7 @@ function App() {
           <EditarBorrarProductos 
             onProductoUpdated={onProductoAdded}
             isOnline={isOnline}
+            apiBaseUrl={API_BASE_URL}
           />
         );
       case 'escaparate':
@@ -285,6 +288,7 @@ function App() {
             productosUpdated={productosUpdated}
             mapaCarrito={carrito}
             setCarrito={setCarrito}
+            apiBaseUrl={API_BASE_URL}
           />
         );
     }
@@ -307,7 +311,8 @@ function App() {
       return (
         <PanelUsuario 
           usuario={usuario} 
-          onLogout={handleLogout} 
+          onLogout={handleLogout}
+          apiBaseUrl={API_BASE_URL}
         />
       );
     } else {
@@ -315,6 +320,7 @@ function App() {
         <PanelAutenticacion 
           onLogin={handleLogin}
           isOnline={isOnline}
+          apiBaseUrl={API_BASE_URL}
         />
       );
     }
@@ -359,6 +365,7 @@ function App() {
             carritoUpdatedProp={carritoUpdated}
             carrito={carrito}
             setCarrito={setCarrito}
+            apiBaseUrl={API_BASE_URL}
           />
         )}
         
