@@ -39,7 +39,7 @@ Si nada funciona prueba a purgar docker
 docker system prune -a --volumes -f
 ```
 
-## Acceder al proyecto
+## Acceder al proyecto (LOCAL)
 
 Las URLs para acceder a los diferentes servicios son las siguientes:
 
@@ -61,22 +61,16 @@ Las URLs para acceder a los diferentes servicios son las siguientes:
 ## Tareas
 
 - [X] Estructura - Xabier
-  - [X] Dockerización
-- [X] Secciones nuevas
+  - [X] Dockerización - Xabier
+- [X] Secciones nuevas - Eneko
 - [X] Autenticacion - Xabier
-- [X] Panel de usuario
-  - [X] Contador de visitas
-- [X] Seccion Mi Cuenta
-  - [X] Formulario de edición de datos de usuario
-- [X] Seccion "Añadir un producto"
-  - [X] Formulario de subida de productos
-- [X] Seccion "Editar/Borrar productos"
-  - [X] Formulario de edición y borrado de productos
+- [X] Panel de usuario - Ander
+  - [X] Contador de visitas - Ander
+- [X] Seccion Mi Cuenta - Luken
+  - [X] Formulario de edición de datos de usuario - Luken
+- [X] Seccion "Añadir un producto" - Ander
+  - [X] Formulario de subida de productos - Ander
+- [X] Seccion "Editar/Borrar productos" - Luken
+  - [X] Formulario de edición y borrado de productos - Luken
 - [X] Base de datos MongoDB - Eneko
-  - [X] Sesión en Express
-
-## TODO
-
-- [ ] El footer no se pega abajo
-- [ ] ¿Deberia de valer con crear una cuenta en firebase o es necesario tambien en mongo?
-- [ ] Error 401 si no hay una sesion activa
+  - [X] Sesión en Express - Eneko
