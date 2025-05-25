@@ -31,14 +31,6 @@ Para iniciar el proyecto ejecuta
 docker compose --profile prod up --build -d
 ```
 
-## Limpiar el sistema en caso de errores
-
-Si nada funciona prueba a purgar docker
-
-```bash
-docker system prune -a --volumes -f
-```
-
 ## Acceder al proyecto (LOCAL)
 
 Las URLs para acceder a los diferentes servicios son las siguientes:
